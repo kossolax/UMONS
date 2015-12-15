@@ -23,7 +23,7 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 	public static final int IP_PROTO_LSP = Datagram.allocateProtocolNumber(PROTOCOL_NAME);
 	
 	private final IPLayer ip;
-	public final Map<IPAddress,LSPMessage> table = new HashMap<IPAddress,LSPMessage>();
+	public final Map<IPAddress,HELLOMessage> table = new HashMap<IPAddress,HELLOMessage>();
 	
 	/** Constructor
 	 * 
@@ -53,13 +53,13 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 		for (IPInterfaceAdapter iface: ip.getInterfaces())
 			iface.addAttrListener(this);
 		
+		HELLOMessage hello = new HELLOMessage(getRouterID());
 		// Send initial DV
 		for (IPInterfaceAdapter iface: ip.getInterfaces()) {
 			if (iface instanceof IPLoopbackAdapter)
 				continue;
 			
-			LSPMessage m = new LSPMessage();
-			Datagram dm = new Datagram(iface.getAddress(), IPAddress.BROADCAST, IP_PROTO_LSP, 1, m);
+			Datagram dm = new Datagram(iface.getAddress(), IPAddress.BROADCAST, IP_PROTO_LSP, 1, hello);
 			iface.send(dm, null);
 		}
 	}
@@ -79,13 +79,26 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 	@Override
 	public void receive(IPInterfaceAdapter iface, Datagram msg) throws Exception {
 		System.out.println(  ((int) (host.getNetwork().getScheduler().getCurrentTime() * 1000)) + "ms " + host.name + " " + iface + " " + msg  );
-		LSPMessage dvm = (LSPMessage) msg.getPayload();
-		
-		table.put( iface.getAddress(), dvm);
-		
-		if( dvm.add(iface.getAddress(), iface.getMetric()) ) {
-			Datagram dm = new Datagram(iface.getAddress(), msg.src, IP_PROTO_LSP, 1, dvm);
-			iface.send(dm, msg.src);
+		if( msg.getPayload() instanceof HELLOMessage ) {
+			HELLOMessage m = (HELLOMessage) msg.getPayload();
+			
+			if( !table.containsKey(m.GetOrigin()) ) {
+				if( !m.contains(iface.getAddress()) ) {
+					m.Add( m.GetOrigin() );
+					m.SetOrigin( iface.getAddress() );
+				}
+				else {
+					table.put( iface.getAddress(), m);
+				}
+				
+				//Datagram dm = new Datagram(iface.getAddress(), msg.src, IP_PROTO_LSP, 1, m);
+				//iface.send(dm, msg.src);
+				Datagram dm = new Datagram(iface.getAddress(), IPAddress.BROADCAST, IP_PROTO_LSP, 1, m);
+				iface.send(dm, null);
+			}
+			else {
+				System.out.println(host.name + " ==> "+ table);
+			}
 		}
 	}
 

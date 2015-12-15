@@ -17,13 +17,14 @@ public class Testing {
 		AbstractScheduler scheduler= new Scheduler();
 		try {
 			Network network= NetworkBuilder.loadTopology(filename, scheduler);
-//			for (Node n: network.getNodes()) {
-//				IPRouter router = (IPRouter) n;
-//				router.addApplication( new LSPRoutingProtocol(router) );
-//				router.start();
-//			}
+			for (Node n: network.getNodes()) {
+				IPRouter router = (IPRouter) n;
+				router.addApplication( new LSPRoutingProtocol(router) );
+				router.start();
+			}
+			scheduler.run();
 			
-			
+			/*
 			IPRouter router = (IPRouter) network.getNodeByName("R1");
 			LSPRoutingProtocol app1 = new LSPRoutingProtocol(router);
 			router.addApplication( app1 );
@@ -34,8 +35,9 @@ public class Testing {
 			router.addApplication( app2 );
 			router.start();	
 			
-//			Simulation s = new Simulation(scheduler, 10, true, network);
-//			s.start();
+			
+			Simulation s = new Simulation(scheduler, 10, true, network);
+			s.start();
 			scheduler.runUntil(10);
 			
 			System.out.println("R1   :");
@@ -43,6 +45,7 @@ public class Testing {
 			System.out.println("--------------------");
 			System.out.println("R4   :");
 			System.out.println(app2.table);
+			 */		
 			
 		} catch (Exception e) {
 			e.printStackTrace();
