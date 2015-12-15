@@ -1,0 +1,8 @@
+router R1
+	lo 10.0.0.1
+	eth 192.168.0.1
+router R2
+	lo 10.0.0.2
+	eth 192.168.0.2
+link R1 eth0 R2 eth0 5000000
+	metric 1 2
