@@ -23,7 +23,7 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 	public static final int IP_PROTO_LSP = Datagram.allocateProtocolNumber(PROTOCOL_NAME);
 	
 	private final IPLayer ip;
-	private final Map<IPAddress,LSPMessage> table = new HashMap<IPAddress,LSPMessage>();
+	public final Map<IPAddress,LSPMessage> table = new HashMap<IPAddress,LSPMessage>();
 	
 	/** Constructor
 	 * 
@@ -58,7 +58,7 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 			if (iface instanceof IPLoopbackAdapter)
 				continue;
 			
-			LSPMessage m = new LSPMessage(host.name);
+			LSPMessage m = new LSPMessage();
 			Datagram dm = new Datagram(iface.getAddress(), IPAddress.BROADCAST, IP_PROTO_LSP, 1, m);
 			iface.send(dm, null);
 		}
@@ -69,16 +69,6 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 		for (IPInterfaceAdapter iface: ip.getInterfaces())
 			iface.removeAttrListener(this);
 	}
-	
-	private void sendToAll( String msg ) throws Exception {
-		for (IPInterfaceAdapter iface: ip.getInterfaces()) {
-			if (iface instanceof IPLoopbackAdapter)
-				continue;
-			
-			
-			iface.send(new Datagram(iface.getAddress(), IPAddress.BROADCAST, IP_PROTO_LSP, 1, new LSPMessage(msg) ), null);
-		}
-	}
 
 	public int addMetric(int m1, int m2) {
 		if (((long) m1) + ((long) m2) > Integer.MAX_VALUE)
@@ -88,12 +78,15 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 	
 	@Override
 	public void receive(IPInterfaceAdapter iface, Datagram msg) throws Exception {
-		
 		System.out.println(  ((int) (host.getNetwork().getScheduler().getCurrentTime() * 1000)) + "ms " + host.name + " " + iface + " " + msg  );
-		
 		LSPMessage dvm = (LSPMessage) msg.getPayload();
-		table.put( iface.getAddress() , dvm);
-		System.out.println(table.toString());
+		
+		table.put( iface.getAddress(), dvm);
+		
+		if( dvm.add(iface.getAddress(), iface.getMetric()) ) {
+			Datagram dm = new Datagram(iface.getAddress(), msg.src, IP_PROTO_LSP, 1, dvm);
+			iface.send(dm, msg.src);
+		}
 	}
 
 	@Override
