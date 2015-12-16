@@ -23,7 +23,7 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 	public static final int IP_PROTO_LSP = Datagram.allocateProtocolNumber(PROTOCOL_NAME);
 	
 	private final IPLayer ip;
-	public final Map<IPAddress, HELLOMessage> table = new HashMap<IPAddress,HELLOMessage>();
+	public final Map<IPAddress, Adjacence> voisin = new HashMap<IPAddress,Adjacence>();
 	public final Map<IPAddress, LSMessage> LSDB = new HashMap<IPAddress, LSMessage>();
 	
 	/** Constructor
@@ -69,6 +69,9 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 		ip.removeListener(IP_PROTO_LSP, this);
 		for (IPInterfaceAdapter iface: ip.getInterfaces())
 			iface.removeAttrListener(this);
+		
+		System.out.println(host.name + ":    ");
+		System.out.println(LSDB);
 	}
 
 	public int addMetric(int m1, int m2) {
@@ -81,29 +84,55 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 	public void receive(IPInterfaceAdapter iface, Datagram msg) throws Exception {		
 		if( msg.getPayload() instanceof HELLOMessage ) {
 			HELLOMessage m = (HELLOMessage) msg.getPayload();
-			if( !table.containsKey(m.GetOrigin()) ) {
-				if( !m.contains(iface.getAddress()) ) {
-					m.Add( m.GetOrigin() );
-					m.SetOrigin( iface.getAddress() );
+			
+			if( !voisin.containsKey(m.GetOrigin()) ) {
+				if( !m.contains( getRouterID() ) ) {
+					// Je me figure pas dans ce message HELLO. Je m'y ajoutes.
+					m.Add( getRouterID() );
+					m.SetOrigin( getRouterID() );
 				}
 				else {
-					table.put( iface.getAddress(), m);
+					// Sur cette interface, je suis adjacent avec...
+					voisin.put( iface.getAddress(), new Adjacence(m.GetOrigin(), iface.getMetric()) );
 				}
 				
-				Datagram dm = new Datagram(iface.getAddress(), msg.src, IP_PROTO_LSP, 1, m); // <-- TODO: Remplacer par getRouterID? 
+				Datagram dm = new Datagram(iface.getAddress(), msg.src, IP_PROTO_LSP, 1, m);
 				iface.send(dm, msg.src);
 			}
 			else {
 				// La connexion est bidirictionnel. On valide:
 				LSMessage LS = new LSMessage( getRouterID() );
-				table.forEach((k,v) -> LS.Add( new Adjacence(v.GetOrigin(), iface.getMetric()) ) ); // <-- ???
+				voisin.forEach((k,v) -> LS.Add(v));
 				LSDB.put( getRouterID(), LS );
 				
-				System.out.println(host.name + "   " + LSDB);
+				// On transmet à toute les interfaces:
+				for( IPInterfaceAdapter dst: ip.getInterfaces() ) {
+					if( dst instanceof IPLoopbackAdapter )
+						continue;
+					
+					Datagram dm = new Datagram(dst.getAddress(), IPAddress.BROADCAST, IP_PROTO_LSP, 1, LS);
+					dst.send(dm, null);
+				}
 			}
 		}
 		else if( msg.getPayload() instanceof LSMessage ) {
-			System.out.println( (LSMessage)msg.getPayload() );
+			LSMessage m = (LSMessage) msg.getPayload();
+			
+			// Si on le connait pas, ou que le numéro de séquence est plus grand:
+			if( !LSDB.containsKey(m.getOrigin()) ||
+				LSDB.get(m.getOrigin()).getSequenceID() < m.getSequenceID() ) {
+				
+				LSDB.put( m.getOrigin(), m );
+				System.out.println( host.name + " j'ai reçu un LSP!     " + (LSMessage)msg.getPayload() );
+				
+				for( IPInterfaceAdapter dst: ip.getInterfaces() ) {
+					if( dst instanceof IPLoopbackAdapter || dst == iface )
+						continue;
+					
+					Datagram dm = new Datagram(dst.getAddress(), IPAddress.BROADCAST, IP_PROTO_LSP, 1, m);
+					dst.send(dm, null);
+				}
+			}
 		}
 	}
 

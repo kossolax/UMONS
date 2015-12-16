@@ -23,6 +23,11 @@ public class Testing {
 				router.start();
 			}
 			scheduler.run();
+			for (Node n: network.getNodes()) {
+				IPRouter router = (IPRouter) n;
+				router.stop();
+			}
+			scheduler.run();
 			
 			/*
 			IPRouter router = (IPRouter) network.getNodeByName("R1");

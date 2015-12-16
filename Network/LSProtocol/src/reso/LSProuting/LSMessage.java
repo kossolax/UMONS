@@ -24,7 +24,12 @@ public class LSMessage implements Message {
 		length++;
 		LSDB = buffer;
 	}
-	
+	public IPAddress getOrigin() {
+		return origin;
+	}
+	public int getSequenceID() {
+		return seqID;
+	}
 	public String toString() {
 		String res = "";
 		res += "[LSP From: "+ origin;
