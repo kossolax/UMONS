@@ -91,10 +91,8 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 					table.put( iface.getAddress(), m);
 				}
 				
-				//Datagram dm = new Datagram(iface.getAddress(), msg.src, IP_PROTO_LSP, 1, m);
-				//iface.send(dm, msg.src);
-				Datagram dm = new Datagram(iface.getAddress(), IPAddress.BROADCAST, IP_PROTO_LSP, 1, m);
-				iface.send(dm, null);
+				Datagram dm = new Datagram(iface.getAddress(), msg.src, IP_PROTO_LSP, 1, m);
+				iface.send(dm, msg.src);
 			}
 			else {
 				System.out.println(host.name + " ==> "+ table);
