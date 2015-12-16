@@ -9,7 +9,7 @@ import reso.utilities.*;
 
 public class Testing {
 	
-	public static final String TOPO_FILE= "reso/data/topology2.txt"; // TODO: topology.txt ne fonctionne pas
+	public static final String TOPO_FILE= "reso/data/topology.txt";
 	
 	public static void main(String[] args) {
 		String filename= Testing.class.getClassLoader().getResource(TOPO_FILE).getFile();
@@ -22,17 +22,16 @@ public class Testing {
 				router.addApplication( new LSPRoutingProtocol(router) );
 				router.start();
 			}
-			scheduler.run();
+			scheduler.runUntil(10);
 			for (Node n: network.getNodes()) {
 				IPRouter router = (IPRouter) n;
 				router.stop();
 			}
-			scheduler.run();
+			scheduler.runUntil(1);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 	}
 	
 	

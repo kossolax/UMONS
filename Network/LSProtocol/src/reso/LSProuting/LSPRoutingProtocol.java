@@ -98,7 +98,7 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 					voisin.put( iface.getAddress(), new Adjacence(m.GetOrigin(), iface.getMetric()) );
 				}
 				
-				Datagram dm = new Datagram(iface.getAddress(), msg.src, IP_PROTO_LSP, 1, m);
+				Datagram dm = new Datagram(getRouterID(), msg.src, IP_PROTO_LSP, 1, m); // TODO: Mettre le getRouterID() permet de résoudre les boucles... Pourquoi?!?
 				iface.send(dm, msg.src);
 			}
 			else {
