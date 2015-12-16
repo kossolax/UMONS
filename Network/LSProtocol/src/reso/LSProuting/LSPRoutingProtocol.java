@@ -23,7 +23,8 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 	public static final int IP_PROTO_LSP = Datagram.allocateProtocolNumber(PROTOCOL_NAME);
 	
 	private final IPLayer ip;
-	public final Map<IPAddress,HELLOMessage> table = new HashMap<IPAddress,HELLOMessage>();
+	public final Map<IPAddress, HELLOMessage> table = new HashMap<IPAddress,HELLOMessage>();
+	public final Map<IPAddress, LSMessage> LSDB = new HashMap<IPAddress, LSMessage>();
 	
 	/** Constructor
 	 * 
@@ -77,11 +78,9 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 	}
 	
 	@Override
-	public void receive(IPInterfaceAdapter iface, Datagram msg) throws Exception {
-		System.out.println(  ((int) (host.getNetwork().getScheduler().getCurrentTime() * 1000)) + "ms " + host.name + " " + iface + " " + msg  );
+	public void receive(IPInterfaceAdapter iface, Datagram msg) throws Exception {		
 		if( msg.getPayload() instanceof HELLOMessage ) {
 			HELLOMessage m = (HELLOMessage) msg.getPayload();
-			
 			if( !table.containsKey(m.GetOrigin()) ) {
 				if( !m.contains(iface.getAddress()) ) {
 					m.Add( m.GetOrigin() );
@@ -91,12 +90,20 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 					table.put( iface.getAddress(), m);
 				}
 				
-				Datagram dm = new Datagram(iface.getAddress(), msg.src, IP_PROTO_LSP, 1, m);
+				Datagram dm = new Datagram(iface.getAddress(), msg.src, IP_PROTO_LSP, 1, m); // <-- TODO: Remplacer par getRouterID? 
 				iface.send(dm, msg.src);
 			}
 			else {
-				System.out.println(host.name + " ==> "+ table);
+				// La connexion est bidirictionnel. On valide:
+				LSMessage LS = new LSMessage( getRouterID() );
+				table.forEach((k,v) -> LS.Add( new Adjacence(v.GetOrigin(), iface.getMetric()) ) ); // <-- ???
+				LSDB.put( getRouterID(), LS );
+				
+				System.out.println(host.name + "   " + LSDB);
 			}
+		}
+		else if( msg.getPayload() instanceof LSMessage ) {
+			System.out.println( (LSMessage)msg.getPayload() );
 		}
 	}
 

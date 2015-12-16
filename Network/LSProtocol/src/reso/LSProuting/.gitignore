@@ -9,3 +9,8 @@
 /Simulation.class
 /HELLOMessage.class
 /HELLOMessage$LSDB.class
+/LSPMessage$LinkState.class
+/LSMessage$LinkState.class
+/LSMessage.class
+/LSMessage$Adjacence.class
+/Adjacence.class
