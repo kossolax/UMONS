@@ -37,6 +37,8 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 	}
 
 	private IPAddress getRouterID() {
+		return ip.getInterfaceByName("lo0").getAddress();
+		/*
 		IPAddress routerID= null;
 		for (IPInterfaceAdapter iface: ip.getInterfaces()) {
 			IPAddress addr= iface.getAddress();
@@ -45,7 +47,7 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 			else if (routerID.compareTo(addr) < 0)
 				routerID= addr;
 		}
-		return routerID;
+		return routerID;*/
 	}
 	
 	@Override
@@ -73,9 +75,6 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 		
 		System.out.println(host.name + ":   LSDB: ");
 		System.out.println(LSDB);
-		System.out.println(host.name + ":   Adjacent: ");
-		System.out.println(voisin);
-		
 	}
 
 	public int addMetric(int m1, int m2) {
@@ -83,7 +82,22 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 			return Integer.MAX_VALUE;
 		return m1 + m2;
 	}
-	
+	public void sendLSD() throws Exception {
+		LSMessage LS = new LSMessage( getRouterID(), seqID++);					
+		for(Adjacence v : voisin.values()) {
+			if( v.routeID == getRouterID() )
+				continue;
+			LS.Add(v);
+		}
+		LSDB.put( getRouterID(), LS );
+		for( IPInterfaceAdapter dst: ip.getInterfaces() ) {
+			if( dst instanceof IPLoopbackAdapter )
+				continue;
+			
+			Datagram dm = new Datagram(dst.getAddress(), IPAddress.BROADCAST, IP_PROTO_LSP, 1, LS);
+			dst.send(dm, null);
+		}
+	}
 	@Override
 	public void receive(IPInterfaceAdapter iface, Datagram msg) throws Exception {
 		System.out.println(((int) (host.getNetwork().getScheduler().getCurrentTime() * 1000)) + "ms " + host.name + " " + iface + " " + msg);
@@ -98,7 +112,10 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 				}
 				else {
 					// Sur cette interface, je suis adjacent avec...
-					voisin.put( iface.getAddress(), new Adjacence(m.GetOrigin(), iface.getMetric()) );
+					voisin.put( iface.getAddress(), new Adjacence( m.GetOrigin(), iface.getMetric()) );
+					if( host.name.equals("R3") ) System.out.println("Mise à jour des voisins de R3: "+voisin);
+					
+					//sendLSD();
 				}
 				
 				m.SetOrigin( getRouterID() );
@@ -106,19 +123,7 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 				iface.send(dm, msg.src);
 			}
 			else {
-				// La connexion est bidirictionnel. On valide:
-				LSMessage LS = new LSMessage( getRouterID(), seqID++);
-				voisin.forEach((k,v) -> LS.Add(v));
-				LSDB.put( getRouterID(), LS );
-				
-				// On transmet à toute les interfaces:
-				for( IPInterfaceAdapter dst: ip.getInterfaces() ) {
-					if( dst instanceof IPLoopbackAdapter )
-						continue;
-					
-					Datagram dm = new Datagram(dst.getAddress(), IPAddress.BROADCAST, IP_PROTO_LSP, 1, LS);
-					dst.send(dm, null);
-				}
+				//sendLSD();
 			}
 		}
 		else if( msg.getPayload() instanceof LSMessage ) {
@@ -129,7 +134,7 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 				LSDB.get(m.getOrigin()).getSequenceID() < m.getSequenceID() ) {
 				
 				LSDB.put( m.getOrigin(), m );
-				System.out.println( host.name + " j'ai reçu un LSP!     " + (LSMessage)msg.getPayload() );
+				//System.out.println( host.name + " j'ai reçu un LSP!     " + (LSMessage)msg.getPayload() );
 				
 				for( IPInterfaceAdapter dst: ip.getInterfaces() ) {
 					if( dst instanceof IPLoopbackAdapter || dst == iface )
