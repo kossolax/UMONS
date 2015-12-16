@@ -22,7 +22,7 @@ public class Testing {
 				router.addApplication( new LSPRoutingProtocol(router) );
 				router.start();
 			}
-			scheduler.runUntil(10);
+			scheduler.runUntil(30);
 			for (Node n: network.getNodes()) {
 				IPRouter router = (IPRouter) n;
 				router.stop();

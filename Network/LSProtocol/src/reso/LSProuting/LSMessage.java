@@ -10,10 +10,10 @@ public class LSMessage implements Message {
 	private byte length;
 	private Adjacence[] LSDB;
 	
-	public LSMessage(IPAddress ip) {
+	public LSMessage(IPAddress ip, int seqID) {
 		this.origin = ip;
 		this.length = 0;
-		this.seqID = 0;
+		this.seqID = seqID;
 	}
 	public void Add(Adjacence adj) {
 		Adjacence[] buffer = new Adjacence[length+1];

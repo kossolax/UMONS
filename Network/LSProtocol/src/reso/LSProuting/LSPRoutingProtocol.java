@@ -25,6 +25,7 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 	private final IPLayer ip;
 	public final Map<IPAddress, Adjacence> voisin = new HashMap<IPAddress,Adjacence>();
 	public final Map<IPAddress, LSMessage> LSDB = new HashMap<IPAddress, LSMessage>();
+	private int seqID = 0;
 	
 	/** Constructor
 	 * 
@@ -70,8 +71,11 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 		for (IPInterfaceAdapter iface: ip.getInterfaces())
 			iface.removeAttrListener(this);
 		
-		System.out.println(host.name + ":    ");
+		System.out.println(host.name + ":   LSDB: ");
 		System.out.println(LSDB);
+		System.out.println(host.name + ":   Adjacent: ");
+		System.out.println(voisin);
+		
 	}
 
 	public int addMetric(int m1, int m2) {
@@ -87,23 +91,23 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 		if( msg.getPayload() instanceof HELLOMessage ) {
 			HELLOMessage m = (HELLOMessage) msg.getPayload();
 			
-			if( !voisin.containsKey(m.GetOrigin()) ) {
+			if( !voisin.containsKey( iface.getAddress() ) ) {
 				if( !m.contains( getRouterID() ) ) {
 					// Je me figure pas dans ce message HELLO. Je m'y ajoutes.
 					m.Add( getRouterID() );
-					m.SetOrigin( getRouterID() );
 				}
 				else {
 					// Sur cette interface, je suis adjacent avec...
 					voisin.put( iface.getAddress(), new Adjacence(m.GetOrigin(), iface.getMetric()) );
 				}
 				
-				Datagram dm = new Datagram(getRouterID(), msg.src, IP_PROTO_LSP, 1, m); // TODO: Mettre le getRouterID() permet de résoudre les boucles... Pourquoi?!?
+				m.SetOrigin( getRouterID() );
+				Datagram dm = new Datagram(iface.getAddress(), msg.src, IP_PROTO_LSP, 1, m);
 				iface.send(dm, msg.src);
 			}
 			else {
 				// La connexion est bidirictionnel. On valide:
-				LSMessage LS = new LSMessage( getRouterID() );
+				LSMessage LS = new LSMessage( getRouterID(), seqID++);
 				voisin.forEach((k,v) -> LS.Add(v));
 				LSDB.put( getRouterID(), LS );
 				
