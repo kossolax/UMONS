@@ -81,7 +81,9 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 	}
 	
 	@Override
-	public void receive(IPInterfaceAdapter iface, Datagram msg) throws Exception {		
+	public void receive(IPInterfaceAdapter iface, Datagram msg) throws Exception {
+		System.out.println(((int) (host.getNetwork().getScheduler().getCurrentTime() * 1000)) + "ms " + host.name + " " + iface + " " + msg);
+		
 		if( msg.getPayload() instanceof HELLOMessage ) {
 			HELLOMessage m = (HELLOMessage) msg.getPayload();
 			
