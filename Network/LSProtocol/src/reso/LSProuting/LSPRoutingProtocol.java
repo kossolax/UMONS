@@ -101,14 +101,13 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 	@Override
 	public void receive(IPInterfaceAdapter iface, Datagram msg) throws Exception {
 		System.out.println(((int) (host.getNetwork().getScheduler().getCurrentTime() * 1000)) + "ms " + host.name + " " + iface + " " + msg);
-		
 		if( msg.getPayload() instanceof HELLOMessage ) {
 			HELLOMessage m = (HELLOMessage) msg.getPayload();
 			
 			if( !voisin.containsKey( iface.getAddress() ) ) {
 				if( !m.contains( getRouterID() ) ) {
 					// Je me figure pas dans ce message HELLO. Je m'y ajoutes.
-					m.Add( getRouterID() );
+					m.Add( m.GetOrigin());
 				}
 				else {
 					// Sur cette interface, je suis adjacent avec...
