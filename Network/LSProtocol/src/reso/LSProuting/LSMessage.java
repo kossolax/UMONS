@@ -30,6 +30,9 @@ public class LSMessage implements Message {
 	public int getSequenceID() {
 		return seqID;
 	}
+	public Adjacence[] getAdjacence() {
+		return LSDB;
+	}
 	public String toString() {
 		String res = "";
 		res += "[LSP From: "+ origin;

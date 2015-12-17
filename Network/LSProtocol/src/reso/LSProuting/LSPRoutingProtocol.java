@@ -1,5 +1,6 @@
 package reso.LSProuting;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,8 +74,16 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 		for (IPInterfaceAdapter iface: ip.getInterfaces())
 			iface.removeAttrListener(this);
 		
-		System.out.println(host.name + ":   LSDB: ");
-		System.out.println(LSDB);
+		if( host.name.equals("R1") ) {
+			System.out.println(host.name + ": " + getRouterID());
+			try {
+				Dijkstra graph = new Dijkstra(getRouterID(), LSDB);
+				ArrayList<IPAddress> way = graph.GetPathTo(IPAddress.getByAddress("10.0.0.5"));
+				System.out.println( way );
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public int addMetric(int m1, int m2) {

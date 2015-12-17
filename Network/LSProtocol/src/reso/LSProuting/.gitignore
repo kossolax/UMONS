@@ -14,3 +14,6 @@
 /LSMessage.class
 /LSMessage$Adjacence.class
 /Adjacence.class
+/Dijkstra.class
+/Dijkstra$Arc.class
+/Dijkstra$Link.class

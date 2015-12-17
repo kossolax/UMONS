@@ -9,7 +9,7 @@ import reso.utilities.*;
 
 public class Testing {
 	
-	public static final String TOPO_FILE= "reso/data/topology.txt";
+	public static final String TOPO_FILE= "reso/data/topologyBIS.txt";
 	
 	public static void main(String[] args) {
 		String filename= Testing.class.getClassLoader().getResource(TOPO_FILE).getFile();
