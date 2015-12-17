@@ -57,12 +57,12 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 		for (IPInterfaceAdapter iface: ip.getInterfaces())
 			iface.addAttrListener(this);
 		
-		HELLOMessage hello = new HELLOMessage(getRouterID());
-		// Send initial DV
+
 		for (IPInterfaceAdapter iface: ip.getInterfaces()) {
 			if (iface instanceof IPLoopbackAdapter)
 				continue;
 			
+			HELLOMessage hello = new HELLOMessage(getRouterID());
 			Datagram dm = new Datagram(iface.getAddress(), IPAddress.BROADCAST, IP_PROTO_LSP, 1, hello);
 			iface.send(dm, null);
 		}
@@ -100,7 +100,8 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 	}
 	@Override
 	public void receive(IPInterfaceAdapter iface, Datagram msg) throws Exception {
-		System.out.println(((int) (host.getNetwork().getScheduler().getCurrentTime() * 1000)) + "ms " + host.name + " " + iface + " " + msg);
+		//System.out.println(((int) (host.getNetwork().getScheduler().getCurrentTime() * 1000)) + "ms " + host.name + " " + iface + " " + msg);
+		
 		if( msg.getPayload() instanceof HELLOMessage ) {
 			HELLOMessage m = (HELLOMessage) msg.getPayload();
 			
@@ -112,8 +113,6 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 				else {
 					// Sur cette interface, je suis adjacent avec...
 					voisin.put( iface.getAddress(), new Adjacence( m.GetOrigin(), iface.getMetric()) );
-					if( host.name.equals("R3") ) System.out.println("Mise à jour des voisins de R3: "+voisin);
-					
 					//sendLSD();
 				}
 				
@@ -122,7 +121,7 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 				iface.send(dm, msg.src);
 			}
 			else {
-				//sendLSD();
+				sendLSD();
 			}
 		}
 		else if( msg.getPayload() instanceof LSMessage ) {
