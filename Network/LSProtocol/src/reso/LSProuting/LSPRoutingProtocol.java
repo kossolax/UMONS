@@ -74,12 +74,13 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 		for (IPInterfaceAdapter iface: ip.getInterfaces())
 			iface.removeAttrListener(this);
 		
-		if( host.name.equals("R1") ) {
+		if( 1==1/*host.name.equals("R1")*/ ) {
 			System.out.println(host.name + ": " + getRouterID());
 			try {
 				Dijkstra graph = new Dijkstra(getRouterID(), LSDB);
-				ArrayList<IPAddress> way = graph.GetPathTo(IPAddress.getByAddress("10.0.0.5"));
-				System.out.println( way );
+				/*ArrayList<IPAddress> way = graph.GetPathTo(IPAddress.getByAddress("10.0.0.5"));
+				System.out.println( way );*/
+				graph.GetAllPath();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

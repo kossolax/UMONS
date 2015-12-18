@@ -37,7 +37,7 @@ public class Dijkstra {
 			
 			for(int j=0; j<LS.length; j++) {
 				graph.get(n).voisin.put( graph.get(LS[j].routeID), LS[j].cost);
-				System.out.println(n + " -> " + LS[j].routeID + " cout : " + LS[j].cost );
+				//System.out.println(n + " -> " + LS[j].routeID + " cout : " + LS[j].cost );
 			}
 		}
 		
@@ -46,8 +46,8 @@ public class Dijkstra {
 	private void Compute() {
 		NavigableSet<Link> q = new TreeSet<>();		
 		Link u, v, source = graph.get(src);
-		System.out.println(src);
-		System.out.println(source.src);
+		////System.out.println(src);
+		////System.out.println(source.src);
 		
 		if( src != source.src ) {
 			throw new AssertionError("Erreur fatal... Les noeuds sont mal inséré :(");
@@ -69,7 +69,7 @@ public class Dijkstra {
 		while( !q.isEmpty() ) {
 			// Le noeud le plus petit.
 			u = q.pollFirst();
-			System.out.println(u.src + "  " + u.dist);
+			////System.out.println(u.src + "  " + u.dist);
 			if( u.dist == Integer.MAX_VALUE )
 				break; // Note graph est coupé en deux... Pas encore reçu toute la LSDB? Possible. Lien d'un coup infini? Oui.
 	 
@@ -91,12 +91,24 @@ public class Dijkstra {
 	public ArrayList<IPAddress> GetPathTo( IPAddress dst ) {
 		ArrayList<IPAddress> path = new ArrayList<IPAddress>();
 		Link elem = graph.get(dst);
-		
 		while( elem.prev != null && elem.prev != elem ) {
 			path.add(elem.src);
 			elem = elem.prev;
 		}
 		return path;
+	}
+	public void GetAllPath( ) {
+		for(Link f:graph.values()){
+			System.out.println("A " + f.src);
+			ArrayList<IPAddress> path = new ArrayList<IPAddress>();
+			Link elem = graph.get(f.src);
+			
+			while( elem.prev != null && elem.prev != elem ) {
+				path.add(elem.src);
+				elem = elem.prev;
+			}
+			System.out.println(path);
+		}
 	}
 	
 	public static class Link implements Comparable<Link> {
