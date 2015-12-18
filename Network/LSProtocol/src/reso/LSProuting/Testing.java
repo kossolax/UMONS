@@ -1,5 +1,11 @@
 package reso.LSProuting;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.Writer;
+
 import reso.common.*;
 import reso.ip.*;
 import reso.scheduler.*;
@@ -22,12 +28,21 @@ public class Testing {
 				router.addApplication( new LSPRoutingProtocol(router) );
 				router.start();
 			}
-			scheduler.runUntil(550);
+			scheduler.run();
 			for (Node n: network.getNodes()) {
 				IPRouter router = (IPRouter) n;
 				router.stop();
 			}
-			scheduler.runUntil(1);
+			scheduler.run();
+			FIBDumper.dumpForAllRouters(network);
+			for (Node n: network.getNodes()) {
+				IPAddress ndst= ((IPHost) n).getIPLayer().getInterfaceByName("lo0").getAddress();
+				
+				File f= new File(".\\graph\\topology-routing-" + ndst + ".graphviz");
+				Writer w= new BufferedWriter(new FileWriter(f));
+				NetworkGrapher.toGraphviz2(network, ndst, new PrintWriter(w));
+				w.close();
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();

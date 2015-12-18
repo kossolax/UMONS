@@ -16,6 +16,7 @@ import reso.ip.IPInterfaceAdapter;
 import reso.ip.IPInterfaceListener;
 import reso.ip.IPLayer;
 import reso.ip.IPLoopbackAdapter;
+import reso.ip.IPRouteEntry;
 import reso.ip.IPRouter;
 
 public class LSPRoutingProtocol extends AbstractApplication implements IPInterfaceListener, InterfaceAttrListener {
@@ -74,19 +75,36 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 		for (IPInterfaceAdapter iface: ip.getInterfaces())
 			iface.removeAttrListener(this);
 		
-		if( 1==1/*host.name.equals("R1")*/ ) {
-			System.out.println(host.name + ": " + getRouterID());
-			try {
-				Dijkstra graph = new Dijkstra(getRouterID(), LSDB);
-				/*ArrayList<IPAddress> way = graph.GetPathTo(IPAddress.getByAddress("10.0.0.5"));
-				System.out.println( way );*/
-				graph.GetAllPath();
-			} catch (Exception e) {
-				e.printStackTrace();
+		compute();
+	}
+	private void compute() {
+		try {
+			Dijkstra graph = new Dijkstra(getRouterID(), LSDB);
+			IPAddress src = null;
+			for( IPAddress dst : LSDB.keySet() ) {
+				ArrayList<IPAddress> way = graph.GetPathTo(dst);
+				if( way.size() != 0 ) {
+					IPAddress lookup = way.get(way.size()-1);
+						
+					int min = Integer.MAX_VALUE;
+					for( Map.Entry<IPAddress, Adjacence> i : voisin.entrySet()) {
+						if( lookup == i.getValue().routeID && min > i.getValue().cost ) {
+							min = i.getValue().cost;
+							src = i.getKey();
+						}
+					}
+					for (IPInterfaceAdapter iface: ip.getInterfaces()) {
+						if( iface.hasAddress(src) ) {
+							System.out.println("Sur "+host.name + " la meilleur interface pour aller à "+dst+" est... "+iface+" !");
+							ip.addRoute(new IPRouteEntry(dst, iface, PROTOCOL_NAME));
+						}
+					}
+				}
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
-
 	public int addMetric(int m1, int m2) {
 		if (((long) m1) + ((long) m2) > Integer.MAX_VALUE)
 			return Integer.MAX_VALUE;
@@ -123,7 +141,7 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 				else {
 					// Sur cette interface, je suis adjacent avec...
 					voisin.put( iface.getAddress(), new Adjacence( m.GetOrigin(), iface.getMetric()) );
-					//sendLSD();
+					sendLSD();
 				}
 				
 				m.SetOrigin( getRouterID() );
@@ -142,6 +160,7 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 				LSDB.get(m.getOrigin()).getSequenceID() < m.getSequenceID() ) {
 				
 				LSDB.put( m.getOrigin(), m );
+				//compute();
 				//System.out.println( host.name + " j'ai reçu un LSP!     " + (LSMessage)msg.getPayload() );
 				
 				for( IPInterfaceAdapter dst: ip.getInterfaces() ) {
