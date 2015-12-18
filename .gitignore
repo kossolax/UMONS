@@ -1,4 +1,4 @@
 /bin/
 *.vpp~*
 .metadata
-.class
+*.class
