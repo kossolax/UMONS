@@ -88,11 +88,11 @@ public class Dijkstra {
 			}
 		}
 	}
-	public ArrayList<IPAddress> GetPathTo( IPAddress dst ) {
-		ArrayList<IPAddress> path = new ArrayList<IPAddress>();
+	public ArrayList<Adjacence> GetPathTo( IPAddress dst ) {
+		ArrayList<Adjacence> path = new ArrayList<Adjacence>();
 		Link elem = graph.get(dst);
 		while( elem.prev != null && elem.prev != elem ) {
-			path.add(elem.src);
+			path.add(new Adjacence(elem.src, elem.dist));
 			elem = elem.prev;
 		}
 		return path;
@@ -100,11 +100,11 @@ public class Dijkstra {
 	public void GetAllPath( ) {
 		for(Link f:graph.values()){
 			System.out.println("A " + f.src);
-			ArrayList<IPAddress> path = new ArrayList<IPAddress>();
+			ArrayList<Adjacence> path = new ArrayList<Adjacence>();
 			Link elem = graph.get(f.src);
 			
 			while( elem.prev != null && elem.prev != elem ) {
-				path.add(elem.src);
+				path.add(new Adjacence(elem.src, elem.dist));
 				elem = elem.prev;
 			}
 			System.out.println(path);

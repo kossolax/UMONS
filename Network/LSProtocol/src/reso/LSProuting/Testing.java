@@ -44,7 +44,7 @@ public class Testing {
 				router.stop();
 			}
 			scheduler.run();
-			FIBDumper.dumpForAllRouters(network);
+			//FIBDumper.dumpForAllRouters(network);
 			for (Node n: network.getNodes()) {
 				IPAddress ndst= getRouterID(((IPHost) n).getIPLayer());
 				

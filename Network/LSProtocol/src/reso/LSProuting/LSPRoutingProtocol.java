@@ -85,20 +85,20 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 			
 			for( IPAddress dst : LSDB.keySet() ) {
 				
-				ArrayList<IPAddress> way = graph.GetPathTo(dst);
+				ArrayList<Adjacence> way = graph.GetPathTo(dst);
 				if( way.size() != 0 ) {
-					IPAddress lookup = way.get(way.size()-1);
+					Adjacence lookup = way.get(way.size()-1);
 						
 					int min = Integer.MAX_VALUE;
 					for( Map.Entry<IPAddress, Adjacence> i : voisin.entrySet()) {
-						if( lookup == i.getValue().routeID && min > i.getValue().cost ) {
+						if( lookup.routeID == i.getValue().routeID && min > i.getValue().cost ) {
 							min = i.getValue().cost;
 							src = i.getKey();
 						}
 					}
 					for (IPInterfaceAdapter iface: ip.getInterfaces()) {
 						if( iface.hasAddress(src) ) {
-							System.out.println("Sur "+host.name + " la meilleur interface pour aller à "+dst+" est... "+iface+" !");
+							//System.out.println("Sur "+host.name + " la meilleur interface pour aller à "+dst+" est... "+iface+" !");
 							ip.addRoute(new IPRouteEntry(dst, iface, PROTOCOL_NAME));
 						}
 					}
