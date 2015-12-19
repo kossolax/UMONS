@@ -81,7 +81,10 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 		try {
 			Dijkstra graph = new Dijkstra(getRouterID(), LSDB);
 			IPAddress src = null;
+			graph.GetAllPath();
+			
 			for( IPAddress dst : LSDB.keySet() ) {
+				
 				ArrayList<IPAddress> way = graph.GetPathTo(dst);
 				if( way.size() != 0 ) {
 					IPAddress lookup = way.get(way.size()-1);

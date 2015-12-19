@@ -38,7 +38,7 @@ public class Testing {
 			for (Node n: network.getNodes()) {
 				IPAddress ndst= ((IPHost) n).getIPLayer().getInterfaceByName("lo0").getAddress();
 				
-				File f= new File(".\\graph\\topology-routing-" + ndst + ".graphviz");
+				File f= new File(".\\topology-routing-" + ndst + ".graphviz");
 				Writer w= new BufferedWriter(new FileWriter(f));
 				NetworkGrapher.toGraphviz2(network, ndst, new PrintWriter(w));
 				w.close();
