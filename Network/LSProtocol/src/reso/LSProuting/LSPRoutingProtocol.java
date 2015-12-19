@@ -3,13 +3,9 @@ package reso.LSProuting;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.swing.plaf.TableHeaderUI;
-
 import reso.common.AbstractApplication;
 import reso.common.Interface;
 import reso.common.InterfaceAttrListener;
-import reso.examples.dv_routing.DVMessage;
 import reso.ip.Datagram;
 import reso.ip.IPAddress;
 import reso.ip.IPInterfaceAdapter;
@@ -81,10 +77,8 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 		try {
 			Dijkstra graph = new Dijkstra(getRouterID(), LSDB);
 			IPAddress src = null;
-			graph.GetAllPath();
 			
 			for( IPAddress dst : LSDB.keySet() ) {
-				
 				ArrayList<Adjacence> way = graph.GetPathTo(dst);
 				if( way.size() != 0 ) {
 					Adjacence lookup = way.get(way.size()-1);
@@ -98,7 +92,6 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 					}
 					for (IPInterfaceAdapter iface: ip.getInterfaces()) {
 						if( iface.hasAddress(src) ) {
-							//System.out.println("Sur "+host.name + " la meilleur interface pour aller à "+dst+" est... "+iface+" !");
 							ip.addRoute(new IPRouteEntry(dst, iface, PROTOCOL_NAME));
 						}
 					}
