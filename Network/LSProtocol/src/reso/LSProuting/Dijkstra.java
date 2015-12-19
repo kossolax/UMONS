@@ -48,8 +48,8 @@ public class Dijkstra {
 	private void Compute() {
 		NavigableSet<Link> q = new TreeSet<>();		
 		Link u, v, source = graph.get(src);
-		////System.out.println(src);
-		////System.out.println(source.src);
+		System.out.println(src);
+		System.out.println(source.src);
 		
 		if( src != source.src ) {
 			throw new AssertionError("Erreur fatal... Les noeuds sont mal inséré :(");
@@ -78,8 +78,12 @@ public class Dijkstra {
 			// Pour chaque voisin du noeud marqué
 			for( Map.Entry<Link, Integer> a : u.voisin.entrySet() ) {
 				v = a.getKey();
-	 
+				System.out.println("\n");
+				System.out.println(u.src);
+				System.out.println(v.src);
 				min = u.dist + a.getValue();
+				System.out.println(min);
+				System.out.println(v.dist);
 				if (min < v.dist) {
 					// Il existe un chemin plus court
 	            	q.remove(v);
