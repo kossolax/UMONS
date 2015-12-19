@@ -39,8 +39,8 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 	}
 
 	private IPAddress getRouterID() {
-		return ip.getInterfaceByName("lo0").getAddress();
-		/*
+		//return ip.getInterfaceByName("lo0").getAddress();
+		
 		IPAddress routerID= null;
 		for (IPInterfaceAdapter iface: ip.getInterfaces()) {
 			IPAddress addr= iface.getAddress();
@@ -49,7 +49,7 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 			else if (routerID.compareTo(addr) < 0)
 				routerID= addr;
 		}
-		return routerID;*/
+		return routerID;
 	}
 	
 	@Override

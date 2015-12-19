@@ -14,8 +14,18 @@ import reso.utilities.*;
 
 
 public class Testing {
-	
-	public static final String TOPO_FILE= "reso/data/topologyBIS.txt";
+	private static IPAddress getRouterID(IPLayer ip) {
+		IPAddress routerID= null;
+		for (IPInterfaceAdapter iface: ip.getInterfaces()) {
+			IPAddress addr= iface.getAddress();
+			if (routerID == null)
+				routerID= addr;
+			else if (routerID.compareTo(addr) < 0)
+				routerID= addr;
+		}
+		return routerID;
+	}
+	public static final String TOPO_FILE= "reso/data/topologyTest4.txt";
 	
 	public static void main(String[] args) {
 		String filename= Testing.class.getClassLoader().getResource(TOPO_FILE).getFile();
@@ -36,7 +46,7 @@ public class Testing {
 			scheduler.run();
 			FIBDumper.dumpForAllRouters(network);
 			for (Node n: network.getNodes()) {
-				IPAddress ndst= ((IPHost) n).getIPLayer().getInterfaceByName("lo0").getAddress();
+				IPAddress ndst= getRouterID(((IPHost) n).getIPLayer());
 				
 				File f= new File(".\\topology-routing-" + ndst + ".graphviz");
 				Writer w= new BufferedWriter(new FileWriter(f));
