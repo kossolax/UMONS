@@ -3,8 +3,7 @@ package reso.LSProuting;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NavigableSet;
-import java.util.TreeSet;
+import java.util.PriorityQueue;
 
 import reso.ip.IPAddress;
 
@@ -12,7 +11,6 @@ import reso.ip.IPAddress;
 public class Dijkstra {
 	public Map<IPAddress, Link> graph;
 	IPAddress src;
-	
 	
 	public Dijkstra(IPAddress src, Map<IPAddress, LSMessage> LSDB) {
 		this.src = src;
@@ -24,36 +22,26 @@ public class Dijkstra {
 		// Ajout des noeuds
 		for( Map.Entry<IPAddress, LSMessage> i : LSDB.entrySet()) {
 			n = i.getKey();
-			LS = i.getValue().getAdjacence();
-			
-			for(int j=0; j<LS.length; j++) {
-				graph.put(n, new Link(n));
-			}
+			graph.put(n, new Link(n));
 		}
 		// Ajout des voisins
 		for( Map.Entry<IPAddress, LSMessage> i : LSDB.entrySet()) {
 			n = i.getKey();
 			LS = i.getValue().getAdjacence();
+			Link k = graph.get(n);
 			
 			for(int j=0; j<LS.length; j++) {
 				if( LS[j].cost >= 0 && LS[j].cost < Integer.MAX_VALUE ) {
-					graph.get(n).voisin.put( graph.get(LS[j].routeID), LS[j].cost);
-					//System.out.println(n + " -> " + LS[j].routeID + " cout : " + LS[j].cost );
+					k.voisin.put( graph.get(LS[j].routeID), LS[j].cost);
 				}
 			}
 		}
-		
 		Compute();
 	}
 	private void Compute() {
-		NavigableSet<Link> q = new TreeSet<>();		
+		PriorityQueue<Link> q = new PriorityQueue<Link>();		
 		Link u, v, source = graph.get(src);
-		////System.out.println(src);
-		////System.out.println(source.src);
-		
-		if( src != source.src ) {
-			throw new AssertionError("Erreur fatal... Les noeuds sont mal inséré :(");
-		}
+		int alt;
 		
 		for( Link w : graph.values() ) {
 			if( w == source ) {
@@ -66,24 +54,23 @@ public class Dijkstra {
 			}
 			q.add(w);
 		}
-		int min;
 		
 		while( !q.isEmpty() ) {
 			// Le noeud le plus petit.
-			u = q.pollFirst();
-			////System.out.println(u.src + "  " + u.dist);
+			u = q.poll();
+			
 			if( u.dist == Integer.MAX_VALUE )
 				break; // Note graph est coupé en deux... Pas encore reçu toute la LSDB? Possible. Lien d'un coup infini? Oui.
 	 
 			// Pour chaque voisin du noeud marqué
 			for( Map.Entry<Link, Integer> a : u.voisin.entrySet() ) {
 				v = a.getKey();
-	 
-				min = u.dist + a.getValue();
-				if (min < v.dist) {
+				
+				alt = u.dist + a.getValue();
+				if( alt < v.dist ) {
 					// Il existe un chemin plus court
 	            	q.remove(v);
-	            	v.dist = min;
+	            	v.dist = alt;
 	            	v.prev = u;
 	            	q.add(v);
 				} 
@@ -93,6 +80,7 @@ public class Dijkstra {
 	public ArrayList<Adjacence> GetPathTo( IPAddress dst ) {
 		ArrayList<Adjacence> path = new ArrayList<Adjacence>();
 		Link elem = graph.get(dst);
+		
 		while( elem.prev != null && elem.prev != elem ) {
 			path.add(new Adjacence(elem.src, elem.dist));
 			elem = elem.prev;
@@ -124,6 +112,18 @@ public class Dijkstra {
 		}
 		public int compareTo(Link dst) {
 			return Integer.compare(dist, dst.dist);
+		}
+		public String toString() {
+			String str;
+			
+			if (this == this.prev)
+	            str = this.src.toString();
+	        else if (this.prev == null)
+	        	str = this.src.toString() + "(non joignable)";
+	        else
+	        	str = this.prev.toString() + " -> " + this.src;
+
+			return str;
 		}
 	}
 }
