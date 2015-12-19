@@ -36,8 +36,10 @@ public class Dijkstra {
 			LS = i.getValue().getAdjacence();
 			
 			for(int j=0; j<LS.length; j++) {
-				graph.get(n).voisin.put( graph.get(LS[j].routeID), LS[j].cost);
-				//System.out.println(n + " -> " + LS[j].routeID + " cout : " + LS[j].cost );
+				if( LS[j].cost >= 0 && LS[j].cost < Integer.MAX_VALUE ) {
+					graph.get(n).voisin.put( graph.get(LS[j].routeID), LS[j].cost);
+					//System.out.println(n + " -> " + LS[j].routeID + " cout : " + LS[j].cost );
+				}
 			}
 		}
 		
