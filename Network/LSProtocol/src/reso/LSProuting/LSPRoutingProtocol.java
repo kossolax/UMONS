@@ -157,7 +157,7 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 				
 				LSDB.put( m.getOrigin(), m );
 				//compute();
-				//System.out.println( host.name + " j'ai reçu un LSP!     " + (LSMessage)msg.getPayload() );
+				System.out.println( host.name + " j'ai reçu un LSP!     " + (LSMessage)msg.getPayload() );
 				
 				for( IPInterfaceAdapter dst: ip.getInterfaces() ) {
 					if( dst instanceof IPLoopbackAdapter || dst == iface )
