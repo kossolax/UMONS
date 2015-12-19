@@ -60,11 +60,13 @@ public class Dijkstra {
 			u = q.poll();
 			
 			if( u.dist == Integer.MAX_VALUE )
-				break; // Note graph est coupé en deux... Pas encore reçu toute la LSDB? Possible. Lien d'un coup infini? Oui.
+				break; // Notre graph est coupé en deux... Lien d'un coup infini? Oui.
 	 
 			// Pour chaque voisin du noeud marqué
 			for( Map.Entry<Link, Integer> a : u.voisin.entrySet() ) {
 				v = a.getKey();
+				if( v == null )
+					break; // Notre graph est coupé en deux... Pas encore reçu toute la LSDB.
 				
 				alt = u.dist + a.getValue();
 				if( alt < v.dist ) {

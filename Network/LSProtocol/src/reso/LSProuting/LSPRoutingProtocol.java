@@ -70,8 +70,6 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 		ip.removeListener(IP_PROTO_LSP, this);
 		for (IPInterfaceAdapter iface: ip.getInterfaces())
 			iface.removeAttrListener(this);
-		
-		compute();
 	}
 	private void compute() {
 		try {
@@ -156,8 +154,7 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 				LSDB.get(m.getOrigin()).getSequenceID() < m.getSequenceID() ) {
 				
 				LSDB.put( m.getOrigin(), m );
-				//compute();
-				System.out.println( host.name + " j'ai reçu un LSP!     " + (LSMessage)msg.getPayload() );
+				compute();
 				
 				for( IPInterfaceAdapter dst: ip.getInterfaces() ) {
 					if( dst instanceof IPLoopbackAdapter || dst == iface )

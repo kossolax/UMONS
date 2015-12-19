@@ -39,12 +39,7 @@ public class Testing {
 				router.start();
 			}
 			scheduler.run();
-			for (Node n: network.getNodes()) {
-				IPRouter router = (IPRouter) n;
-				router.stop();
-			}
-			scheduler.run();
-			//FIBDumper.dumpForAllRouters(network);
+			FIBDumper.dumpForAllRouters(network);
 			for (Node n: network.getNodes()) {
 				IPAddress ndst= getRouterID(((IPHost) n).getIPLayer());
 				
