@@ -1,7 +1,6 @@
 package reso.LSProuting;
 
 import reso.common.*;
-import reso.ip.*;
 import reso.scheduler.AbstractScheduler;
 
 public class LSPTimer extends AbstractTimer {

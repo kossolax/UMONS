@@ -26,6 +26,7 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 	public final Map<IPAddress, Adjacence> voisin = new HashMap<IPAddress,Adjacence>();
 	public final Map<IPAddress, LSMessage> LSDB = new HashMap<IPAddress, LSMessage>();
 	private int seqID;
+	private double LSPTimeout;
 	private HelloTimer helloTimer;
 	private LSPTimer LSPTimer;
 	
@@ -37,6 +38,8 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 	public LSPRoutingProtocol(AbstractScheduler scheduler, IPRouter router, double helloTime, double LSTimer) {
 		super(router, PROTOCOL_NAME);
 		this.ip = router.getIPLayer();
+		this.LSPTimeout = LSTimer * 2 + 1;
+		
 		helloTimer = new HelloTimer(scheduler, helloTime, true, this);
 		LSPTimer = new LSPTimer(scheduler, LSTimer, true, this);
 		seqID = 0;
@@ -129,24 +132,24 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 				continue;
 			
 			HELLOMessage hello = new HELLOMessage(getRouterID());
+			for( Map.Entry<IPAddress, Adjacence> i : voisin.entrySet()) {
+				hello.Add( i.getValue().routeID );
+			}
 			Datagram dm = new Datagram(iface.getAddress(), IPAddress.BROADCAST, IP_PROTO_LSP, 1, hello);
 			iface.send(dm, null);
 		}
 	}
-	public void dumpLSDB() {
-		System.out.println(LSDB);
-	}
 	@Override
 	public void receive(IPInterfaceAdapter iface, Datagram msg) throws Exception {
-		//System.out.println(((int) (host.getNetwork().getScheduler().getCurrentTime() * 1000)) + "ms " + host.name + " " + iface + " " + msg);
 		
 		if( msg.getPayload() instanceof HELLOMessage ) {
+			System.out.println(((int) (host.getNetwork().getScheduler().getCurrentTime() * 1000)) + "ms " + host.name + " " + iface + " " + msg);
 			HELLOMessage m = (HELLOMessage) msg.getPayload();
 			
 			if( !voisin.containsKey( iface.getAddress() ) ) {
 				if( !m.contains( getRouterID() ) ) {
 					// Je me figure pas dans ce message HELLO. Je m'y ajoutes.
-					m.Add( m.GetOrigin());
+					m.Add( m.GetOrigin() );
 				}
 				else {
 					// Sur cette interface, je suis adjacent avec...
@@ -205,11 +208,8 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 		if( attr.equals("state") ) {
 			
 			if( iface.isActive() == false ) {
-				for( Map.Entry<IPAddress, Adjacence> i : voisin.entrySet()) {
-					if( i.getKey() == src ) {
-						voisin.remove(i);
-					}
-				}
+
+				voisin.remove(src);
 				
 				try {
 					sendLSD();

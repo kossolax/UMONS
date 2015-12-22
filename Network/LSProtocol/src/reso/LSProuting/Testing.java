@@ -11,8 +11,6 @@ import reso.ip.*;
 import reso.scheduler.*;
 import reso.utilities.*;
 
-
-
 public class Testing {
 	private static IPAddress getRouterID(IPLayer ip) {
 		IPAddress routerID= null;
@@ -25,7 +23,7 @@ public class Testing {
 		}
 		return routerID;
 	}
-	public static final String TOPO_FILE= "reso/data/topology3.txt";
+	public static final String TOPO_FILE= "reso/data/topologyTest4.txt";
 	
 	public static void main(String[] args) {
 		String filename= Testing.class.getClassLoader().getResource(TOPO_FILE).getFile();
@@ -40,7 +38,13 @@ public class Testing {
 			}
 			//scheduler.run();
 			scheduler.runUntil(30);
-			((IPHost) network.getNodeByName("R2")).getIPLayer().getInterfaceByName("eth0").down();
+			((IPHost) network.getNodeByName("R5")).getInterfaceByName("eth0").down();
+			((IPHost) network.getNodeByName("R7")).getInterfaceByName("eth0").down();
+			//((IPHost) network.getNodeByName("R5")).getInterfaceByName("eth1").down();
+			((IPHost) network.getNodeByName("R6")).getInterfaceByName("eth0").down();
+			//((IPHost) network.getNodeByName("R2")).getInterfaceByName("eth2").down();
+			
+			
 			scheduler.runUntil(100);
 			
 			//FIBDumper.dumpForAllRouters(network);
