@@ -24,6 +24,13 @@ public class LSMessage implements Message {
 		length++;
 		LSDB = buffer;
 	}
+	public boolean contains(IPAddress ip) {
+		for(int i=0; i<length; i++) {
+			if( LSDB[i].routeID == ip )
+				return true;
+		}
+		return false;
+	}
 	public IPAddress getOrigin() {
 		return origin;
 	}

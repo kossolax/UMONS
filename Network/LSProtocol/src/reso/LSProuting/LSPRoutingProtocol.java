@@ -1,5 +1,6 @@
 package reso.LSProuting;
 
+import java.awt.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,11 +25,13 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 	
 	private final IPLayer ip;
 	public final Map<IPAddress, Adjacence> voisin = new HashMap<IPAddress,Adjacence>();
-	public final Map<IPAddress, LSMessage> LSDB = new HashMap<IPAddress, LSMessage>();
+	public final Map<IPAddress, LSDBEntry> LSDB = new HashMap<IPAddress, LSDBEntry>();
 	private int seqID;
 	private double LSPTimeout;
 	private HelloTimer helloTimer;
 	private LSPTimer LSPTimer;
+	private AbstractScheduler scheduler;
+	
 	
 	
 	/** Constructor
@@ -39,6 +42,7 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 		super(router, PROTOCOL_NAME);
 		this.ip = router.getIPLayer();
 		this.LSPTimeout = LSTimer * 2 + 1;
+		this.scheduler = scheduler;
 		
 		helloTimer = new HelloTimer(scheduler, helloTime, true, this);
 		LSPTimer = new LSPTimer(scheduler, LSTimer, true, this);
@@ -83,17 +87,20 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 			
 			for( IPAddress dst : LSDB.keySet() ) {
 				ArrayList<Adjacence> way = graph.GetPathTo(dst);
+				ip.removeRoute(dst);
+				
 				if( way.size() != 0 ) {
 					Adjacence lookup = way.get(way.size()-1);
 						
 					int min = Integer.MAX_VALUE;
-					for( Map.Entry<IPAddress, Adjacence> i : voisin.entrySet()) {
-						if( lookup.routeID == i.getValue().routeID && min > i.getValue().cost ) {
-							min = i.getValue().cost;
-							src = i.getKey();
+					for( Map.Entry<IPAddress, Adjacence> j : voisin.entrySet()) {
+						// S'il y a 2 liens, choix de la route optimal... + Vérification que le lien est valide dans la LSDB d'en face.
+						if( lookup.routeID == j.getValue().routeID && min > j.getValue().cost && LSDB.containsKey(j.getValue().routeID) && LSDB.get(j.getValue().routeID).message.contains(getRouterID()) ) {
+							min = j.getValue().cost;
+							src = j.getKey();
 						}
 					}
-					ip.removeRoute(dst);
+					
 					for (IPInterfaceAdapter iface: ip.getInterfaces()) {
 						if( iface.hasAddress(src) ) {
 							ip.addRoute(new IPRouteEntry(dst, iface, PROTOCOL_NAME));
@@ -105,11 +112,7 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 			e.printStackTrace();
 		}
 	}
-	public int addMetric(int m1, int m2) {
-		if (((long) m1) + ((long) m2) > Integer.MAX_VALUE)
-			return Integer.MAX_VALUE;
-		return m1 + m2;
-	}
+	
 	public void sendLSD() throws Exception {
 		LSMessage LS = new LSMessage( getRouterID(), seqID++);					
 		for(Adjacence v : voisin.values()) {
@@ -117,7 +120,25 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 				continue;
 			LS.Add(v);
 		}
-		LSDB.put( getRouterID(), LS );
+		LSDB.put( getRouterID(), new LSDBEntry(LS, scheduler.getCurrentTime() ));
+		
+		
+		// Gestion des timeout
+		ArrayList<IPAddress>clean = new ArrayList<IPAddress>();
+		for( Map.Entry<IPAddress, LSDBEntry> i : LSDB.entrySet()) {
+			if( (i.getValue().timestamp+LSPTimeout) <scheduler.getCurrentTime() ) {
+				clean.add(i.getKey());
+			}
+		}
+		for( IPAddress dst : clean ) {
+			ip.removeRoute(dst);
+			LSDB.remove(dst);
+		}
+		if( !clean.isEmpty() ) {
+			compute();
+		}
+		
+		// Envoyer mon LS message partout.
 		for( IPInterfaceAdapter dst: ip.getInterfaces() ) {
 			if( dst instanceof IPLoopbackAdapter )
 				continue;
@@ -142,8 +163,7 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 	@Override
 	public void receive(IPInterfaceAdapter iface, Datagram msg) throws Exception {
 		
-		if( msg.getPayload() instanceof HELLOMessage ) {
-			System.out.println(((int) (host.getNetwork().getScheduler().getCurrentTime() * 1000)) + "ms " + host.name + " " + iface + " " + msg);
+		if( msg.getPayload() instanceof HELLOMessage ) {	
 			HELLOMessage m = (HELLOMessage) msg.getPayload();
 			
 			if( !voisin.containsKey( iface.getAddress() ) ) {
@@ -170,9 +190,9 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 			
 			// Si on le connait pas, ou que le numéro de séquence est plus grand:
 			if( !LSDB.containsKey(m.getOrigin()) ||
-				LSDB.get(m.getOrigin()).getSequenceID() < m.getSequenceID() ) {
+				LSDB.get(m.getOrigin()).message.getSequenceID() < m.getSequenceID() ) {
 				
-				LSDB.put( m.getOrigin(), m );
+				LSDB.put(m.getOrigin(), new LSDBEntry(m, scheduler.getCurrentTime()));
 				compute();
 				
 				for( IPInterfaceAdapter dst: ip.getInterfaces() ) {
@@ -188,35 +208,26 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 
 	@Override
 	public void attrChanged(Interface iface, String attr) {
-		System.out.println("attribute \"" + attr + "\" changed on interface \"" + iface + "\" : " + iface.getAttribute(attr));
-		IPAddress src = ((IPInterfaceAdapter)iface).getAddress();
+		try {
+			IPAddress src = ((IPInterfaceAdapter)iface).getAddress();
 		
-		if( attr.equals("metric") ) {
-			
-			for( Map.Entry<IPAddress, Adjacence> i : voisin.entrySet()) {							
-				if( i.getKey() == src ) {
-					i.getValue().cost = Integer.parseInt(iface.getAttribute(attr).toString());
+			if( attr.equals("metric") ) {
+				for( Map.Entry<IPAddress, Adjacence> i : voisin.entrySet()) {							
+					if( i.getKey() == src ) {
+						i.getValue().cost = Integer.parseInt(iface.getAttribute(attr).toString());
+					}
 				}
-			}
-			
-			try {
+				
 				sendLSD();
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
-		}
-		if( attr.equals("state") ) {
-			
-			if( iface.isActive() == false ) {
-
+			if( attr.equals("state") && iface.isActive() == false ) {
 				voisin.remove(src);
 				
-				try {
-					sendLSD();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				// On enverait pas un HELLO plutot?
+				sendLSD();
 			}
+		} catch (Exception e) {
+			// ..
 		}
 	}
 	

@@ -12,7 +12,7 @@ public class Dijkstra {
 	public Map<IPAddress, Link> graph;
 	IPAddress src;
 	
-	public Dijkstra(IPAddress src, Map<IPAddress, LSMessage> LSDB) {
+	public Dijkstra(IPAddress src, Map<IPAddress, LSDBEntry> LSDB) {
 		this.src = src;
 		this.graph = new HashMap<IPAddress, Link>(LSDB.size());
 		
@@ -20,24 +20,34 @@ public class Dijkstra {
 		Adjacence[] LS;
 		
 		// Ajout des noeuds
-		for( Map.Entry<IPAddress, LSMessage> i : LSDB.entrySet()) {
+		for( Map.Entry<IPAddress, LSDBEntry> i : LSDB.entrySet()) {
 			n = i.getKey();
 			graph.put(n, new Link(n));
 		}
 		// Ajout des voisins
-		for( Map.Entry<IPAddress, LSMessage> i : LSDB.entrySet()) {
+		for( Map.Entry<IPAddress, LSDBEntry> i : LSDB.entrySet()) {
 			n = i.getKey();
-			LS = i.getValue().getAdjacence();
+			LS = i.getValue().message.getAdjacence();
 			if( LS == null ) return; // Notre LSDB n'est pas encore crée, inutile de tester dijstra
 			Link k = graph.get(n);
 			
 			for(int j=0; j<LS.length; j++) {
-				if( LS[j].cost >= 0 && LS[j].cost < Integer.MAX_VALUE ) {
+				// Si le cout du lien est valide et que
+				// Le voisin a été détecté, mais le lien en face a été coupé après la détection:
+				if( LS[j].cost >= 0 && LS[j].cost <= Integer.MAX_VALUE && LSDB.containsKey(LS[j].routeID) && LSDB.get(LS[j].routeID).message.contains(n) ) {
 					k.voisin.put( graph.get(LS[j].routeID), LS[j].cost);
 				}
 			}
 		}
+		
+		
+		
 		Compute();
+	}
+	private int addMetric(int m1, int m2) {
+		if (((long) m1) + ((long) m2) > Integer.MAX_VALUE)
+			return Integer.MAX_VALUE;
+		return m1 + m2;
 	}
 	private void Compute() {
 		PriorityQueue<Link> q = new PriorityQueue<Link>();		
@@ -70,6 +80,8 @@ public class Dijkstra {
 					break; // Notre graph est coupé en deux... Pas encore reçu toute la LSDB.
 				
 				alt = u.dist + a.getValue();
+				alt = addMetric(u.dist, a.getValue());
+				
 				if( alt < v.dist ) {
 					// Il existe un chemin plus court
 	            	q.remove(v);
