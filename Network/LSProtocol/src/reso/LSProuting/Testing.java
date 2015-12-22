@@ -25,21 +25,25 @@ public class Testing {
 		}
 		return routerID;
 	}
-	public static final String TOPO_FILE= "reso/data/topologyTest4.txt";
+	public static final String TOPO_FILE= "reso/data/topology3.txt";
 	
 	public static void main(String[] args) {
 		String filename= Testing.class.getClassLoader().getResource(TOPO_FILE).getFile();
 		
-		AbstractScheduler scheduler= new Scheduler();
+		AbstractScheduler scheduler = new Scheduler();
 		try {
 			Network network= NetworkBuilder.loadTopology(filename, scheduler);
 			for (Node n: network.getNodes()) {
 				IPRouter router = (IPRouter) n;
-				router.addApplication( new LSPRoutingProtocol(router) );
+				router.addApplication( new LSPRoutingProtocol(scheduler, router, 10, 30) );
 				router.start();
 			}
-			scheduler.run();
-			FIBDumper.dumpForAllRouters(network);
+			//scheduler.run();
+			scheduler.runUntil(30);
+			((IPHost) network.getNodeByName("R2")).getIPLayer().getInterfaceByName("eth0").down();
+			scheduler.runUntil(100);
+			
+			//FIBDumper.dumpForAllRouters(network);
 			for (Node n: network.getNodes()) {
 				IPAddress ndst= getRouterID(((IPHost) n).getIPLayer());
 				

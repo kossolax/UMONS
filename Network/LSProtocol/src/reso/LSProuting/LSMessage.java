@@ -35,7 +35,7 @@ public class LSMessage implements Message {
 	}
 	public String toString() {
 		String res = "";
-		res += "[LSP From: "+ origin;
+		res += "[LSP SeqID: "+seqID+" From: "+ origin;
 		
 		if( length > 0 ) {
 			res += " LS: (";

@@ -28,6 +28,7 @@ public class Dijkstra {
 		for( Map.Entry<IPAddress, LSMessage> i : LSDB.entrySet()) {
 			n = i.getKey();
 			LS = i.getValue().getAdjacence();
+			if( LS == null ) return; // Notre LSDB n'est pas encore crée, inutile de tester dijstra
 			Link k = graph.get(n);
 			
 			for(int j=0; j<LS.length; j++) {

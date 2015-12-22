@@ -3,6 +3,7 @@ package reso.LSProuting;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
 import reso.common.AbstractApplication;
 import reso.common.Interface;
 import reso.common.InterfaceAttrListener;
@@ -14,6 +15,7 @@ import reso.ip.IPLayer;
 import reso.ip.IPLoopbackAdapter;
 import reso.ip.IPRouteEntry;
 import reso.ip.IPRouter;
+import reso.scheduler.AbstractScheduler;
 
 public class LSPRoutingProtocol extends AbstractApplication implements IPInterfaceListener, InterfaceAttrListener {
 
@@ -23,20 +25,27 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 	private final IPLayer ip;
 	public final Map<IPAddress, Adjacence> voisin = new HashMap<IPAddress,Adjacence>();
 	public final Map<IPAddress, LSMessage> LSDB = new HashMap<IPAddress, LSMessage>();
-	private int seqID = 0;
+	private int seqID;
+	private HelloTimer helloTimer;
+	private LSPTimer LSPTimer;
+	
 	
 	/** Constructor
 	 * 
 	 * @param router is the router that hosts the routing protocol
 	 */
-	public LSPRoutingProtocol(IPRouter router) {
+	public LSPRoutingProtocol(AbstractScheduler scheduler, IPRouter router, double helloTime, double LSTimer) {
 		super(router, PROTOCOL_NAME);
 		this.ip = router.getIPLayer();
+		helloTimer = new HelloTimer(scheduler, helloTime, true, this);
+		LSPTimer = new LSPTimer(scheduler, LSTimer, true, this);
+		seqID = 0;
+		
+		helloTimer.start();
+		LSPTimer.start();
 	}
 
-	private IPAddress getRouterID() {
-		//return ip.getInterfaceByName("lo0").getAddress();
-		
+	private IPAddress getRouterID() {		
 		IPAddress routerID= null;
 		for (IPInterfaceAdapter iface: ip.getInterfaces()) {
 			IPAddress addr= iface.getAddress();
@@ -56,14 +65,7 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 			iface.addAttrListener(this);
 		
 
-		for (IPInterfaceAdapter iface: ip.getInterfaces()) {
-			if (iface instanceof IPLoopbackAdapter)
-				continue;
-			
-			HELLOMessage hello = new HELLOMessage(getRouterID());
-			Datagram dm = new Datagram(iface.getAddress(), IPAddress.BROADCAST, IP_PROTO_LSP, 1, hello);
-			iface.send(dm, null);
-		}
+		sendHELLO();
 	}
 	
 	public void stop() {
@@ -88,6 +90,7 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 							src = i.getKey();
 						}
 					}
+					ip.removeRoute(dst);
 					for (IPInterfaceAdapter iface: ip.getInterfaces()) {
 						if( iface.hasAddress(src) ) {
 							ip.addRoute(new IPRouteEntry(dst, iface, PROTOCOL_NAME));
@@ -119,6 +122,19 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 			Datagram dm = new Datagram(dst.getAddress(), IPAddress.BROADCAST, IP_PROTO_LSP, 1, LS);
 			dst.send(dm, null);
 		}
+	}
+	public void sendHELLO() throws Exception {
+		for (IPInterfaceAdapter iface: ip.getInterfaces()) {
+			if (iface instanceof IPLoopbackAdapter)
+				continue;
+			
+			HELLOMessage hello = new HELLOMessage(getRouterID());
+			Datagram dm = new Datagram(iface.getAddress(), IPAddress.BROADCAST, IP_PROTO_LSP, 1, hello);
+			iface.send(dm, null);
+		}
+	}
+	public void dumpLSDB() {
+		System.out.println(LSDB);
 	}
 	@Override
 	public void receive(IPInterfaceAdapter iface, Datagram msg) throws Exception {
@@ -170,7 +186,38 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 	@Override
 	public void attrChanged(Interface iface, String attr) {
 		System.out.println("attribute \"" + attr + "\" changed on interface \"" + iface + "\" : " + iface.getAttribute(attr));
+		IPAddress src = ((IPInterfaceAdapter)iface).getAddress();
+		
+		if( attr.equals("metric") ) {
+			
+			for( Map.Entry<IPAddress, Adjacence> i : voisin.entrySet()) {							
+				if( i.getKey() == src ) {
+					i.getValue().cost = Integer.parseInt(iface.getAttribute(attr).toString());
+				}
+			}
+			
+			try {
+				sendLSD();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		if( attr.equals("state") ) {
+			
+			if( iface.isActive() == false ) {
+				for( Map.Entry<IPAddress, Adjacence> i : voisin.entrySet()) {
+					if( i.getKey() == src ) {
+						voisin.remove(i);
+					}
+				}
+				
+				try {
+					sendLSD();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
-		
 }
