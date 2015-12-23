@@ -47,9 +47,6 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 		helloTimer = new HelloTimer(scheduler, helloTime, true, this);
 		LSPTimer = new LSPTimer(scheduler, LSTimer, true, this);
 		seqID = 0;
-		
-		helloTimer.start();
-		LSPTimer.start();
 	}
 
 	private IPAddress getRouterID() {		
@@ -66,11 +63,12 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 	
 	@Override
 	public void start() throws Exception {
-		ip.addListener(IP_PROTO_LSP, this);
-		
+		ip.addListener(IP_PROTO_LSP, this);		
 		for (IPInterfaceAdapter iface: ip.getInterfaces())
 			iface.addAttrListener(this);
 		
+		helloTimer.start();
+		LSPTimer.start();
 
 		sendHELLO();
 	}
@@ -79,6 +77,9 @@ public class LSPRoutingProtocol extends AbstractApplication implements IPInterfa
 		ip.removeListener(IP_PROTO_LSP, this);
 		for (IPInterfaceAdapter iface: ip.getInterfaces())
 			iface.removeAttrListener(this);
+		
+		helloTimer.stop();
+		LSPTimer.stop();
 	}
 	private void compute() {
 		try {
