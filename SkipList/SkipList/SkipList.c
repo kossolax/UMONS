@@ -16,7 +16,7 @@ SkipList SK_init(int maxElem, float p) {
 	list.levelMAX = (int)round(log2(maxElem));
 	list.size = 1;
 	list.head = createNode(INT_MAX, INT_MAX);
-	for (int i = 1; i <= list.levelMAX; i++)
+	for (int i = 0; i < list.levelMAX; i++)
 		list.head->forward[i] = list.head;
 	list.p = p;
 
@@ -70,7 +70,7 @@ int SK_Insert(SkipList list, int key, int value) {
 	node* x = list.head;
 
 	// On marque les noeuds pour la mise à jour
-	for (int i = list.size; i >= 1; i--) {
+	for (int i = list.size - 1; i >= 0; i--) {
 #ifdef DEBUG
 		printf("AT %d\n", i);
 		step++;
@@ -86,7 +86,7 @@ int SK_Insert(SkipList list, int key, int value) {
 	}
 
 	// Vérification qu'on ajoute pas un doublon:
-	x = x->forward[1];
+	x = x->forward[0];
 	if (x->key == key) {
 #ifdef DEBUG
 		printf("WARNING: KEY:%d was already in the list.", key);
@@ -96,7 +96,7 @@ int SK_Insert(SkipList list, int key, int value) {
 	else {
 		int level = getRandomLevel(list);
 		if (level > list.size) {
-			for (int i = list.size+1; i <= level; i++) {
+			for (int i = list.size; i <= level; i++) {
 				update[i] = list.head;
 #ifdef DEBUG
 				step++;
@@ -106,7 +106,7 @@ int SK_Insert(SkipList list, int key, int value) {
 		}
 		
 		x = createNode(key, value);
-		for (int i = 1; i <= level; i++) {
+		for (int i = 0; i < level; i++) {
 			// ???
 			x->forward[i] = update[i]->forward[i];
 			update[i]->forward[i] = x;
@@ -133,7 +133,7 @@ int SK_Delete(SkipList list, int key) {
 	node* x = list.head;
 
 	// On marque les noeuds pour la mise à jour
-	for (int i = list.size; i >= 1; i--) {
+	for (int i = list.size - 1; i >= 0; i--) {
 #ifdef DEBUG
 		step++;
 #endif
@@ -147,9 +147,9 @@ int SK_Delete(SkipList list, int key) {
 	}
 
 	// La clé t'elle été trouvée ?
-	x = x->forward[1];
+	x = x->forward[0];
 	if (x->key == key) {
-		for (int i = 1; i <= list.size; i++) {
+		for (int i = 0; i < list.size; i++) {
 			// ???
 			x->forward[i] = update[i]->forward[i];
 			update[i]->forward[i] = x;
