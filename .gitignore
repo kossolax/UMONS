@@ -3,5 +3,6 @@
 .metadata
 *.class
 *.graphviz
+*.opendb
 /SkipList/Debug/
 /SkipList/SkipList/Debug/
