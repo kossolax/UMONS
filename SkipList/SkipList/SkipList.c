@@ -7,16 +7,16 @@ SkipList SK_init(int maxElem) {
 	SkipList list;
 
 #ifdef DEBUG
-	printf("Creating Skip-List");
+	printf("Creating Skip-List\n");
 #endif
 
-	list.levelMAX = round(log2(maxElem));
+	list.levelMAX = (int)round(log2(maxElem));
 	list.size = 0;
 	list.head = createNode(INT_MIN);
 	list.tail = createNode(INT_MAX);
 
 #ifdef DEBUG
-	printf("Done, max level: %d", list.levelMAX);
+	printf("Done, max level: %d\n", list.levelMAX);
 #endif
 
 	return list;
