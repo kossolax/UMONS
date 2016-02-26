@@ -12,3 +12,4 @@
 *.o
 SkipList/list
 SkipList/SkipListTest.sdf
+*.sdf

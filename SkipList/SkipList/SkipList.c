@@ -15,8 +15,9 @@ SkipList SK_init(int maxElem, float p) {
 
 	list.levelMAX = (int)round(log2(maxElem));
 	list.size = 1;
-	list.head = createNode(INT_MIN, INT_MIN);
-	list.tail = createNode(INT_MAX, INT_MAX);
+	list.head = createNode(INT_MAX, INT_MAX);
+	for (int i = 1; i <= list.levelMAX; i++)
+		list.head->forward[i] = list.head;
 	list.p = p;
 
 #ifdef DEBUG
@@ -27,7 +28,6 @@ SkipList SK_init(int maxElem, float p) {
 }
 void SK_free(SkipList list) {
 	free(list.head);
-	free(list.tail);
 }
 node* SK_Search(SkipList list, int key) {
 #ifdef DEBUG
@@ -63,7 +63,7 @@ node* SK_Search(SkipList list, int key) {
 }
 int SK_Insert(SkipList list, int key, int value) {
 #ifdef DEBUG
-	printf("Inserting %d in SkipList[%p]\n", value, &list);
+	printf("Inserting %d:%d in SkipList[%p]\n", key, value, &list);
 	int step = 0;
 #endif
 	node** update = (node**)malloc(sizeof(node*)*list.size);
@@ -72,13 +72,15 @@ int SK_Insert(SkipList list, int key, int value) {
 	// On marque les noeuds pour la mise à jour
 	for (int i = list.size; i >= 1; i--) {
 #ifdef DEBUG
+		printf("AT %d\n", i);
 		step++;
 #endif
-		while (x->forward[i]->key < value) {
-			x = x->forward[i];
+		while (x->forward[i]->key < key) {
 #ifdef DEBUG
+			printf("->[%p]->[%p]-%d->%d\n", x, x->forward[i], x->forward[i]->key);
 			step++;
 #endif
+			x = x->forward[i];
 		}
 		update[i] = x;
 	}
@@ -87,7 +89,7 @@ int SK_Insert(SkipList list, int key, int value) {
 	x = x->forward[1];
 	if (x->key == key) {
 #ifdef DEBUG
-		printf("WARNING: %d was already in the list.", value);
+		printf("WARNING: KEY:%d was already in the list.", key);
 #endif
 		x->value = value;
 	}
@@ -114,7 +116,54 @@ int SK_Insert(SkipList list, int key, int value) {
 		}
 	}
 #ifdef DEBUG
-	printf("OK %d has been added to list in %d steps.\n", value, step);
+	printf("OK %d:%d has been added to list in %d steps.\n", key, value, step);
+#endif
+	free(update);
+#ifdef DEBUG
+	printf("Done.\n");
+#endif
+	return 0;
+}
+int SK_Delete(SkipList list, int key) {
+#ifdef DEBUG
+	printf("Removing %d in SkipList[%p]\n", key, &list);
+	int step = 0;
+#endif
+	node** update = (node**)malloc(sizeof(node*)*list.size);
+	node* x = list.head;
+
+	// On marque les noeuds pour la mise à jour
+	for (int i = list.size; i >= 1; i--) {
+#ifdef DEBUG
+		step++;
+#endif
+		while (x->forward[i]->key < key) {
+			x = x->forward[i];
+#ifdef DEBUG
+			step++;
+#endif
+		}
+		update[i] = x;
+	}
+
+	// La clé t'elle été trouvée ?
+	x = x->forward[1];
+	if (x->key == key) {
+		for (int i = 1; i <= list.size; i++) {
+			// ???
+			x->forward[i] = update[i]->forward[i];
+			update[i]->forward[i] = x;
+#ifdef DEBUG
+			step++;
+#endif
+		}
+		free(x);
+		// TODO:
+		// while(list.size > 1 && list.head->forward[list->size] == NULL )
+		//	list.size--;
+	}
+#ifdef DEBUG
+	printf("OK %d has been added to list in %d steps.\n", key, step);
 #endif
 	free(update);
 #ifdef DEBUG
@@ -136,4 +185,7 @@ node* createNode(int key, int value) {
 	noeud->value = value;
 
 	return noeud;
+}
+int SK_GetValueFromNode(node* noeud) {
+	return noeud->value;
 }

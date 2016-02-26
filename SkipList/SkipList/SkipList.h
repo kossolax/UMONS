@@ -14,7 +14,6 @@ typedef struct SkipList {
 	float p;
 	int size;
 	struct node* head;
-	struct node* tail;
 } SkipList;
 typedef struct node {
 	int key;
@@ -25,6 +24,11 @@ typedef struct node {
 
 SkipList SK_init(int maxElem, float p);
 void SK_free(SkipList list);
+node* SK_Search(SkipList list, int key);
+int SK_Insert(SkipList list, int key, int value);
+int SK_Delete(SkipList list, int key);
+int SK_GetValueFromNode(node* noeud);
 
+// Private: eyes only.
 node* createNode(int key, int value);
 int getRandomLevel(SkipList list);
