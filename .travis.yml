@@ -5,4 +5,4 @@ script:
     - make
 
 after_success:
-    - $HOME/SkipList/list
+    - ./list

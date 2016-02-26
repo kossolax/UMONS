@@ -9,14 +9,14 @@ SkipList SK_init(int maxElem, float p) {
 #endif
 
 	if (init == 0) {
-		srand(time(NULL));
+		srand((int)time(NULL));
 		init = 1;
 	}
 
 	list.levelMAX = (int)round(log2(maxElem));
 	list.size = 1;
-	list.head = createNode(INT_MIN);
-	list.tail = createNode(INT_MAX);
+	list.head = createNode(INT_MIN, INT_MIN);
+	list.tail = createNode(INT_MAX, INT_MAX);
 	list.p = p;
 
 #ifdef DEBUG
@@ -29,9 +29,9 @@ void SK_free(SkipList list) {
 	free(list.head);
 	free(list.tail);
 }
-int SK_Search(SkipList list, int value) {
+node* SK_Search(SkipList list, int key) {
 #ifdef DEBUG
-	printf("Searching for %d in SkipList[%p]\n", value, &list);
+	printf("Searching for %d in SkipList[%p]\n", key, &list);
 	int step = 0;
 #endif
 	node* x = list.head;
@@ -41,7 +41,7 @@ int SK_Search(SkipList list, int value) {
 #ifdef DEBUG
 		step++;
 #endif
-		while (x->forward[i]->value < value) {
+		while (x->forward[i]->key < key) {
 			x = x->forward[i];
 #ifdef DEBUG
 			step++;
@@ -50,18 +50,18 @@ int SK_Search(SkipList list, int value) {
 	}
 	// Si l'élement suivant est celui-qu'on cherche, on l'a trouvé.
 	x = x->forward[1];
-	if (x->value == value) {
+	if (x->key == key) {
 #ifdef DEBUG
-		printf("Found %d in %d steps", value, step);
+		printf("Found %d in %d steps", key, step);
 #endif
-		return 1;
+		return x;
 	}
 #ifdef DEBUG
-	printf("NotFound %d in %d steps", value, step);
+	printf("NotFound %d in %d steps", key, step);
 #endif
-	return 0;
+	return NULL;
 }
-int SK_Insert(SkipList list, int value) {
+int SK_Insert(SkipList list, int key, int value) {
 #ifdef DEBUG
 	printf("Inserting %d in SkipList[%p]\n", value, &list);
 	int step = 0;
@@ -74,7 +74,7 @@ int SK_Insert(SkipList list, int value) {
 #ifdef DEBUG
 		step++;
 #endif
-		while (x->forward[i]->value < value) {
+		while (x->forward[i]->key < value) {
 			x = x->forward[i];
 #ifdef DEBUG
 			step++;
@@ -85,11 +85,11 @@ int SK_Insert(SkipList list, int value) {
 
 	// Vérification qu'on ajoute pas un doublon:
 	x = x->forward[1];
-	if (x->value == value) {
+	if (x->key == key) {
 #ifdef DEBUG
 		printf("WARNING: %d was already in the list.", value);
 #endif
-		x->value = value; // ??
+		x->value = value;
 	}
 	else {
 		int level = getRandomLevel(list);
@@ -103,7 +103,7 @@ int SK_Insert(SkipList list, int value) {
 			list.size = level;
 		}
 		
-		x = createNode(value);
+		x = createNode(key, value);
 		for (int i = 1; i <= level; i++) {
 			// ???
 			x->forward[i] = update[i]->forward[i];
@@ -129,9 +129,10 @@ int getRandomLevel(SkipList list) {
 	}
 	return MIN(level, list.levelMAX);
 }
-node* createNode(int value) {
+node* createNode(int key, int value) {
 	node* noeud = (node*)malloc(sizeof(node));
 
+	noeud->key = key;
 	noeud->value = value;
 
 	return noeud;

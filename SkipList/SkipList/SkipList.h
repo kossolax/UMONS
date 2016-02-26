@@ -17,6 +17,7 @@ typedef struct SkipList {
 	struct node* tail;
 } SkipList;
 typedef struct node {
+	int key;
 	int value;
 	struct node* forward[];
 
@@ -25,5 +26,5 @@ typedef struct node {
 SkipList SK_init(int maxElem, float p);
 void SK_free(SkipList list);
 
-node* createNode(int value);
+node* createNode(int key, int value);
 int getRandomLevel(SkipList list);
