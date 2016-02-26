@@ -3,3 +3,5 @@
 .metadata
 *.class
 *.graphviz
+/SkipList/Debug/
+/SkipList/SkipList/Debug/
