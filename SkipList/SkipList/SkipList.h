@@ -8,6 +8,7 @@
 
 typedef struct SkipList {
 	int levelMAX;
+	float p;
 	int size;
 	struct node* head;
 	struct node* tail;
@@ -18,5 +19,8 @@ typedef struct node {
 
 } node;
 
-SkipList SK_init(int maxElem);
+SkipList SK_init(int maxElem, float p);
 void SK_free(SkipList list);
+
+node* createNode(int value);
+int getRandomLevel(SkipList list);
