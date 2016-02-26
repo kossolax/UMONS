@@ -25,7 +25,7 @@ void SK_free(SkipList list) {
 }
 int SK_Search(SkipList list, int value) {
 #ifdef DEBUG
-	printf("Searching for %d in SkipList[%d]\n", value, &list);
+	printf("Searching for %d in SkipList[%p]\n", value, &list);
 	int step = 0;
 #endif
 	node* x = list.head;
@@ -57,7 +57,7 @@ int SK_Search(SkipList list, int value) {
 }
 int SK_Insert(SkipList list, int value) {
 #ifdef DEBUG
-	printf("Inserting %d in SkipList[%d]\n", value, &list);
+	printf("Inserting %d in SkipList[%p]\n", value, &list);
 	int step = 0;
 #endif
 	node** update = (node**)malloc(sizeof(node*)*list.size);
@@ -119,7 +119,7 @@ int getRandomLevel(SkipList list) {
 	while (rand() < list.p) {
 		level++;
 	}
-	return min(level, list.levelMAX);
+	return MIN(level, list.levelMAX);
 }
 node* createNode(int value) {
 	node* noeud = (node*)malloc(sizeof(node));

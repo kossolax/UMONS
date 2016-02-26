@@ -9,3 +9,5 @@
 /SkipList/SkipList/Debug/
 /SkipList/SkipList/x64/
 *.suo
+*.o
+SkipList/list
