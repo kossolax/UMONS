@@ -1,11 +1,17 @@
 #include "SkipList.h"
 
 SkipList SK_init(int maxElem, float p) {
+	static int init = 0;
 	SkipList list;
 
 #ifdef DEBUG
 	printf("Creating Skip-List\n");
 #endif
+
+	if (init == 0) {
+		srand(time(NULL));
+		init = 1;
+	}
 
 	list.levelMAX = (int)round(log2(maxElem));
 	list.size = 1;
@@ -88,10 +94,13 @@ int SK_Insert(SkipList list, int value) {
 	else {
 		int level = getRandomLevel(list);
 		if (level > list.size) {
-			// TODO: 
+			for (int i = list.size+1; i <= level; i++) {
+				update[i] = list.head;
 #ifdef DEBUG
-			step++;
+				step++;
 #endif
+			}
+			list.size = level;
 		}
 		
 		x = createNode(value);
@@ -105,7 +114,7 @@ int SK_Insert(SkipList list, int value) {
 		}
 	}
 #ifdef DEBUG
-	printf("OK %d has been added to list.\n", value);
+	printf("OK %d has been added to list in %d steps.\n", value, step);
 #endif
 	free(update);
 #ifdef DEBUG
@@ -115,8 +124,7 @@ int SK_Insert(SkipList list, int value) {
 }
 int getRandomLevel(SkipList list) {
 	int level = 1;
-	// TODO: Fix RAND()
-	while (rand() < list.p) {
+	while (rand()/RAND_MAX < list.p) {
 		level++;
 	}
 	return MIN(level, list.levelMAX);
