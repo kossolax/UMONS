@@ -4,28 +4,41 @@
 
 int main(int argc, char** argv) {
 
-	for (int j = 0; j <= 1000; j++) {
+	for (int j = 0; j <= 10000; j++) {
 		if (j % 100 == 0)
 			printf(".");
-		
-		SkipList* list = SK_init(32, 0.25);
 
-		for (int i = 1; i <= 32; i++)
-			SK_Insert(list, i, i);
+		SkipList* list = SK_init(128, 0.25);
 
-		SK_Delete(list, 4);
-		SK_Delete(list, 6);
-		SK_Delete(list, 9);
-		for (int i = 11; i <= 24; i++)
-			SK_Delete(list, i);
+		int z = rand() % 64 + 1;
+		int test1 = rand() % 128;
+		int test2 = rand() % 128;
+		if (test2 == test1)
+			continue;
+
+
+		for (int i = 1; i <= 64; i++) {
+			SK_Insert(list, rand() % i, i);
+
+			if (i == z) {
+				SK_Insert(list, test1, -99999);
+				SK_Insert(list, test2, -99999);
+			}
+		}
+		for (int i = 50; i <= 80; i++)
+			SK_Insert(list, rand()%i, i);
+
+		for (int i = 0; i <= 128; i++)
+			if (i != test1 && (i == test2 || rand()%4 == 0) )
+				SK_Delete(list, i);
 		
-		node* found = SK_Search(list, 5);
-		node* notfound = SK_Search(list, 6);
+		node* found = SK_Search(list, test1);
+		node* notfound = SK_Search(list, test2);
 
 		if (!found) {
 			SK_Print(list);
 			SK_free(list);
-			printf("ERR: 5 was not found but exist\n");
+			printf("ERR: %d was not found but exist\n", test1);
 #ifdef WIN32
 			system("pause");
 #endif
@@ -34,7 +47,7 @@ int main(int argc, char** argv) {
 		if (notfound) {
 			SK_Print(list);
 			SK_free(list);
-			printf("ERR: 6 was found but doesn't exist\n");
+			printf("ERR: %d was found but doesn't exist\n", test2);
 #ifdef WIN32
 			system("pause");
 #endif
