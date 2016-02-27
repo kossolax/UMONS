@@ -140,10 +140,10 @@ int SK_Delete(SkipList list, int key) {
 		step++;
 #endif
 		while (x->forward[i]->key < key) {
-			x = x->forward[i];
 #ifdef DEBUG
 			step++;
 #endif
+			x = x->forward[i];
 		}
 		update[i] = x;
 	}
@@ -152,17 +152,17 @@ int SK_Delete(SkipList list, int key) {
 	x = x->forward[0];
 	if (x->key == key) {
 		for (int i = 0; i < list.size; i++) {
-			// ???
-			x->forward[i] = update[i]->forward[i];
-			update[i]->forward[i] = x;
+			if( update[i]->forward[i] != x)
+				continue;
+			update[i]->forward[i] = x->forward[i];
 #ifdef DEBUG
 			step++;
 #endif
 		}
-		//free(x);
-		// TODO:
-		// while(list.size > 1 && list.head->forward[list->size] == NULL )
-		//	list.size--;
+		free(x->forward);
+		free(x);
+		while(list.size > 1 && list.head->forward[list.size]->key == INT_MAX )
+			list.size--;
 	}
 #ifdef DEBUG
 	printf("OK %d has been added to list in %d steps.\n", key, step);
