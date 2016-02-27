@@ -9,6 +9,7 @@
 #define MIN(a,b) (((a)<(b))?(a):(b))
 //#define DEBUG
 
+//---------------BEGINSKStruct----------------
 typedef struct SkipList {
 	int levelMAX;
 	float p;
@@ -19,8 +20,8 @@ typedef struct node {
 	int key;
 	int value;
 	struct node** forward;
-
 } node;
+//---------------ENDSKStruct----------------
 
 SkipList* SK_init(int maxElem, float p);
 void SK_free(SkipList* list);

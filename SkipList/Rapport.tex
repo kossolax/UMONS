@@ -4,6 +4,11 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage{graphicx}
+\usepackage{listings}
+\usepackage{color}
+
+\lstset{language=C,rangeprefix=//---------------,rangesuffix=----------------,includerangemarker=false,columns=spaceflexible,extendedchars=true,showspaces=false,showstringspaces=false,inputencoding=ansinew,tabsize=4,frame=shadowbox,morecomment=[is]{\#ifdef}{\#endif},morecomment=[is]{/*}{*/}}
+
 \title{Lecture et rédaction scientifiques: \\Skip-lists }
 \author{Steve Zaretti}
 
@@ -39,10 +44,15 @@
 	\end{itemize}
 	
 	\section{Les algorithmes}
+	\lstinputlisting[linerange=BEGINSKStruct-ENDSKStruct]{SkipList/SkipList.h}
 	\subsection{La recherche}
+	\lstinputlisting[linerange=BEGINSKSearch-ENDSKSearch]{SkipList/SkipList.c}
 	\subsection{La hauteur}
+	\lstinputlisting[linerange=BEGINSKRandom-ENDSKRandom]{SkipList/SkipList.c}
 	\subsection{L'insertion}
+	\lstinputlisting[linerange=BEGINSKInsert-ENDSKInsert]{SkipList/SkipList.c}
 	\subsection{La suppression}
+	\lstinputlisting[linerange=BEGINSKDelete-ENDSKDelete]{SkipList/SkipList.c}
 	
 	\section{Analyse des performances}
 	\section{Comparaison avec d'autres structures de données}

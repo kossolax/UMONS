@@ -33,14 +33,15 @@ void SK_free(SkipList* list) {
 	free(list->head);
 	free(list);
 }
+//---------------BEGINSKSearch----------------
 node* SK_Search(SkipList* list, int key) {
 #ifdef DEBUG
 	printf("Searching for %d in SkipList[%p]\n", key, &list);
 	int step = 0;
 #endif
 	node* x = list->head;
-	// On recherche du plus haut, vers le plus bas
-	// Puis, on essaye d'aller le plus à droite possible.
+	/* On recherche du plus haut, vers le plus bas
+	 * Puis, on essaye d'aller le plus à droite possible. */
 	for (int i = list->size - 1; i >= 0; i--) {
 #ifdef DEBUG
 		step++;
@@ -52,7 +53,7 @@ node* SK_Search(SkipList* list, int key) {
 #endif
 		}
 	}
-	// Si l'élement suivant est celui-qu'on cherche, on l'a trouvé.
+	/* Si l'élement suivant est celui-qu'on cherche, on l'a trouvé. */
 	x = x->forward[0];
 	if (x->key == key) {
 #ifdef DEBUG
@@ -65,6 +66,8 @@ node* SK_Search(SkipList* list, int key) {
 #endif
 	return NULL;
 }
+//---------------ENDSKSearch----------------
+//---------------BEGINSKInsert----------------
 int SK_Insert(SkipList* list, int key, int value) {
 #ifdef DEBUG
 	printf("Inserting %d:%d in SkipList[%p]\n", key, value, list);
@@ -72,8 +75,7 @@ int SK_Insert(SkipList* list, int key, int value) {
 #endif
 	node** update = (node**)malloc(sizeof(node*)*list->levelMAX);
 	node* x = list->head;
-
-	// On marque les noeuds pour la mise à jour
+	/* On marque les noeuds pour la mise à jour */
 	for (int i = list->size - 1; i >= 0; i--) {
 #ifdef DEBUG
 		step++;
@@ -86,8 +88,7 @@ int SK_Insert(SkipList* list, int key, int value) {
 		}
 		update[i] = x;
 	}
-
-	// Vérification qu'on ajoute pas un doublon:
+	/* Vérification qu'on ajoute pas un doublon */
 	x = x->forward[0];
 	if (x->key == key) {
 #ifdef DEBUG
@@ -124,11 +125,10 @@ int SK_Insert(SkipList* list, int key, int value) {
 	printf("OK %d:%d has been added to list in %d steps.\n", key, value, step);
 #endif
 	free(update);
-#ifdef DEBUG
-	printf("Done.\n");
-#endif
 	return 0;
 }
+//---------------ENDSKInsert----------------
+//---------------BEGINSKDelete----------------
 int SK_Delete(SkipList* list, int key) {
 #ifdef DEBUG
 	printf("Removing %d in SkipList[%p]\n", key, &list);
@@ -136,8 +136,7 @@ int SK_Delete(SkipList* list, int key) {
 #endif
 	node** update = (node**)malloc(sizeof(node*)*list->size);
 	node* x = list->head;
-
-	// On marque les noeuds pour la mise à jour
+	/* On marque les noeuds pour la mise à jour */
 	for (int i = list->size - 1; i >= 0; i--) {
 #ifdef DEBUG
 		step++;
@@ -151,7 +150,7 @@ int SK_Delete(SkipList* list, int key) {
 		update[i] = x;
 	}
 
-	// La clé t'elle été trouvée ?
+	/* La clé t'elle été trouvée ? */
 	x = x->forward[0];
 	if (x->key == key) {
 		for (int i = 0; i < list->size; i++) {
@@ -164,18 +163,18 @@ int SK_Delete(SkipList* list, int key) {
 		}
 		free(x->forward);
 		free(x);
-		while(list->size > 1 && list->head->forward[list->size-1]->key == INT_MAX )
+		while(list->size > 1 &&
+			list->head->forward[list->size-1] == list->head ) {
 			list->size--;
+		}
 	}
 #ifdef DEBUG
 	printf("OK %d has been added to list in %d steps.\n", key, step);
 #endif
 	free(update);
-#ifdef DEBUG
-	printf("Done.\n");
-#endif
 	return 0;
 }
+//---------------ENDSKDelete----------------
 void SK_Print(SkipList* list) {
 
 	node* x;
@@ -210,6 +209,7 @@ void SK_Print(SkipList* list) {
 	}
 	printf("\n\n");
 }
+//---------------BEGINSKRandom----------------
 int getRandomLevel(SkipList* list) {
 	int level = 1;
 	while ( (double)rand()/(double)RAND_MAX < (double)list->p) {
@@ -217,6 +217,8 @@ int getRandomLevel(SkipList* list) {
 	}
 	return MIN(level, list->levelMAX);
 }
+//---------------ENDSKRandom----------------
+
 node* createNode(SkipList* list, int key, int value) {
 	node* noeud = (node*)malloc(sizeof(node));
 
