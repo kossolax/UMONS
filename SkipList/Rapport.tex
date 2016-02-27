@@ -1,0 +1,62 @@
+\documentclass[a4paper, 12pt]{article}
+\usepackage[french]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{graphicx}
+\title{Lecture et rédaction scientifiques: \\Skip-lists }
+\author{Steve Zaretti}
+
+\begin{document}
+	
+	\maketitle
+	\newpage
+	\tableofcontents
+	\newpage
+	
+	\section{Introduction}
+	\subsection{Liste chainée}
+	Une liste chainée est une structure de donnée de taille arbitraire. Le principe est que chacun des éléments de cette liste contient une référence vers l'éléments suivant. Cette méthodologie facilite l'insertion et la suppression des éléments, au détriment de la rapidité et de la recherche.
+	\subsection{Les alternatives}
+	Il existe de nombreuses alternatives aux listes chainées pour trouver un élément plus rapidement: Les tables de hashages, les arbres binaires, etc. Mais certaines séquences d'insertions peuvent être catastrophiques. Par exemple, insérer des éléments croissant dans un arbre binaire provoque un rééquilibrage de l'arbre. En revanche, si les éléments sont insérer de façon aléatoire, l'équilibrage devient plus rare.
+
+	Grâce aux probabilités, les \og skip-list \fg{} bénéficient d'un atout majeur: Aucune séquence ne peut provoquer systématiquement le pire scénario. Mieux encore, les skip-lists utilisent des algorithmes plus simple et rapide que ses concurrents. Les skip-lists sont aussi très légère et peuvent être configurée pour n'utiliser que $1\frac{1}{3}$ pointeurs par éléments.
+	
+	\subsection{Qu'est-ce qu'une Skip-List}
+	 Une skip-list bénéficie des avantages de la liste chainée, sans ses inconvénients. Cette structure de donnée utilises les chaines classique de façon parallèle. Une fonction basé sur les probabilités permet de déterminer si une nouvelle chaine doit être utilisée ou non. Cette couche supérieur est un moyen plus rapide d'accéder à cet élément.
+	 \begin{center}
+		\includegraphics[width=\textwidth]{img/SkipList}
+	\end{center}
+	
+	\subsubsection{Définition}
+	\begin{itemize}
+		\item La hauteur maximale d'une skip-list est définie lors de sa création. Bien qu'il n'y ai pas de taille maximal d'une skip-list, il est conseillé d'utiliser $log_2(n)$ où $n$ est le nombre d'éléments théorique présent dans la liste. 
+		\item Le niveau le plus bas de la liste mène au nœud suivant. 
+		\item Les nœuds supérieurs pointent vers un nœuds plus avancés dans la liste.  Une couche supérieur est une voie rapide vers la couche inférieur. Ainsi, la couche la plus haute contient les sauts les plus grands.
+		\item Le parcours d'une skip-list se fait de haut en bas, et de droite à gauche. Si la clé de l'éléments suivants sur une couche est plus grands que celle qu'on recherche, celle-ci continue sur une voie inférieur.
+		\item L'insertion dans la liste utilise une fonctions de probabilité afin de définir sa hauteur maximal.
+	\end{itemize}
+	
+	\section{Les algorithmes}
+	\subsection{La recherche}
+	\subsection{La hauteur}
+	\subsection{L'insertion}
+	\subsection{La suppression}
+	
+	\section{Analyse des performances}
+	\section{Comparaison avec d'autres structures de données}
+	
+	@online{1,
+		author = {Patrice Roy},
+		title = {Skip Lists},
+		date = {27/02/2015},
+		url = {http://h-deb.clg.qc.ca/Sujets/Structures-donnees/SkipLists.html},
+	}
+	@online{2,
+		author = {Sylvie Hamel},
+		title = {Dictionnaires ordonnés et “Skip List”},
+		date = {25/02/2016},
+		url = {http://www.iro.umontreal.ca/~hamelsyl/SkipList.pdf},
+	}
+	
+\end{document} 
