@@ -162,7 +162,7 @@ int SK_Delete(SkipList* list, int key) {
 		}
 		free(x->forward);
 		free(x);
-		while(list->size > 1 && list->head->forward[list->size]->key == INT_MAX )
+		while(list->size >= 1 && list->head->forward[list->size-1]->key == INT_MAX )
 			list->size--;
 	}
 #ifdef DEBUG
