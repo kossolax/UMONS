@@ -156,7 +156,7 @@ int SK_Delete(SkipList* list, int key) {
 	if (x->key == key) {
 		for (int i = 0; i < list->size; i++) {
 			if( update[i]->forward[i] != x)
-				continue;
+				break;
 			update[i]->forward[i] = x->forward[i];
 #ifdef DEBUG
 			step++;
@@ -164,7 +164,7 @@ int SK_Delete(SkipList* list, int key) {
 		}
 		free(x->forward);
 		free(x);
-		while(list->size >= 1 && list->head->forward[list->size-1]->key == INT_MAX )
+		while(list->size > 1 && list->head->forward[list->size-1]->key == INT_MAX )
 			list->size--;
 	}
 #ifdef DEBUG
@@ -179,15 +179,32 @@ int SK_Delete(SkipList* list, int key) {
 void SK_Print(SkipList* list) {
 
 	node* x;
+	node* y;
 	
 	printf("--------- List of %d levels ---------------\n", list->size);
 	for (int i = list->size - 1; i >= 0; i--) {
 
 		x = list->head;
 		printf("[]-->");
+		
+
 		while (x->forward[i] != list->head) {
+			if (i != 0) {
+				y = x;
+				while (y->forward[0] != x->forward[i]) {
+					printf("--------->");
+					y = y->forward[0];
+				}
+			}
 			x = x->forward[i];
-			printf("[%d,%d]-->", x->key, x->value);
+			printf("[%2d,%2d]-->", x->key, x->value);
+		}
+		if (i != 0) {
+			y = x;
+			while (y->forward[0] != x->forward[i]) {
+				printf("--------->");
+				y = y->forward[0];
+			}
 		}
 		printf("[NiL]\n");
 	}
