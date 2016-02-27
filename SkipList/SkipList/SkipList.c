@@ -15,7 +15,7 @@ SkipList* SK_init(int maxElem, float p) {
 
 	list->levelMAX = (int)round(log2(maxElem));
 	list->size = 1;
-	list->head = createNode(&list, INT_MAX, INT_MAX);
+	list->head = createNode(list, INT_MAX, INT_MAX);
 	for (int i = 0; i < list->levelMAX; i++)
 		list->head->forward[i] = list->head;
 	list->p = p;
@@ -95,7 +95,6 @@ int SK_Insert(SkipList* list, int key, int value) {
 	else {
 		int level = getRandomLevel(list);
 		if (level > list->size) {
-			printf("New size: %d\n", level);
 #ifdef DEBUG
 			printf("New size: %d\n", level);
 #endif
