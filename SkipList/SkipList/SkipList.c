@@ -38,7 +38,7 @@ node* SK_Search(SkipList* list, int key) {
 	node* x = list->head;
 	// On recherche du plus haut, vers le plus bas
 	// Puis, on essaye d'aller le plus à droite possible.
-	for (int i = list->size - 1; i >= 1; i--) {
+	for (int i = list->size - 1; i >= 0; i--) {
 #ifdef DEBUG
 		step++;
 #endif
@@ -50,7 +50,7 @@ node* SK_Search(SkipList* list, int key) {
 		}
 	}
 	// Si l'élement suivant est celui-qu'on cherche, on l'a trouvé.
-	x = x->forward[1];
+	x = x->forward[0];
 	if (x->key == key) {
 #ifdef DEBUG
 		printf("Found %d in %d steps", key, step);
