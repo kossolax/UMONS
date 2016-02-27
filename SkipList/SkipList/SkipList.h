@@ -18,7 +18,7 @@ typedef struct SkipList {
 typedef struct node {
 	int key;
 	int value;
-	struct node* forward[];
+	struct node** forward;
 
 } node;
 
@@ -30,5 +30,5 @@ int SK_Delete(SkipList list, int key);
 int SK_GetValueFromNode(node* noeud);
 
 // Private: eyes only.
-node* createNode(int key, int value);
+node* createNode(SkipList, int key, int value);
 int getRandomLevel(SkipList list);

@@ -15,7 +15,7 @@ SkipList SK_init(int maxElem, float p) {
 
 	list.levelMAX = (int)round(log2(maxElem));
 	list.size = 1;
-	list.head = createNode(INT_MAX, INT_MAX);
+	list.head = createNode(list, INT_MAX, INT_MAX);
 	for (int i = 0; i < list.levelMAX; i++)
 		list.head->forward[i] = list.head;
 	list.p = p;
@@ -27,6 +27,7 @@ SkipList SK_init(int maxElem, float p) {
 	return list;
 }
 void SK_free(SkipList list) {
+	free(list.head->forward);
 	free(list.head);
 }
 node* SK_Search(SkipList list, int key) {
@@ -37,7 +38,7 @@ node* SK_Search(SkipList list, int key) {
 	node* x = list.head;
 	// On recherche du plus haut, vers le plus bas
 	// Puis, on essaye d'aller le plus à droite possible.
-	for (int i = list.size; i >= 1; i--) {
+	for (int i = list.size - 1; i >= 1; i--) {
 #ifdef DEBUG
 		step++;
 #endif
@@ -66,18 +67,16 @@ int SK_Insert(SkipList list, int key, int value) {
 	printf("Inserting %d:%d in SkipList[%p]\n", key, value, &list);
 	int step = 0;
 #endif
-	node** update = (node**)malloc(sizeof(node*)*list.size);
+	node** update = (node**)malloc(sizeof(node*)*list.levelMAX);
 	node* x = list.head;
 
 	// On marque les noeuds pour la mise à jour
 	for (int i = list.size - 1; i >= 0; i--) {
 #ifdef DEBUG
-		printf("AT %d\n", i);
 		step++;
 #endif
 		while (x->forward[i]->key < key) {
 #ifdef DEBUG
-			printf("->[%p]->[%p]-%d->%d\n", x, x->forward[i], x->forward[i]->key);
 			step++;
 #endif
 			x = x->forward[i];
@@ -96,7 +95,7 @@ int SK_Insert(SkipList list, int key, int value) {
 	else {
 		int level = getRandomLevel(list);
 		if (level > list.size) {
-			for (int i = list.size; i <= level; i++) {
+			for (int i = list.size; i < level; i++) {
 				update[i] = list.head;
 #ifdef DEBUG
 				step++;
@@ -105,7 +104,7 @@ int SK_Insert(SkipList list, int key, int value) {
 			list.size = level;
 		}
 		
-		x = createNode(key, value);
+		x = createNode(list, key, value);
 		for (int i = 0; i < level; i++) {
 			// ???
 			x->forward[i] = update[i]->forward[i];
@@ -157,7 +156,7 @@ int SK_Delete(SkipList list, int key) {
 			step++;
 #endif
 		}
-		free(x);
+		//free(x);
 		// TODO:
 		// while(list.size > 1 && list.head->forward[list->size] == NULL )
 		//	list.size--;
@@ -178,11 +177,12 @@ int getRandomLevel(SkipList list) {
 	}
 	return MIN(level, list.levelMAX);
 }
-node* createNode(int key, int value) {
+node* createNode(SkipList list, int key, int value) {
 	node* noeud = (node*)malloc(sizeof(node));
 
 	noeud->key = key;
 	noeud->value = value;
+	noeud->forward = (node**)malloc(sizeof(node*) * (list.levelMAX));
 
 	return noeud;
 }
