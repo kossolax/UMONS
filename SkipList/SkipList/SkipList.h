@@ -28,8 +28,8 @@ node* SK_Search(SkipList* list, int key);
 int SK_Insert(SkipList* list, int key, int value);
 int SK_Delete(SkipList* list, int key);
 int SK_GetValueFromNode(node* noeud);
+void SK_Print(SkipList* list);
 
 // Private: eyes only.
 node* createNode(SkipList*, int key, int value);
-void SK_Print(SkipList* list);
 int getRandomLevel(SkipList* list);

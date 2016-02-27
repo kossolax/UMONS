@@ -3,6 +3,7 @@
 #include "SkipList.h"
 
 int main(int argc, char** argv) {
+	srand((int)time(NULL));
 
 	for (int j = 0; j <= 10000; j++) {
 		if (j % 100 == 0)
@@ -14,7 +15,7 @@ int main(int argc, char** argv) {
 		int test1 = rand() % 128;
 		int test2 = rand() % 128;
 		if (test2 == test1)
-			continue;
+			test2--;
 
 
 		for (int i = 1; i <= 64; i++) {
