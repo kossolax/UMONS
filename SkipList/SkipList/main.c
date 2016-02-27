@@ -3,13 +3,15 @@
 #include "SkipList.h"
 
 int main(int argc, char** argv) {
-	SkipList list = SK_init(32, 0.25);
+	SkipList* list = SK_init(32, 0.25);
 
-	SK_Insert(list, 1, 1);
-	for (int i = 4; i <= 8; i++)
+	for (int i = 1; i <= 16; i++)
 		SK_Insert(list, i, i);
 
+	SK_Print(list);
 	SK_Delete(list, 4);
+	SK_Print(list);
+
 	node* found = SK_Search(list, 5);
 	node* notfound = SK_Search(list, 6);
 
