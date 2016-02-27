@@ -95,6 +95,9 @@ int SK_Insert(SkipList list, int key, int value) {
 	else {
 		int level = getRandomLevel(list);
 		if (level > list.size) {
+#ifdef DEBUG
+			printf("New size: %d\n", level);
+#endif
 			for (int i = list.size; i < level; i++) {
 				update[i] = list.head;
 #ifdef DEBUG
@@ -172,7 +175,7 @@ int SK_Delete(SkipList list, int key) {
 }
 int getRandomLevel(SkipList list) {
 	int level = 1;
-	while (rand()/RAND_MAX < list.p) {
+	while ( (double)rand()/(double)RAND_MAX < (double)list.p) {
 		level++;
 	}
 	return MIN(level, list.levelMAX);
