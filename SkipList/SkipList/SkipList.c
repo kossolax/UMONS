@@ -1,25 +1,23 @@
 #include "SkipList.h"
 
+//---------------BEGINSKInit----------------
 SkipList* SK_init(int maxElem, float p) {
 	SkipList* list = (SkipList*)malloc(sizeof(SkipList));
-
 #ifdef DEBUG
 	printf("Creating Skip-List\n");
 #endif
-
 	list->levelMAX = (int)round(log2(maxElem));
 	list->size = 1;
 	list->head = createNode(list, INT_MAX, INT_MAX);
 	for (int i = 0; i < list->levelMAX; i++)
 		list->head->forward[i] = list->head;
 	list->p = p;
-
 #ifdef DEBUG
 	printf("Done, max level: %d\n", list->levelMAX);
 #endif
-
 	return list;
 }
+//---------------ENDSKInit----------------
 void SK_free(SkipList* list) {
 	node* p = list->head->forward[0];
 	node* q;
