@@ -7,6 +7,7 @@
 \usepackage{hyperref}
 \usepackage{listings}
 \usepackage{color}
+\usepackage[titletoc,title]{appendix}
 \lstset{language=C,rangeprefix=//---------------,rangesuffix=----------------,includerangemarker=false,columns=spaceflexible,extendedchars=true,showspaces=false,showstringspaces=false,inputencoding=ansinew,tabsize=4,frame=shadowbox,morecomment=[is]{\#ifdef}{\#endif},morecomment=[is]{/*}{*/}}
 \title{Lecture et rédaction scientifiques: \\Skip-lists }
 \author{Steve Zaretti}
@@ -27,12 +28,12 @@
 
 	Grâce aux probabilités, les \og skip-list \fg{} bénéficient d'un atout majeur: aucune séquence ne peut provoquer systématiquement le pire scénario. Mieux encore, les skip-lists utilisent des algorithmes plus simples et rapides que ses concurrents. Les skip-lists sont aussi très légère et peuvent être configurée pour n'utiliser que $1\frac{1}{3}$ pointeurs par élément.
 	
+	\newpage
 	\subsection{Skip-List}
 	 Une skip-list bénéficie des avantages de la liste chainée, sans ses inconvénients. Cette structure de données utilise les chaines de façon parallèle. Une fonction basée sur des probabilités permet de déterminer si une nouvelle chaine doit être utilisée ou non. Cette couche supérieure est un moyen plus rapide d'accéder à cet élément.
 	\begin{center}
 		\includegraphics[width=\textwidth]{img/SkipList}
 	\end{center}
-	
 	\subsubsection*{Définition}
 	\begin{itemize}
 		\item La hauteur maximale d'une skip-list est définie lors de sa création. Bien qu'il n'y ait pas de taille maximale d'une skip-list, il est conseillé d'utiliser $log_2(n)$ où $n$ est le nombre d'éléments théoriques présents dans la liste. 
@@ -42,11 +43,12 @@
 		\item L'insertion dans la liste utilise une fonction de probabilité afin de définir sa hauteur maximale.
 	\end{itemize}
 	
+	\newpage
 	\section{Les algorithmes}
 	Une skip-list a besoin d'avoir un pointeur vers sa tête $(node* head)$. La liste doit connaitre le nombre de voie actuellement utilisé $(size)$. Selon les implémentations, il est possible de définir un nombre de voie maximal $(levelMAX)$. Il est aussi possible de changer le paramètre $(p)$ de probabilité de création d'une nouvelle voie. La variation de ses deux derniers paramètres est étudier dans le chapitre \nameref{perf}.
 	\lstinputlisting[linerange=BEGINSKStruct-ENDSKStruct]{SkipList/SkipList.h}
 	
-	L'initiation se fait de la manière suivante.
+	L'initiation se fait de la manière suivante:
 	\begin{itemize}
 		\item La hauteur maximale est déterminé par le nombre d'élément total $n$ présent dans la liste. Pour des questions de rapidité, la valeur $log_2(n)$ est recommandé.
 		\item Création d'un élément $NIL$ possédant une clé plus grande que le maximum autorisé.
@@ -54,10 +56,10 @@
 		\item Le nombre de voie actuel est fixé à 1.
 		\item Le pointeur de tête est définis par l'élément $NIL$.
 	\end{itemize}
-	\lstinputlisting[linerange=BEGINSKInit-ENDSKInit]{SkipList/SkipList.c}
-	
+	\emph{L'algorithme écrit en langage C figure en annexe \ref{SKInit}.}
+
 	\subsection{La recherche}
-	La recherche d'un élément s'exécute de la façon suivante.
+	La recherche d'un élément s'exécute de la façon suivante:
 	\begin{enumerate}
 		\item Commencer l'exploration de la liste par l'élément en tête et se positionner sur la plus haute voie.
 		\item Sur la voie actuelle, regarder l'élément suivant
@@ -66,17 +68,13 @@
 		\item Si la clé de l'élément suivant correspond à celle recherchée, l'élément a été trouvé.
 		\item Sinon, l'élément n'a pas été trouvé.
 	\end{enumerate}
-	En langage C, la recherche d'un nœud se fait comme suit:
-	\lstinputlisting[linerange=BEGINSKSearch-ENDSKSearch]{SkipList/SkipList.c}
+	\emph{L'algorithme écrit en langage C figure en annexe \ref{SKSearch}.}
 	
 	\subsection{La hauteur}
 	La fonction de hauteur est très importante dans une skip-liste. En effet, celle-ci permet de définir à combien de nœud un élément est attaché. Si trop d'élément possède la même hauteur, la recherche devient trop lente.	Cette méthode est définie à l'aide d'une fonction aléatoire. La hauteur ne dépend ni de la clé de l'élément, ni se sa valeur. La fonction aléatoire doit être défie pour qu'un élément de hauteur $h$ possède le double de probabilité qu'un élément de hauteur $h+1$. Ainsi, si un nœud de hauteur 1 a une probabilité $p$ de $0.5$ alors le niveau 2 a une probabilité de $0.25$.
 	
-	En langage C, la hauteur d'un nœud se définit comme suit:
-	\lstinputlisting[linerange=BEGINSKRandom-ENDSKRandom]{SkipList/SkipList.c}
-	
 	\subsection{L'insertion}
-	L'insertion d'un élément dans une skip-liste s'effectue de la façon suivante.
+	L'insertion d'un élément dans une skip-liste s'effectue de la façon suivante:
 	\begin{enumerate}
 		\item Commencer l'exploration de la liste par l'élément en tête et se positionner sur la plus haute voie.
 		\item Sur la voie actuelle, regarder l'élément suivant
@@ -91,11 +89,11 @@
 		\item Mettre à jour les pointeurs de l'élément marqué de cette voie vers $x$.
 		\item \textbf{FIN}.
 	\end{enumerate}
-	En langage C, l'insertion d'un élément dans une skip-list se fait comme suit:
-	\lstinputlisting[linerange=BEGINSKInsert-ENDSKInsert]{SkipList/SkipList.c}
+	\emph{L'algorithme écrit en langage C figure en annexe \ref{SKInsert}.}
+	
 	
 	\subsection{La suppression}
-	La suppression d'un élément dans une skip-liste s'effectue de la façon suivante.
+	La suppression d'un élément dans une skip-liste s'effectue de la façon suivante:
 	\begin{enumerate}
 		\item Commencer l'exploration de la liste par l'élément en tête et se positionner sur la plus haute voie.
 		\item Sur la voie actuelle, regarder l'élément suivant
@@ -108,15 +106,36 @@
 		\item Sinon, \textbf{FIN}.
 		\item Si la hauteur est plus grande que 1, aller en 8.
 	\end{enumerate}
-	\lstinputlisting[linerange=BEGINSKDelete-ENDSKDelete]{SkipList/SkipList.c}
+	\emph{L'algorithme écrit en langage C figure en annexe \ref{SKDelete}.}
 	
 	\section{Analyse des performances}\label{perf}
 	\section{Comparaison avec d'autres structures de données}
 	
+	
+	\begin{appendices}
+	\newpage
+	\section{Représentation d'une Skip-List en langage C}
+	\subsection{Initiation}\label{SKInit}
+	\lstinputlisting[linerange=BEGINSKInit-ENDSKInit]{SkipList/SkipList.c}
+	\subsection{Fonction aléatoire}\label{SKRandom}
+	\lstinputlisting[linerange=BEGINSKRandom-ENDSKRandom]{SkipList/SkipList.c}
+
+	\subsection{Recherche}\label{SKSearch}
+	\lstinputlisting[linerange=BEGINSKSearch-ENDSKSearch]{SkipList/SkipList.c}
+
+	\subsection{Insertion}\label{SKInsert}
+	\lstinputlisting[linerange=BEGINSKInsert-ENDSKInsert]{SkipList/SkipList.c}
+	
+	\subsection{Suppression}\label{SKDelete}
+	\lstinputlisting[linerange=BEGINSKDelete-ENDSKDelete]{SkipList/SkipList.c}
+	\newpage
+	\end{appendices}
+	
+	
 	@online{1,
 		author = {Patrice Roy},
 		title = {Skip Lists},
-		date = {27/02/2015},
+		date = {27/02/2016},
 		url = {http://h-deb.clg.qc.ca/Sujets/Structures-donnees/SkipLists.html},
 	}
 	@online{2,
