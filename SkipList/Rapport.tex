@@ -7,6 +7,8 @@
 \usepackage{hyperref}
 \usepackage{listings}
 \usepackage{color}
+\usepackage{svg}
+
 \usepackage[titletoc,title]{appendix}
 \lstset{language=C,rangeprefix=//---------------,rangesuffix=----------------,includerangemarker=false,columns=spaceflexible,extendedchars=true,showspaces=false,showstringspaces=false,inputencoding=ansinew,tabsize=4,frame=shadowbox,morecomment=[is]{\#ifdef}{\#endif},morecomment=[is]{/*}{*/}}
 \title{Lecture et rédaction scientifiques: \\Skip-lists }
@@ -21,22 +23,27 @@
 	
 	\section{Introduction}
 	\subsection{Liste chainée}
-	Une liste chainée est une structure de données de taille arbitraire. Le principe est que chacun des éléments de cette liste contient une référence vers l'élément suivant. Cette pratique facilite l'insertion et la suppression des éléments, au détriment de la rapidité de la recherche.
+	Une liste chainée \textit{(figure a)} est une structure de données de taille arbitraire. Le principe est que chacun des éléments de cette liste contient une référence vers l'élément suivant. Cette pratique facilite l'insertion et la suppression des éléments, au détriment de la rapidité de la recherche.
 	
 	\subsubsection*{Les alternatives}
-	Il existe de nombreuses alternatives aux listes chainées pour trouver un élément plus rapidement: les tables de hashages, les arbres binaires, etc. Mais certaines séquences d'insertions peuvent être catastrophiques. Par exemple, insérer des éléments croissants dans un arbre binaire provoque un rééquilibrage de l'arbre. En revanche, si les éléments sont insérés de façon aléatoire, l'équilibrage devient plus rare.
+	Il existe de nombreuses alternatives aux listes chainées pour trouver un élément plus rapidement: les tables de hashages \textit{(figure b)}, les arbres binaires \textit{(figure c)}, etc. Mais certaines séquences d'insertions peuvent être catastrophiques. Par exemple, insérer des éléments croissants dans un arbre binaire provoque un rééquilibrage de l'arbre. En revanche, si les éléments sont insérés de façon aléatoire, l'équilibrage devient plus rare.
 
-	Grâce aux probabilités, les \og skip-list \fg{} bénéficient d'un atout majeur: aucune séquence ne peut provoquer systématiquement le pire scénario. Mieux encore, les skip-lists utilisent des algorithmes plus simples et rapides que ses concurrents. Les skip-lists sont aussi très légères et peuvent être configurées pour n'utiliser que $1\frac{1}{3}$ pointeurs par élément.
+	Grâce aux probabilités, les \og skip-list \fg{} \textit{(figure d)} bénéficient d'un atout majeur: aucune séquence ne peut provoquer systématiquement le pire scénario. Mieux encore, les skip-lists utilisent des algorithmes plus simples et rapides que ses concurrents. Les skip-lists sont aussi très légères et peuvent être configurées pour n'utiliser que $1\frac{1}{3}$ pointeurs par élément.
 	
-	%% TODO: Insérer illustration
+	\begin{center}
+		\includegraphics[width=\textwidth]{img/datastructure}
+	\end{center}
+	
 	
 	\newpage
 	\subsection{Skip-List}
 	 Une skip-list bénéficie des avantages de la liste chainée, sans ses inconvénients. Cette structure de données utilise les chaines de façon parallèle. Une fonction basée sur des probabilités permet de déterminer si une nouvelle chaine doit être utilisée ou non. Cette couche supérieure est un moyen plus rapide d'accéder à cet élément.
-	\begin{center}
-		\includegraphics[width=\textwidth]{img/SkipList}
-	\end{center}
 	\subsubsection*{Définition}
+	
+	\begin{center}
+		\includegraphics[width=\textwidth]{img/struct}
+	\end{center}
+	
 	\begin{itemize}
 		\item La hauteur maximale d'une skip-list est définie lors de sa création. Bien qu'il n'y ait pas de taille maximale d'une skip-list, il est conseillé d'utiliser $log_2(n)$ où $n$ est le nombre d'éléments théoriques présents dans la liste. 
 		\item Le niveau le plus bas de la liste mène au nœud suivant. %% TODO: Cette phrase est floue, à reformuler.
@@ -60,7 +67,7 @@
 	\end{itemize}
 	\emph{L'algorithme écrit en langage C figure en annexe \ref{SKInit}.}
 	
-	%% TODO: Insérer illustration
+	\includegraphics{img/init}
 	
 	\subsection{La recherche}
 	La recherche d'un élément s'exécute de la façon suivante:
@@ -73,7 +80,9 @@
 		\item Sinon, l'élément n'a pas été trouvé.
 	\end{enumerate}
 	\emph{L'algorithme écrit en langage C figure en annexe \ref{SKSearch}.}
-	%% TODO: Insérer illustration
+	\begin{center}
+		\includegraphics[width=\textwidth]{img/search}
+	\end{center}
 	
 	\subsection{La hauteur}
 	La notion de hauteur est très importante dans une skip-liste. En effet, celle-ci permet de définir à combien de nœuds un élément est attaché. Si trop d'éléments possèdent la même hauteur, la recherche devient trop lente.	Cette méthode est définie à l'aide d'une fonction aléatoire. La hauteur ne dépend ni de la clé de l'élément ni de sa valeur. La fonction aléatoire doit être définie pour qu'un élément de hauteur $h$ possède le double de probabilité qu'un élément de hauteur $h+1$. Ainsi, si un nœud de hauteur 1 a une probabilité $p$ de $0.5$ alors le niveau 2 a une probabilité de $0.25$.
@@ -96,8 +105,9 @@
 		\item \textbf{FIN}.
 	\end{enumerate}
 	\emph{L'algorithme écrit en langage C est présenté en annexe \ref{SKInsert}.}
-	%% TODO: Insérer illustration
-	
+	\begin{center}
+		\includegraphics[width=\textwidth]{img/insert}
+	\end{center}
 	
 	\subsection{La suppression}
 	La suppression d'un élément dans une skip-liste s'effectue de la façon suivante:
@@ -114,7 +124,9 @@
 		\item Si la hauteur est plus grande que 1, aller en 8.
 	\end{enumerate}
 	\emph{L'algorithme écrit en langage C figure en annexe \ref{SKDelete}.}
-	%% TODO: Insérer illustration
+	\begin{center}
+		\includegraphics[width=\textwidth]{img/delete}
+	\end{center}
 	
 	\section{Analyse des performances}\label{perf}
 	\section{Comparaison avec d'autres structures de données}
