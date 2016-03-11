@@ -1,4 +1,5 @@
 /bin/
+UML/bin/
 *.vpp~*
 .metadata
 *.class

@@ -1,15 +1,33 @@
 package framework;
 
+import java.util.Collection;
+
+import framework.payement.Payment;
+
 public class Machine {
 
 	private String name;
+	private Collection<Module> modules;
+	
 
 	/**
-	 * 
-	 * @param Payment
-	 * @param Article
+	 * Buy.
+	 *
+	 * @param payement the kind of payement
+	 * @param article the article
 	 */
-	public void Buy(int Payment, int Article) {
+	public boolean Buy(Payment payement, Article article) {
+		if( article.isAvalaible() ) {
+			double price = article.getPrice();
+			if( payement.pay() ) {
+				return ( article.delivery() != null );
+			}
+		}
+		return false;
+	}
+	
+	public void addModule(Module module) {
+		modules.add(module);
 	}
 
 }

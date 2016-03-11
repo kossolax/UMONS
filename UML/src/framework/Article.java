@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 public class Article {
 	private String name;
-	private int price;
+	private double price;
 	private Recipe recipe;
 	
 	/**
@@ -26,6 +26,27 @@ public class Article {
 		return avaialable;
 	}
 
-	public void delivery() {
+	/**
+	 * Delivery.
+	 *
+	 * @return true, if successful
+	 */
+	public Article delivery() {
+		Iterator<RawMaterial> itr = recipe.getRecipe().iterator();
+		while( itr.hasNext() ) {
+			RawMaterial materials = itr.next();
+			try {
+				materials.getStock().changeAmount( -materials.getAmount() );
+				
+			} catch ( Exception e ) {
+				// TODO: Que faire dans ce cas? Il était sensé avoir la bonne quantité, mais...
+				return null;
+			}
+		}
+		return this;
+	}
+
+	public double getPrice() {
+		return price;
 	}
 }
