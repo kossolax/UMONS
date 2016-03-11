@@ -1,10 +1,11 @@
 package framework;
 
+import java.util.Collection;
 public class Recipe {
-
-	private int amount;
-	private boolean variable;
-	private int min;
-	private int max;
-
+	private Collection<RawMaterial> require;
+	
+	public Collection<RawMaterial> getRecipe() {
+		return require;
+	}
+	
 }
