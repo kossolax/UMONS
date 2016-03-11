@@ -31,48 +31,6 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 			maintenance = true;
 		}
 
-		private boolean add;
-
-		public void raiseAdd() {
-			add = true;
-		}
-
-		private boolean delete;
-
-		public void raiseDelete() {
-			delete = true;
-		}
-
-		private boolean login;
-
-		public void raiseLogin() {
-			login = true;
-		}
-
-		private boolean create;
-
-		public void raiseCreate() {
-			create = true;
-		}
-
-		private boolean load;
-
-		public void raiseLoad() {
-			load = true;
-		}
-
-		private boolean alter;
-
-		public void raiseAlter() {
-			alter = true;
-		}
-
-		private boolean save;
-
-		public void raiseSave() {
-			save = true;
-		}
-
 		private double piece;
 		public double getPiece() {
 			return piece;
@@ -91,27 +49,11 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 			this.itemPrice = value;
 		}
 
-		private long loginType;
-		public long getLoginType() {
-			return loginType;
-		}
-
-		public void setLoginType(long value) {
-			this.loginType = value;
-		}
-
 		public void clearEvents() {
 			insertPiece = false;
 			addItem = false;
 			refound = false;
 			maintenance = false;
-			add = false;
-			delete = false;
-			login = false;
-			create = false;
-			load = false;
-			alter = false;
-			save = false;
 		}
 
 	}
@@ -119,7 +61,7 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 	private SCInterfaceImpl sCInterface;
 
 	public enum State {
-		machine_Maintenance, machine_Maintenance_r1_Authentification, machine_Maintenance_r1_Stock, machine_Maintenance_r1_MachineManagement, machine_Maintenance_r1_CreateMachine, machine_Maintenance_r1_moduleManagement, machine_Maintenance_r1_ArticleManagement, machine_Machine, machine_Machine_r1_Standby, machine_Machine_r1_Selection, machine_Machine_r1_Distribute, coin_ATM_Standby, coin_ATM_Pay, coin_ATM_Withdraw, $NullState$
+		distributeur_Distributeur, distributeur_Distributeur_r1_distribution, distributeur_Distributeur_r1_Selection, distributeur_Distributeur_r1_Attente, distributeur_Maintenance, distributeur_Maintenance_r1_StandBy, monayeur_Attente, monayeur_Paiement, monayeur_rendreMonaie, $NullState$
 	};
 
 	private double totalMoney;
@@ -127,6 +69,7 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 	private double needMoney;
 	private boolean enabled;
 
+	private State[] historyVector = new State[1];
 	private final State[] stateVector = new State[2];
 
 	private int nextStateIndex;
@@ -149,14 +92,15 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 			stateVector[i] = State.$NullState$;
 		}
 
+		for (int i = 0; i < 1; i++) {
+			historyVector[i] = State.$NullState$;
+		}
 		clearEvents();
 		clearOutEvents();
 
 		sCInterface.piece = 0.5;
 
 		sCInterface.itemPrice = 1;
-
-		sCInterface.loginType = 0;
 
 		totalMoney = 0;
 
@@ -173,64 +117,43 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 		}
 		entryAction();
 
+		needMoney = 0;
+
 		nextStateIndex = 0;
-		stateVector[0] = State.machine_Maintenance_r1_Authentification;
+		stateVector[0] = State.distributeur_Distributeur_r1_Attente;
+
+		historyVector[0] = stateVector[0];
 
 		nextStateIndex = 1;
-		stateVector[1] = State.coin_ATM_Standby;
+		stateVector[1] = State.monayeur_Attente;
 	}
 
 	public void exit() {
 		switch (stateVector[0]) {
-			case machine_Maintenance_r1_Authentification :
-				nextStateIndex = 0;
-				stateVector[0] = State.$NullState$;
-				break;
-
-			case machine_Maintenance_r1_Stock :
-				nextStateIndex = 0;
-				stateVector[0] = State.$NullState$;
-				break;
-
-			case machine_Maintenance_r1_MachineManagement :
-				nextStateIndex = 0;
-				stateVector[0] = State.$NullState$;
-				break;
-
-			case machine_Maintenance_r1_CreateMachine :
-				nextStateIndex = 0;
-				stateVector[0] = State.$NullState$;
-				break;
-
-			case machine_Maintenance_r1_moduleManagement :
-				nextStateIndex = 0;
-				stateVector[0] = State.$NullState$;
-				break;
-
-			case machine_Maintenance_r1_ArticleManagement :
-				nextStateIndex = 0;
-				stateVector[0] = State.$NullState$;
-				break;
-
-			case machine_Machine_r1_Standby :
-				nextStateIndex = 0;
-				stateVector[0] = State.$NullState$;
-				break;
-
-			case machine_Machine_r1_Selection :
+			case distributeur_Distributeur_r1_distribution :
 				nextStateIndex = 0;
 				stateVector[0] = State.$NullState$;
 
 				timer.unsetTimer(this, 0);
+
+				sCInterface.raiseRefound();
 				break;
 
-			case machine_Machine_r1_Distribute :
+			case distributeur_Distributeur_r1_Selection :
 				nextStateIndex = 0;
 				stateVector[0] = State.$NullState$;
 
 				timer.unsetTimer(this, 1);
+				break;
 
-				sCInterface.raiseRefound();
+			case distributeur_Distributeur_r1_Attente :
+				nextStateIndex = 0;
+				stateVector[0] = State.$NullState$;
+				break;
+
+			case distributeur_Maintenance_r1_StandBy :
+				nextStateIndex = 0;
+				stateVector[0] = State.$NullState$;
 				break;
 
 			default :
@@ -238,17 +161,17 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 		}
 
 		switch (stateVector[1]) {
-			case coin_ATM_Standby :
+			case monayeur_Attente :
 				nextStateIndex = 1;
 				stateVector[1] = State.$NullState$;
 				break;
 
-			case coin_ATM_Pay :
+			case monayeur_Paiement :
 				nextStateIndex = 1;
 				stateVector[1] = State.$NullState$;
 				break;
 
-			case coin_ATM_Withdraw :
+			case monayeur_rendreMonaie :
 				nextStateIndex = 1;
 				stateVector[1] = State.$NullState$;
 				break;
@@ -282,40 +205,30 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 	 */
 	public boolean isStateActive(State state) {
 		switch (state) {
-			case machine_Maintenance :
-				return stateVector[0].ordinal() >= State.machine_Maintenance
+			case distributeur_Distributeur :
+				return stateVector[0].ordinal() >= State.distributeur_Distributeur
 						.ordinal()
-						&& stateVector[0].ordinal() <= State.machine_Maintenance_r1_ArticleManagement
+						&& stateVector[0].ordinal() <= State.distributeur_Distributeur_r1_Attente
 								.ordinal();
-			case machine_Maintenance_r1_Authentification :
-				return stateVector[0] == State.machine_Maintenance_r1_Authentification;
-			case machine_Maintenance_r1_Stock :
-				return stateVector[0] == State.machine_Maintenance_r1_Stock;
-			case machine_Maintenance_r1_MachineManagement :
-				return stateVector[0] == State.machine_Maintenance_r1_MachineManagement;
-			case machine_Maintenance_r1_CreateMachine :
-				return stateVector[0] == State.machine_Maintenance_r1_CreateMachine;
-			case machine_Maintenance_r1_moduleManagement :
-				return stateVector[0] == State.machine_Maintenance_r1_moduleManagement;
-			case machine_Maintenance_r1_ArticleManagement :
-				return stateVector[0] == State.machine_Maintenance_r1_ArticleManagement;
-			case machine_Machine :
-				return stateVector[0].ordinal() >= State.machine_Machine
+			case distributeur_Distributeur_r1_distribution :
+				return stateVector[0] == State.distributeur_Distributeur_r1_distribution;
+			case distributeur_Distributeur_r1_Selection :
+				return stateVector[0] == State.distributeur_Distributeur_r1_Selection;
+			case distributeur_Distributeur_r1_Attente :
+				return stateVector[0] == State.distributeur_Distributeur_r1_Attente;
+			case distributeur_Maintenance :
+				return stateVector[0].ordinal() >= State.distributeur_Maintenance
 						.ordinal()
-						&& stateVector[0].ordinal() <= State.machine_Machine_r1_Distribute
+						&& stateVector[0].ordinal() <= State.distributeur_Maintenance_r1_StandBy
 								.ordinal();
-			case machine_Machine_r1_Standby :
-				return stateVector[0] == State.machine_Machine_r1_Standby;
-			case machine_Machine_r1_Selection :
-				return stateVector[0] == State.machine_Machine_r1_Selection;
-			case machine_Machine_r1_Distribute :
-				return stateVector[0] == State.machine_Machine_r1_Distribute;
-			case coin_ATM_Standby :
-				return stateVector[1] == State.coin_ATM_Standby;
-			case coin_ATM_Pay :
-				return stateVector[1] == State.coin_ATM_Pay;
-			case coin_ATM_Withdraw :
-				return stateVector[1] == State.coin_ATM_Withdraw;
+			case distributeur_Maintenance_r1_StandBy :
+				return stateVector[0] == State.distributeur_Maintenance_r1_StandBy;
+			case monayeur_Attente :
+				return stateVector[1] == State.monayeur_Attente;
+			case monayeur_Paiement :
+				return stateVector[1] == State.monayeur_Paiement;
+			case monayeur_rendreMonaie :
+				return stateVector[1] == State.monayeur_rendreMonaie;
 			default :
 				return false;
 		}
@@ -361,27 +274,6 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 	public void raiseMaintenance() {
 		sCInterface.raiseMaintenance();
 	}
-	public void raiseAdd() {
-		sCInterface.raiseAdd();
-	}
-	public void raiseDelete() {
-		sCInterface.raiseDelete();
-	}
-	public void raiseLogin() {
-		sCInterface.raiseLogin();
-	}
-	public void raiseCreate() {
-		sCInterface.raiseCreate();
-	}
-	public void raiseLoad() {
-		sCInterface.raiseLoad();
-	}
-	public void raiseAlter() {
-		sCInterface.raiseAlter();
-	}
-	public void raiseSave() {
-		sCInterface.raiseSave();
-	}
 
 	public double getPiece() {
 		return sCInterface.getPiece();
@@ -397,13 +289,6 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 	public void setItemPrice(double value) {
 		sCInterface.setItemPrice(value);
 	}
-	public long getLoginType() {
-		return sCInterface.getLoginType();
-	}
-
-	public void setLoginType(long value) {
-		sCInterface.setLoginType(value);
-	}
 
 	/* Entry action for statechart 'default'. */
 	private void entryAction() {
@@ -413,531 +298,70 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 	private void exitAction() {
 	}
 
-	/* The reactions of state Authentification. */
-	private void reactMachine_Maintenance_r1_Authentification() {
-		if (sCInterface.maintenance) {
-			switch (stateVector[0]) {
-				case machine_Maintenance_r1_Authentification :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_Stock :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_MachineManagement :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_CreateMachine :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_moduleManagement :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_ArticleManagement :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				default :
-					break;
-			}
-
-			needMoney = 0;
-
-			nextStateIndex = 0;
-			stateVector[0] = State.machine_Machine_r1_Standby;
-		} else {
-			if (sCInterface.login) {
-				nextStateIndex = 0;
-				stateVector[0] = State.$NullState$;
-
-				if (sCInterface.loginType == 0) {
-					nextStateIndex = 0;
-					stateVector[0] = State.machine_Maintenance_r1_Stock;
-				} else {
-					if (sCInterface.loginType == 1) {
-						nextStateIndex = 0;
-						stateVector[0] = State.machine_Maintenance_r1_MachineManagement;
-					} else {
-						nextStateIndex = 0;
-						stateVector[0] = State.machine_Maintenance_r1_Authentification;
-					}
-				}
-			}
-		}
-	}
-
-	/* The reactions of state Stock. */
-	private void reactMachine_Maintenance_r1_Stock() {
-		if (sCInterface.maintenance) {
-			switch (stateVector[0]) {
-				case machine_Maintenance_r1_Authentification :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_Stock :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_MachineManagement :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_CreateMachine :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_moduleManagement :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_ArticleManagement :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				default :
-					break;
-			}
-
-			needMoney = 0;
-
-			nextStateIndex = 0;
-			stateVector[0] = State.machine_Machine_r1_Standby;
-		} else {
-			if (sCInterface.add) {
-				nextStateIndex = 0;
-				stateVector[0] = State.$NullState$;
-
-				nextStateIndex = 0;
-				stateVector[0] = State.machine_Maintenance_r1_Stock;
-			} else {
-				if (sCInterface.delete) {
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-
-					nextStateIndex = 0;
-					stateVector[0] = State.machine_Maintenance_r1_Stock;
-				} else {
-					if (sCInterface.alter) {
-						nextStateIndex = 0;
-						stateVector[0] = State.$NullState$;
-
-						nextStateIndex = 0;
-						stateVector[0] = State.machine_Maintenance_r1_ArticleManagement;
-					}
-				}
-			}
-		}
-	}
-
-	/* The reactions of state MachineManagement. */
-	private void reactMachine_Maintenance_r1_MachineManagement() {
-		if (sCInterface.maintenance) {
-			switch (stateVector[0]) {
-				case machine_Maintenance_r1_Authentification :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_Stock :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_MachineManagement :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_CreateMachine :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_moduleManagement :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_ArticleManagement :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				default :
-					break;
-			}
-
-			needMoney = 0;
-
-			nextStateIndex = 0;
-			stateVector[0] = State.machine_Machine_r1_Standby;
-		} else {
-			if (sCInterface.create) {
-				nextStateIndex = 0;
-				stateVector[0] = State.$NullState$;
-
-				nextStateIndex = 0;
-				stateVector[0] = State.machine_Maintenance_r1_CreateMachine;
-			} else {
-				if (sCInterface.load) {
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-
-					nextStateIndex = 0;
-					stateVector[0] = State.machine_Maintenance_r1_moduleManagement;
-				} else {
-					if (sCInterface.save) {
-						nextStateIndex = 0;
-						stateVector[0] = State.$NullState$;
-
-						nextStateIndex = 0;
-						stateVector[0] = State.machine_Maintenance_r1_MachineManagement;
-					}
-				}
-			}
-		}
-	}
-
-	/* The reactions of state CreateMachine. */
-	private void reactMachine_Maintenance_r1_CreateMachine() {
-		if (sCInterface.maintenance) {
-			switch (stateVector[0]) {
-				case machine_Maintenance_r1_Authentification :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_Stock :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_MachineManagement :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_CreateMachine :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_moduleManagement :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_ArticleManagement :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				default :
-					break;
-			}
-
-			needMoney = 0;
-
-			nextStateIndex = 0;
-			stateVector[0] = State.machine_Machine_r1_Standby;
-		} else {
-			if (sCInterface.add) {
-				nextStateIndex = 0;
-				stateVector[0] = State.$NullState$;
-
-				nextStateIndex = 0;
-				stateVector[0] = State.machine_Maintenance_r1_moduleManagement;
-			}
-		}
-	}
-
-	/* The reactions of state moduleManagement. */
-	private void reactMachine_Maintenance_r1_moduleManagement() {
-		if (sCInterface.maintenance) {
-			switch (stateVector[0]) {
-				case machine_Maintenance_r1_Authentification :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_Stock :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_MachineManagement :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_CreateMachine :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_moduleManagement :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_ArticleManagement :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				default :
-					break;
-			}
-
-			needMoney = 0;
-
-			nextStateIndex = 0;
-			stateVector[0] = State.machine_Machine_r1_Standby;
-		} else {
-			if (sCInterface.add) {
-				nextStateIndex = 0;
-				stateVector[0] = State.$NullState$;
-
-				nextStateIndex = 0;
-				stateVector[0] = State.machine_Maintenance_r1_moduleManagement;
-			} else {
-				if (sCInterface.delete) {
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-
-					nextStateIndex = 0;
-					stateVector[0] = State.machine_Maintenance_r1_moduleManagement;
-				} else {
-					if (sCInterface.save) {
-						nextStateIndex = 0;
-						stateVector[0] = State.$NullState$;
-
-						nextStateIndex = 0;
-						stateVector[0] = State.machine_Maintenance_r1_MachineManagement;
-					}
-				}
-			}
-		}
-	}
-
-	/* The reactions of state ArticleManagement. */
-	private void reactMachine_Maintenance_r1_ArticleManagement() {
-		if (sCInterface.maintenance) {
-			switch (stateVector[0]) {
-				case machine_Maintenance_r1_Authentification :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_Stock :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_MachineManagement :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_CreateMachine :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_moduleManagement :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Maintenance_r1_ArticleManagement :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				default :
-					break;
-			}
-
-			needMoney = 0;
-
-			nextStateIndex = 0;
-			stateVector[0] = State.machine_Machine_r1_Standby;
-		} else {
-			if (sCInterface.delete) {
-				nextStateIndex = 0;
-				stateVector[0] = State.$NullState$;
-
-				nextStateIndex = 0;
-				stateVector[0] = State.machine_Maintenance_r1_ArticleManagement;
-			} else {
-				if (sCInterface.add) {
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-
-					nextStateIndex = 0;
-					stateVector[0] = State.machine_Maintenance_r1_ArticleManagement;
-				} else {
-					if (sCInterface.save) {
-						nextStateIndex = 0;
-						stateVector[0] = State.$NullState$;
-
-						nextStateIndex = 0;
-						stateVector[0] = State.machine_Maintenance_r1_Stock;
-					}
-				}
-			}
-		}
-	}
-
-	/* The reactions of state Standby. */
-	private void reactMachine_Machine_r1_Standby() {
-		if (sCInterface.maintenance) {
-			switch (stateVector[0]) {
-				case machine_Machine_r1_Standby :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Machine_r1_Selection :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-
-					timer.unsetTimer(this, 0);
-					break;
-
-				case machine_Machine_r1_Distribute :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-
-					timer.unsetTimer(this, 1);
-
-					sCInterface.raiseRefound();
-					break;
-
-				default :
-					break;
-			}
-
-			sCInterface.raiseRefound();
-
-			nextStateIndex = 0;
-			stateVector[0] = State.machine_Maintenance_r1_Authentification;
-		} else {
-			if (sCInterface.addItem) {
-				nextStateIndex = 0;
-				stateVector[0] = State.$NullState$;
-
-				timer.setTimer(this, 0, 10 * 1000, false);
-
-				needMoney += sCInterface.itemPrice;
-
-				nextStateIndex = 0;
-				stateVector[0] = State.machine_Machine_r1_Selection;
-			}
-		}
-	}
-
-	/* The reactions of state Selection. */
-	private void reactMachine_Machine_r1_Selection() {
-		if (sCInterface.maintenance) {
-			switch (stateVector[0]) {
-				case machine_Machine_r1_Standby :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Machine_r1_Selection :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-
-					timer.unsetTimer(this, 0);
-					break;
-
-				case machine_Machine_r1_Distribute :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-
-					timer.unsetTimer(this, 1);
-
-					sCInterface.raiseRefound();
-					break;
-
-				default :
-					break;
-			}
-
-			sCInterface.raiseRefound();
-
-			nextStateIndex = 0;
-			stateVector[0] = State.machine_Maintenance_r1_Authentification;
-		} else {
-			if (totalPaid >= needMoney) {
-				nextStateIndex = 0;
-				stateVector[0] = State.$NullState$;
-
-				timer.unsetTimer(this, 0);
-
-				timer.setTimer(this, 1, 1 * 1000, false);
+	/* shallow enterSequence with history in child r1 */
+	private void shallowEnterSequenceDistributeur_Distributeur_r1() {
+		switch (historyVector[0]) {
+			case distributeur_Distributeur_r1_distribution :
+
+				timer.setTimer(this, 0, 1 * 1000, false);
 
 				totalPaid -= needMoney;
 
 				nextStateIndex = 0;
-				stateVector[0] = State.machine_Machine_r1_Distribute;
-			} else {
-				if (timeEvents[0]) {
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
+				stateVector[0] = State.distributeur_Distributeur_r1_distribution;
 
-					timer.unsetTimer(this, 0);
+				historyVector[0] = stateVector[0];
+				break;
 
-					needMoney = 0;
+			case distributeur_Distributeur_r1_Selection :
 
-					nextStateIndex = 0;
-					stateVector[0] = State.machine_Machine_r1_Standby;
-				}
-			}
+				timer.setTimer(this, 1, 10 * 1000, false);
+
+				needMoney += sCInterface.itemPrice;
+
+				nextStateIndex = 0;
+				stateVector[0] = State.distributeur_Distributeur_r1_Selection;
+
+				historyVector[0] = stateVector[0];
+				break;
+
+			case distributeur_Distributeur_r1_Attente :
+				needMoney = 0;
+
+				nextStateIndex = 0;
+				stateVector[0] = State.distributeur_Distributeur_r1_Attente;
+
+				historyVector[0] = stateVector[0];
+				break;
+
+			default :
+				break;
 		}
 	}
 
-	/* The reactions of state Distribute. */
-	private void reactMachine_Machine_r1_Distribute() {
+	/* The reactions of state distribution. */
+	private void reactDistributeur_Distributeur_r1_distribution() {
 		if (sCInterface.maintenance) {
 			switch (stateVector[0]) {
-				case machine_Machine_r1_Standby :
-					nextStateIndex = 0;
-					stateVector[0] = State.$NullState$;
-					break;
-
-				case machine_Machine_r1_Selection :
+				case distributeur_Distributeur_r1_distribution :
 					nextStateIndex = 0;
 					stateVector[0] = State.$NullState$;
 
 					timer.unsetTimer(this, 0);
+
+					sCInterface.raiseRefound();
 					break;
 
-				case machine_Machine_r1_Distribute :
+				case distributeur_Distributeur_r1_Selection :
 					nextStateIndex = 0;
 					stateVector[0] = State.$NullState$;
 
 					timer.unsetTimer(this, 1);
+					break;
 
-					sCInterface.raiseRefound();
+				case distributeur_Distributeur_r1_Attente :
+					nextStateIndex = 0;
+					stateVector[0] = State.$NullState$;
 					break;
 
 				default :
@@ -947,41 +371,174 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 			sCInterface.raiseRefound();
 
 			nextStateIndex = 0;
-			stateVector[0] = State.machine_Maintenance_r1_Authentification;
+			stateVector[0] = State.distributeur_Maintenance_r1_StandBy;
 		} else {
-			if (timeEvents[1]) {
+			if (timeEvents[0]) {
 				nextStateIndex = 0;
 				stateVector[0] = State.$NullState$;
 
-				timer.unsetTimer(this, 1);
+				timer.unsetTimer(this, 0);
 
 				sCInterface.raiseRefound();
 
 				needMoney = 0;
 
 				nextStateIndex = 0;
-				stateVector[0] = State.machine_Machine_r1_Standby;
+				stateVector[0] = State.distributeur_Distributeur_r1_Attente;
+
+				historyVector[0] = stateVector[0];
 			}
 		}
 	}
 
-	/* The reactions of state Standby. */
-	private void reactCoin_ATM_Standby() {
-		if (sCInterface.insertPiece) {
-			nextStateIndex = 1;
-			stateVector[1] = State.$NullState$;
+	/* The reactions of state Selection. */
+	private void reactDistributeur_Distributeur_r1_Selection() {
+		if (sCInterface.maintenance) {
+			switch (stateVector[0]) {
+				case distributeur_Distributeur_r1_distribution :
+					nextStateIndex = 0;
+					stateVector[0] = State.$NullState$;
 
-			totalMoney += sCInterface.piece;
+					timer.unsetTimer(this, 0);
 
-			totalPaid += sCInterface.piece;
+					sCInterface.raiseRefound();
+					break;
 
-			nextStateIndex = 1;
-			stateVector[1] = State.coin_ATM_Pay;
+				case distributeur_Distributeur_r1_Selection :
+					nextStateIndex = 0;
+					stateVector[0] = State.$NullState$;
+
+					timer.unsetTimer(this, 1);
+					break;
+
+				case distributeur_Distributeur_r1_Attente :
+					nextStateIndex = 0;
+					stateVector[0] = State.$NullState$;
+					break;
+
+				default :
+					break;
+			}
+
+			sCInterface.raiseRefound();
+
+			nextStateIndex = 0;
+			stateVector[0] = State.distributeur_Maintenance_r1_StandBy;
+		} else {
+			if (totalPaid >= needMoney) {
+				nextStateIndex = 0;
+				stateVector[0] = State.$NullState$;
+
+				timer.unsetTimer(this, 1);
+
+				timer.setTimer(this, 0, 1 * 1000, false);
+
+				totalPaid -= needMoney;
+
+				nextStateIndex = 0;
+				stateVector[0] = State.distributeur_Distributeur_r1_distribution;
+
+				historyVector[0] = stateVector[0];
+			} else {
+				if (timeEvents[1]) {
+					nextStateIndex = 0;
+					stateVector[0] = State.$NullState$;
+
+					timer.unsetTimer(this, 1);
+
+					needMoney = 0;
+
+					nextStateIndex = 0;
+					stateVector[0] = State.distributeur_Distributeur_r1_Attente;
+
+					historyVector[0] = stateVector[0];
+				}
+			}
 		}
 	}
 
-	/* The reactions of state Pay. */
-	private void reactCoin_ATM_Pay() {
+	/* The reactions of state Attente. */
+	private void reactDistributeur_Distributeur_r1_Attente() {
+		if (sCInterface.maintenance) {
+			switch (stateVector[0]) {
+				case distributeur_Distributeur_r1_distribution :
+					nextStateIndex = 0;
+					stateVector[0] = State.$NullState$;
+
+					timer.unsetTimer(this, 0);
+
+					sCInterface.raiseRefound();
+					break;
+
+				case distributeur_Distributeur_r1_Selection :
+					nextStateIndex = 0;
+					stateVector[0] = State.$NullState$;
+
+					timer.unsetTimer(this, 1);
+					break;
+
+				case distributeur_Distributeur_r1_Attente :
+					nextStateIndex = 0;
+					stateVector[0] = State.$NullState$;
+					break;
+
+				default :
+					break;
+			}
+
+			sCInterface.raiseRefound();
+
+			nextStateIndex = 0;
+			stateVector[0] = State.distributeur_Maintenance_r1_StandBy;
+		} else {
+			if (sCInterface.addItem) {
+				nextStateIndex = 0;
+				stateVector[0] = State.$NullState$;
+
+				timer.setTimer(this, 1, 10 * 1000, false);
+
+				needMoney += sCInterface.itemPrice;
+
+				nextStateIndex = 0;
+				stateVector[0] = State.distributeur_Distributeur_r1_Selection;
+
+				historyVector[0] = stateVector[0];
+			}
+		}
+	}
+
+	/* The reactions of state StandBy. */
+	private void reactDistributeur_Maintenance_r1_StandBy() {
+		if (sCInterface.maintenance) {
+			switch (stateVector[0]) {
+				case distributeur_Maintenance_r1_StandBy :
+					nextStateIndex = 0;
+					stateVector[0] = State.$NullState$;
+					break;
+
+				default :
+					break;
+			}
+
+			/* Enter the region with shallow history */
+			if (historyVector[0] != State.$NullState$) {
+				shallowEnterSequenceDistributeur_Distributeur_r1();
+			}
+		} else {
+			if (totalPaid > 0) {
+				nextStateIndex = 0;
+				stateVector[0] = State.$NullState$;
+
+				sCInterface.raiseRefound();
+
+				nextStateIndex = 0;
+				stateVector[0] = State.distributeur_Maintenance_r1_StandBy;
+			}
+		}
+	}
+
+	/* The reactions of state Attente. */
+	private void reactMonayeur_Attente() {
 		if (sCInterface.insertPiece) {
 			nextStateIndex = 1;
 			stateVector[1] = State.$NullState$;
@@ -991,7 +548,22 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 			totalPaid += sCInterface.piece;
 
 			nextStateIndex = 1;
-			stateVector[1] = State.coin_ATM_Pay;
+			stateVector[1] = State.monayeur_Paiement;
+		}
+	}
+
+	/* The reactions of state Paiement. */
+	private void reactMonayeur_Paiement() {
+		if (sCInterface.insertPiece) {
+			nextStateIndex = 1;
+			stateVector[1] = State.$NullState$;
+
+			totalMoney += sCInterface.piece;
+
+			totalPaid += sCInterface.piece;
+
+			nextStateIndex = 1;
+			stateVector[1] = State.monayeur_Paiement;
 		} else {
 			if (sCInterface.refound) {
 				nextStateIndex = 1;
@@ -1002,31 +574,19 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 				totalPaid = 0;
 
 				nextStateIndex = 1;
-				stateVector[1] = State.coin_ATM_Withdraw;
-			} else {
-				if (isStateActive(State.machine_Maintenance)) {
-					nextStateIndex = 1;
-					stateVector[1] = State.$NullState$;
-
-					totalMoney -= totalPaid;
-
-					totalPaid = 0;
-
-					nextStateIndex = 1;
-					stateVector[1] = State.coin_ATM_Withdraw;
-				}
+				stateVector[1] = State.monayeur_rendreMonaie;
 			}
 		}
 	}
 
-	/* The reactions of state Withdraw. */
-	private void reactCoin_ATM_Withdraw() {
+	/* The reactions of state rendreMonaie. */
+	private void reactMonayeur_rendreMonaie() {
 		if (totalPaid == 0) {
 			nextStateIndex = 1;
 			stateVector[1] = State.$NullState$;
 
 			nextStateIndex = 1;
-			stateVector[1] = State.coin_ATM_Standby;
+			stateVector[1] = State.monayeur_Attente;
 		}
 	}
 
@@ -1037,41 +597,26 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 		for (nextStateIndex = 0; nextStateIndex < stateVector.length; nextStateIndex++) {
 
 			switch (stateVector[nextStateIndex]) {
-				case machine_Maintenance_r1_Authentification :
-					reactMachine_Maintenance_r1_Authentification();
+				case distributeur_Distributeur_r1_distribution :
+					reactDistributeur_Distributeur_r1_distribution();
 					break;
-				case machine_Maintenance_r1_Stock :
-					reactMachine_Maintenance_r1_Stock();
+				case distributeur_Distributeur_r1_Selection :
+					reactDistributeur_Distributeur_r1_Selection();
 					break;
-				case machine_Maintenance_r1_MachineManagement :
-					reactMachine_Maintenance_r1_MachineManagement();
+				case distributeur_Distributeur_r1_Attente :
+					reactDistributeur_Distributeur_r1_Attente();
 					break;
-				case machine_Maintenance_r1_CreateMachine :
-					reactMachine_Maintenance_r1_CreateMachine();
+				case distributeur_Maintenance_r1_StandBy :
+					reactDistributeur_Maintenance_r1_StandBy();
 					break;
-				case machine_Maintenance_r1_moduleManagement :
-					reactMachine_Maintenance_r1_moduleManagement();
+				case monayeur_Attente :
+					reactMonayeur_Attente();
 					break;
-				case machine_Maintenance_r1_ArticleManagement :
-					reactMachine_Maintenance_r1_ArticleManagement();
+				case monayeur_Paiement :
+					reactMonayeur_Paiement();
 					break;
-				case machine_Machine_r1_Standby :
-					reactMachine_Machine_r1_Standby();
-					break;
-				case machine_Machine_r1_Selection :
-					reactMachine_Machine_r1_Selection();
-					break;
-				case machine_Machine_r1_Distribute :
-					reactMachine_Machine_r1_Distribute();
-					break;
-				case coin_ATM_Standby :
-					reactCoin_ATM_Standby();
-					break;
-				case coin_ATM_Pay :
-					reactCoin_ATM_Pay();
-					break;
-				case coin_ATM_Withdraw :
-					reactCoin_ATM_Withdraw();
+				case monayeur_rendreMonaie :
+					reactMonayeur_rendreMonaie();
 					break;
 				default :
 					// $NullState$
