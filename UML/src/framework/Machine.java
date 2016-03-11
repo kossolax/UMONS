@@ -2,6 +2,7 @@ package framework;
 
 import java.util.Collection;
 
+import framework.modules.Module;
 import framework.payement.Payment;
 
 public class Machine {

@@ -1,4 +1,5 @@
-package framework;
+package framework.modules;
+
 
 public class Cooling extends Stockage {
 }

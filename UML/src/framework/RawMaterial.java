@@ -1,5 +1,7 @@
 package framework;
 
+import framework.modules.Stockage;
+
 public class RawMaterial {
 	
 	private int amount, min, max;

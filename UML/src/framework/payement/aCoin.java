@@ -1,6 +1,6 @@
 package framework.payement;
 
-import framework.Stockage;
+import framework.modules.Stockage;
 
 public abstract class aCoin extends Payment {
 	public class Coin extends Stockage {

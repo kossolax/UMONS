@@ -1,6 +1,6 @@
 package framework.payement;
 
-import framework.Module;
+import framework.modules.Module;
 
 public abstract class Payment extends Module {
 

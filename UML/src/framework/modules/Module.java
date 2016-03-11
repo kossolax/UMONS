@@ -1,4 +1,4 @@
-package framework;
+package framework.modules;
 
 public abstract class Module {
 

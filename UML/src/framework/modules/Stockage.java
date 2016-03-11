@@ -1,4 +1,6 @@
-package framework;
+package framework.modules;
+
+
 
 public class Stockage extends Module {
 
