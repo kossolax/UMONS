@@ -31,7 +31,15 @@ public class Articles {
 
 	@Test
 	public void testDelivery() {
-		fail("Not yet implemented");
-	}
+		
+		Stockage stock = new Classic(8, 25);
+		Collection<RawMaterial> recette = new ArrayList<RawMaterial>();
+		recette.add(new RawMaterial(5, TypeOfRawMaterial.gram, stock));
+		Article cafe = new Article("Café", 1.0, new Recipe(recette));
 
+		assertTrue(cafe.delivery() != null);
+		assertTrue(stock.getAmount() == 3);
+		assertTrue(cafe.delivery() == null);
+		
+	}
 }

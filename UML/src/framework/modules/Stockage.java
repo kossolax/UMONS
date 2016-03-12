@@ -15,10 +15,9 @@ public class Stockage extends Module {
 		return amount;
 	}
 	public void changeAmount(int value) throws Exception {
-		if( amount+value > max || amount-value < 0 )
+		if( amount+value > max || amount+value < 0 )
 			throw new Exception();
 		
 		amount += value;
 	}
-
 }
