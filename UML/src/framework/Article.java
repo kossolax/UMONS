@@ -7,6 +7,12 @@ public class Article {
 	private double price;
 	private Recipe recipe;
 	
+	public Article(String name, double price, Recipe recipe) {
+		this.name = name;
+		this.price = price;
+		this.recipe = recipe;
+	}
+	
 	/**
 	 * Checks if Article is avalaible.
 	 *

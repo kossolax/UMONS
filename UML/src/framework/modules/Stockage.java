@@ -1,11 +1,16 @@
 package framework.modules;
 
 
-
 public class Stockage extends Module {
 
 	private int amount;
 	private int max;
+	
+	public Stockage(int amount, int max) {
+		this.avalaible = true;
+		this.amount = amount;
+		this.max = max;
+	}
 	public int getAmount() {
 		return amount;
 	}

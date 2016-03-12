@@ -13,6 +13,11 @@ public class RawMaterial {
 		unity,  centiliter, gram
 	}
 	
+	public RawMaterial(int amount, TypeOfRawMaterial kind, Stockage contains) {
+		this.amount = amount;
+		this.kind = kind;
+		this.contains = contains;
+	}
 	public Stockage getStock() {
 		return contains;
 	}
