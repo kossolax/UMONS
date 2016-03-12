@@ -24,7 +24,7 @@ public class Article {
 		while( itr.hasNext() && avaialable ) {
 			RawMaterial materials = itr.next();
 			
-			if( materials.getStock().getAmount() < materials.getAmount() ) {
+			if( !materials.getStock().isAvalaible() || materials.getStock().getAmount() < materials.getAmount() ) {
 				avaialable = false;
 			}
 		}
@@ -42,8 +42,10 @@ public class Article {
 		while( itr.hasNext() ) {
 			RawMaterial materials = itr.next();
 			try {
-				materials.getStock().changeAmount( -materials.getAmount() );
+				if( !materials.getStock().isAvalaible() )
+					throw new Exception();
 				
+				materials.getStock().changeAmount( -materials.getAmount() );
 			} catch ( Exception e ) {
 				// TODO: Que faire dans ce cas? Il était sensé avoir la bonne quantité, mais...
 				return null;
