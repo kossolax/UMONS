@@ -1,6 +1,6 @@
 package framework;
 
-import framework.modules.Stockage;
+import framework.stockage.Stockage;
 
 public class RawMaterial {
 	

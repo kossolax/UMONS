@@ -18,7 +18,7 @@ public class Machine {
 	 * @param article the article
 	 */
 	public boolean Buy(Payment payement, Article article) {
-		if( article.isAvalaible() ) {
+		if( article.isAvailaible() ) {
 			double price = article.getPrice();
 			if( payement.pay() ) {
 				return ( article.delivery() != null );

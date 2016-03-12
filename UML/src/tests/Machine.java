@@ -11,9 +11,9 @@ import framework.Article;
 import framework.RawMaterial;
 import framework.Recipe;
 import framework.RawMaterial.TypeOfRawMaterial;
-import framework.modules.Classic;
-import framework.modules.Stockage;
 import framework.payement.Token;
+import framework.stockage.Classic;
+import framework.stockage.Stockage;
 
 public class Machine {
 

@@ -7,7 +7,6 @@ public abstract class Module {
 	public boolean isAvalaible() {
 		return avalaible;
 	}
-
 	public void setAvalaible(boolean avalaible) {
 		this.avalaible = avalaible;
 	}

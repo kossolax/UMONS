@@ -14,26 +14,16 @@ public class Article {
 	}
 	
 	/**
-	 * Checks if Article is avalaible.
+	 * Checks if Article is available.
 	 *
-	 * @return true, if is avalaible
+	 * @return true, if is available
 	 */
-	public boolean isAvalaible() {
-		boolean avaialable = true;
-		Iterator<RawMaterial> itr = recipe.getRecipe().iterator();
-		while( itr.hasNext() && avaialable ) {
-			RawMaterial materials = itr.next();
-			
-			if( !materials.getStock().isAvalaible() || materials.getStock().getAmount() < materials.getAmount() ) {
-				avaialable = false;
-			}
-		}
-		
-		return avaialable;
+	public boolean isAvailaible() {
+		return recipe.IsAvailable();
 	}
 
 	/**
-	 * Delivery.
+	 * Delivery. Please check isAvalaible first.
 	 *
 	 * @return true, if successful
 	 */
@@ -45,7 +35,7 @@ public class Article {
 				if( !materials.getStock().isAvalaible() )
 					throw new Exception();
 				
-				materials.getStock().changeAmount( -materials.getAmount() );
+				materials.getStock().Substract(materials);
 			} catch ( Exception e ) {
 				// TODO: Que faire dans ce cas? Il était sensé avoir la bonne quantité, mais...
 				return null;
