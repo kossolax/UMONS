@@ -1,5 +1,6 @@
 package framework;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import framework.modules.Module;
@@ -10,7 +11,11 @@ public class Machine {
 	private String name;
 	private Collection<Module> modules;
 	
-
+	
+	public Machine(String name) {
+		this.name = name;
+		this.modules = new ArrayList<Module>();
+	}
 	/**
 	 * Buy.
 	 *
@@ -29,6 +34,12 @@ public class Machine {
 	
 	public void addModule(Module module) {
 		modules.add(module);
+	}
+	public int countModule() {
+		return modules.size();
+	}
+	public String toString() {
+		return name;
 	}
 
 }
