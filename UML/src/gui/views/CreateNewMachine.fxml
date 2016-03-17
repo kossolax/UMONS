@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Group?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <GridPane layoutX="14.0" prefHeight="400.0" prefWidth="360.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Group>
+               <children>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../data/img/cafe.png" />
+                     </image>
+                  </ImageView>
+                  <CheckBox fx:id="btnCafe" layoutY="69.0" mnemonicParsing="false" onAction="#OnClick_CheckBox" text="Café" />
+               </children>
+            </Group>
+            <Group GridPane.columnIndex="1">
+               <children>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../data/img/bonbon.png" />
+                     </image>
+                  </ImageView>
+                  <CheckBox fx:id="btnConfiserie" layoutY="69.0" mnemonicParsing="false" onAction="#OnClick_CheckBox" text="Confiserie" />
+               </children>
+            </Group>
+            <Group GridPane.columnIndex="2">
+               <children>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../data/img/soft.png" />
+                     </image>
+                  </ImageView>
+                  <CheckBox fx:id="btnBoisson" layoutY="69.0" mnemonicParsing="false" onAction="#OnClick_CheckBox" text="Boisson" />
+               </children>
+            </Group>
+            <Group GridPane.rowIndex="1">
+               <children>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../data/img/eau.png" />
+                     </image>
+                  </ImageView>
+                  <CheckBox fx:id="btnEau" layoutY="69.0" mnemonicParsing="false" onAction="#OnClick_CheckBox" text="Eau" />
+               </children>
+            </Group>
+            <Group GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <children>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../data/img/boiler.png" />
+                     </image>
+                  </ImageView>
+                  <CheckBox fx:id="btnChauffeEau" layoutY="69.0" mnemonicParsing="false" onAction="#OnClick_CheckBox" text="Chauffe eau" />
+               </children>
+            </Group>
+            <Group GridPane.rowIndex="2">
+               <children>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../data/img/freeze.png" />
+                     </image>
+                  </ImageView>
+                  <CheckBox fx:id="btnCongelateur" layoutY="69.0" mnemonicParsing="false" onAction="#OnClick_CheckBox" text="Congelateur" />
+               </children>
+            </Group>
+            <Group GridPane.columnIndex="1" GridPane.rowIndex="2">
+               <children>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../data/img/frigot.png" />
+                     </image>
+                  </ImageView>
+                  <CheckBox fx:id="btnFrigo" layoutY="69.0" mnemonicParsing="false" onAction="#OnClick_CheckBox" text="Frigo" />
+               </children>
+            </Group>
+            <Group GridPane.columnIndex="2" GridPane.rowIndex="2">
+               <children>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../data/img/box.png" />
+                     </image>
+                  </ImageView>
+                  <CheckBox fx:id="btnClassic" layoutY="69.0" mnemonicParsing="false" onAction="#OnClick_CheckBox" text="Classique" />
+               </children>
+            </Group>
+         </children>
+      </GridPane>
+      <Label layoutX="20.0" layoutY="6.0" prefHeight="17.0" prefWidth="270.0" text="Prédéfini:" />
+      <Label layoutX="20.0" layoutY="137.0" prefHeight="17.0" prefWidth="270.0" text="Module complémentaire:" />
+      <Label layoutX="20.0" layoutY="262.0" prefHeight="17.0" prefWidth="270.0" text="Module de stockage:" />
+      <Button layoutX="486.0" layoutY="361.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Valider" onAction="#OnClick_Validate" />
+      <Button layoutX="377.0" layoutY="361.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Annuler" onAction="#handleExit" />
+      <Label layoutX="374.0" layoutY="95.0" text="Nom de la machine:"  />
+      <TextField layoutX="374.0" layoutY="112.0" prefHeight="25.0" prefWidth="210.0" fx:id="txtNomMachine"  />
+      <GridPane layoutX="316.0" layoutY="157.0" prefHeight="87.0" prefWidth="270.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Group>
+               <children>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../data/img/coin.png" />
+                     </image>
+                  </ImageView>
+                  <CheckBox fx:id="btnPiece" layoutY="69.0" mnemonicParsing="false" onAction="#OnClick_CheckBox" text="Pièce" />
+               </children>
+            </Group>
+            <Group />
+            <Group GridPane.columnIndex="1">
+               <children>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../data/img/card.png" />
+                     </image>
+                  </ImageView>
+                  <CheckBox fx:id="btnCarte" layoutY="69.0" mnemonicParsing="false" onAction="#OnClick_CheckBox" text="Carte" />
+               </children>
+            </Group>
+            <Group GridPane.columnIndex="2">
+               <children>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../data/img/tokken.png" />
+                     </image>
+                  </ImageView>
+                  <CheckBox fx:id="btnToken" layoutY="69.0" mnemonicParsing="false" onAction="#OnClick_CheckBox" text="Jeton" />
+               </children>
+            </Group>
+         </children>
+      </GridPane>
+      <Label layoutX="300.0" layoutY="137.0" prefHeight="17.0" prefWidth="300.0" text="Module de paiement:" />
+   </children>
+</Pane>
