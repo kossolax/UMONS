@@ -27,7 +27,7 @@ public class Machine {
 			recette.add(cofeee);
 			Article cafe = new Article("Café", 1.0, new Recipe(recette));
 			
-			framework.Machine machine = new framework.Machine();
+			framework.Machine machine = new framework.Machine("cc");
 			assertTrue(machine.Buy(new Token(), cafe));
 			assertFalse(machine.Buy(new Token(), cafe));
 		} catch (Exception e ) {
