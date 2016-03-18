@@ -72,10 +72,9 @@ public class CreateNewMachine  {
     			(ID.equals("btnBoisson") && !((CheckBox)scene.lookup("#btnConfiserie")).isSelected()) 
     			) {
     		
-    		((CheckBox)scene.lookup("#btnCongelateur")).setSelected(selected);
-    		((CheckBox)scene.lookup("#btnCongelateur")).setDisable(selected);
+    		((CheckBox)scene.lookup("#btnFrigo")).setSelected(selected);
+    		((CheckBox)scene.lookup("#btnFrigo")).setDisable(selected);
     		
-    	
     	}
     }
     @FXML

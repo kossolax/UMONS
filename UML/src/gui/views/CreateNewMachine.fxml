@@ -14,7 +14,7 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <GridPane layoutX="14.0" prefHeight="400.0" prefWidth="360.0">
+      <GridPane layoutX="240.0" prefHeight="400.0" prefWidth="360.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -56,7 +56,7 @@
                   <CheckBox fx:id="btnBoisson" layoutY="69.0" mnemonicParsing="false" onAction="#OnClick_CheckBox" text="Boisson" />
                </children>
             </Group>
-            <Group GridPane.rowIndex="1">
+            <Group GridPane.columnIndex="1" GridPane.rowIndex="1">
                <children>
                   <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -66,7 +66,7 @@
                   <CheckBox fx:id="btnEau" layoutY="69.0" mnemonicParsing="false" onAction="#OnClick_CheckBox" text="Eau" />
                </children>
             </Group>
-            <Group GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <Group GridPane.columnIndex="2" GridPane.rowIndex="1">
                <children>
                   <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -108,21 +108,21 @@
             </Group>
          </children>
       </GridPane>
-      <Label layoutX="20.0" layoutY="6.0" prefHeight="17.0" prefWidth="270.0" text="Prédéfini:" />
-      <Label layoutX="20.0" layoutY="137.0" prefHeight="17.0" prefWidth="270.0" text="Module complémentaire:" />
-      <Label layoutX="20.0" layoutY="262.0" prefHeight="17.0" prefWidth="270.0" text="Module de stockage:" />
-      <Button layoutX="486.0" layoutY="361.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Valider" onAction="#OnClick_Validate" />
-      <Button layoutX="377.0" layoutY="361.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Annuler" onAction="#handleExit" />
-      <Label layoutX="374.0" layoutY="95.0" text="Nom de la machine:"  />
-      <TextField layoutX="374.0" layoutY="112.0" prefHeight="25.0" prefWidth="210.0" fx:id="txtNomMachine"  />
-      <GridPane layoutX="316.0" layoutY="157.0" prefHeight="87.0" prefWidth="270.0">
+      <Label layoutX="240.0" layoutY="11.0" prefHeight="17.0" prefWidth="270.0" text="Prédéfini:" />
+      <Label layoutX="366.0" layoutY="137.0" prefHeight="17.0" prefWidth="230.0" text="Module complémentaire:" />
+      <Label layoutX="242.0" layoutY="272.0" prefHeight="17.0" prefWidth="270.0" text="Module de stockage:" />
+      <Button layoutX="124.0" layoutY="361.0" mnemonicParsing="false" onAction="#OnClick_Validate" prefHeight="25.0" prefWidth="100.0" text="Valider" />
+      <Button layoutX="15.0" layoutY="361.0" mnemonicParsing="false" onAction="#handleExit" prefHeight="25.0" prefWidth="100.0" text="Annuler" />
+      <Label layoutX="19.0" layoutY="23.0" text="Nom de la machine:" />
+      <TextField fx:id="txtNomMachine" layoutX="19.0" layoutY="40.0" prefHeight="25.0" prefWidth="210.0" />
+      <GridPane layoutX="24.0" layoutY="154.0" prefHeight="193.0" prefWidth="201.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
         </columnConstraints>
         <rowConstraints>
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
             <Group>
@@ -135,7 +135,6 @@
                   <CheckBox fx:id="btnPiece" layoutY="69.0" mnemonicParsing="false" onAction="#OnClick_CheckBox" text="Pièce" />
                </children>
             </Group>
-            <Group />
             <Group GridPane.columnIndex="1">
                <children>
                   <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
@@ -146,7 +145,7 @@
                   <CheckBox fx:id="btnCarte" layoutY="69.0" mnemonicParsing="false" onAction="#OnClick_CheckBox" text="Carte" />
                </children>
             </Group>
-            <Group GridPane.columnIndex="2">
+            <Group GridPane.rowIndex="1">
                <children>
                   <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -158,6 +157,6 @@
             </Group>
          </children>
       </GridPane>
-      <Label layoutX="300.0" layoutY="137.0" prefHeight="17.0" prefWidth="300.0" text="Module de paiement:" />
+      <Label layoutX="15.0" layoutY="137.0" prefHeight="17.0" prefWidth="300.0" text="Module de paiement:" />
    </children>
 </Pane>
