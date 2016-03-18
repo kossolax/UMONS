@@ -10,27 +10,8 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <TabPane prefHeight="600.0" prefWidth="400.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane id="tabCategory" prefHeight="600.0" prefWidth="400.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
-          <Tab text="Préconisé">
-               <content>
-                  <ScrollPane>
-                     <content>
-                        <Pane id="btnNewArtlce" prefHeight="120.0" prefWidth="100.0">
-                           <children>
-                              <Label contentDisplay="CENTER" layoutY="100.0" prefHeight="17.0" prefWidth="100.0" text="Nouvel article" textAlignment="CENTER" textOverrun="CLIP" />
-                              <Label layoutX="17.0" layoutY="-21.0" prefHeight="25.0" prefWidth="66.0" text="+">
-                                 <font>
-                                    <Font size="96.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                        </Pane>
-                     </content>
-                  </ScrollPane>
-               </content>
-            </Tab>
-            <Tab text="Ajouter catégorie" />
         </tabs>
       </TabPane>
       <Pane layoutX="400.0" layoutY="400.0" prefHeight="200.0" prefWidth="200.0">

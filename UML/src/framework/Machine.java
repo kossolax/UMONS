@@ -42,6 +42,9 @@ public class Machine {
 	public void addCategory(Category category) {
 		categories.add(category);
 	}
+	public Collection<Category> getCategories() {
+		return categories;
+	}
 	public String toString() {
 		return name;
 	}

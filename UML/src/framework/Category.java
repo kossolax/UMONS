@@ -9,5 +9,11 @@ public class Category {
 	public Category(String name) {
 		this.name = name;
 	}
-
+	
+	public Collection<Article> getArticles() {
+		return belong;
+	}
+	public String toString() {
+		return name;
+	}
 }
