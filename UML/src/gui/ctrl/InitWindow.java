@@ -22,8 +22,9 @@ public class InitWindow extends Pane {
         
         try {
             scene = new Scene(fxmlLoader.load()); 
-        	stage.setTitle("Création d'une nouvelle machine");
+        	stage.setTitle("UMONS - Framework Distributeur");
         	stage.setScene(scene);
+        	stage.setResizable(false);
         	stage.show();
         } catch (IOException e) {
 			e.printStackTrace();
@@ -38,7 +39,14 @@ public class InitWindow extends Pane {
     		((ComboBox<Machine>)scene.lookup("#CBMachineList")).getItems().add(machine);
     	}
     }
-    
+	@SuppressWarnings("unchecked")
+	@FXML
+    private void OnClick_Load() {
+		Machine machine = ((ComboBox<Machine>)scene.lookup("#CBMachineList")).getValue();
+    	if( machine != null ) {
+    		GestionFournisseur f = new GestionFournisseur(mainApp, machine);
+    	}
+    }
     @FXML
     private void handleExit() {
         System.exit(0);

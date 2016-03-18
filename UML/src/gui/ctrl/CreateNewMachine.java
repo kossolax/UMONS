@@ -46,6 +46,7 @@ public class CreateNewMachine  {
         	stage.setScene(scene);
         	stage.setTitle("Création d'une nouvelle machine");
         	stage.initModality(Modality.APPLICATION_MODAL);
+        	stage.setResizable(false);
         	stage.showAndWait();
         	
         } catch (IOException e) {
