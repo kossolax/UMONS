@@ -2,6 +2,7 @@ package gui.ctrl;
 
 import java.io.IOException;
 
+import framework.Category;
 import framework.Machine;
 import framework.modules.Boiler;
 import framework.modules.Water;
@@ -119,6 +120,7 @@ public class CreateNewMachine  {
     		return;
 		}
 		
+		machine.addCategory(new Category("Préconisé"));
 		returnValue = machine;
 		stage.close();
     }
