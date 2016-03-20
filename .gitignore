@@ -1,4 +1,16 @@
 /bin/
+UML/bin/
 *.vpp~*
 .metadata
-.class
+*.class
+*.graphviz
+*.opendb
+*.o
+*.suo
+/SkipList/Debug/
+/SkipList/x64/
+/SkipList/SkipList/Debug/
+/SkipList/SkipList/x64/
+SkipList/list
+SkipList/Rapport.*
+!SkipList/Rapport.tex

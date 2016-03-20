@@ -1,0 +1,60 @@
+router R1
+	lo 10.0.0.1
+	eth 192.168.0.1
+	eth 192.168.1.1
+	eth 192.168.2.1
+	eth 192.168.10.1
+router R2
+	lo 10.0.0.2
+	eth 192.168.0.2
+	eth 192.168.1.2
+	eth 192.168.255.2
+router R3
+	lo 10.0.0.3
+	eth 192.168.255.3
+	eth 192.168.3.3
+router R4
+	lo 10.0.0.1
+	eth 192.168.3.4
+	eth 192.168.4.4
+	eth 192.168.10.4
+router R5
+	lo 10.0.0.2
+	eth 192.168.4.5
+	eth 192.168.5.5
+router R6
+	lo 10.0.0.3
+	eth 192.168.5.6
+	eth 192.168.6.6
+	eth 192.168.206.6
+router R7
+	lo 10.0.0.1
+	eth 192.168.6.7
+	eth 192.168.7.7
+router R8
+	lo 10.0.0.2
+	eth 192.168.206.8
+	eth 192.168.7.8
+	eth 192.168.2.8
+link R1 eth0 R2 eth0 5000000
+	metric 1 7
+link R1 eth1 R2 eth1 5000000
+	metric 1 8
+link R1 eth2 R8 eth2 5000000
+	metric 1 7
+link R2 eth2 R3 eth0 5000000
+	metric 2 2
+link R3 eth1 R4 eth0 5000000
+	metric 8 9
+link R4 eth1 R5 eth0 5000000
+	metric 1 1
+link R5 eth1 R6 eth0 5000000
+	metric 2 6
+link R6 eth1 R7 eth0 5000000
+	metric 7 1
+link R6 eth2 R8 eth0 5000000
+	metric 5 4
+link R7 eth1 R8 eth1 5000000
+	metric 12 2
+link R1 eth3 R4 eth2 5000000
+	metric 12 1

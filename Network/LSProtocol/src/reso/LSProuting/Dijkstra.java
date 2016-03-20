@@ -3,8 +3,7 @@ package reso.LSProuting;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NavigableSet;
-import java.util.TreeSet;
+import java.util.PriorityQueue;
 
 import reso.ip.IPAddress;
 
@@ -13,8 +12,7 @@ public class Dijkstra {
 	public Map<IPAddress, Link> graph;
 	IPAddress src;
 	
-	
-	public Dijkstra(IPAddress src, Map<IPAddress, LSMessage> LSDB) {
+	public Dijkstra(IPAddress src, Map<IPAddress, LSDBEntry> LSDB) {
 		this.src = src;
 		this.graph = new HashMap<IPAddress, Link>(LSDB.size());
 		
@@ -22,36 +20,39 @@ public class Dijkstra {
 		Adjacence[] LS;
 		
 		// Ajout des noeuds
-		for( Map.Entry<IPAddress, LSMessage> i : LSDB.entrySet()) {
+		for( Map.Entry<IPAddress, LSDBEntry> i : LSDB.entrySet()) {
 			n = i.getKey();
-			LS = i.getValue().getAdjacence();
-			
-			for(int j=0; j<LS.length; j++) {
-				graph.put(n, new Link(n));
-			}
+			graph.put(n, new Link(n));
 		}
 		// Ajout des voisins
-		for( Map.Entry<IPAddress, LSMessage> i : LSDB.entrySet()) {
+		for( Map.Entry<IPAddress, LSDBEntry> i : LSDB.entrySet()) {
 			n = i.getKey();
-			LS = i.getValue().getAdjacence();
+			LS = i.getValue().message.getAdjacence();
+			if( LS == null ) return; // Notre LSDB n'est pas encore crée, inutile de tester dijstra
+			Link k = graph.get(n);
 			
 			for(int j=0; j<LS.length; j++) {
-				graph.get(n).voisin.put( graph.get(LS[j].routeID), LS[j].cost);
-				System.out.println(n + " -> " + LS[j].routeID + " cout : " + LS[j].cost );
+				// Si le cout du lien est valide et que
+				// Le voisin a été détecté, mais le lien en face a été coupé après la détection:
+				if( LS[j].cost >= 0 && LS[j].cost <= Integer.MAX_VALUE && LSDB.containsKey(LS[j].routeID) && LSDB.get(LS[j].routeID).message.contains(n) ) {
+					k.voisin.put( graph.get(LS[j].routeID), LS[j].cost);
+				}
 			}
 		}
+		
+		
 		
 		Compute();
 	}
+	private int addMetric(int m1, int m2) {
+		if (((long) m1) + ((long) m2) > Integer.MAX_VALUE)
+			return Integer.MAX_VALUE;
+		return m1 + m2;
+	}
 	private void Compute() {
-		NavigableSet<Link> q = new TreeSet<>();		
+		PriorityQueue<Link> q = new PriorityQueue<Link>();		
 		Link u, v, source = graph.get(src);
-		System.out.println(src);
-		System.out.println(source.src);
-		
-		if( src != source.src ) {
-			throw new AssertionError("Erreur fatal... Les noeuds sont mal inséré :(");
-		}
+		int alt;
 		
 		for( Link w : graph.values() ) {
 			if( w == source ) {
@@ -64,39 +65,55 @@ public class Dijkstra {
 			}
 			q.add(w);
 		}
-		int min;
 		
 		while( !q.isEmpty() ) {
 			// Le noeud le plus petit.
-			u = q.pollFirst();
-			System.out.println(u.src + "  " + u.dist);
+			u = q.poll();
+			
 			if( u.dist == Integer.MAX_VALUE )
-				break; // Note graph est coupé en deux... Pas encore reçu toute la LSDB? Possible. Lien d'un coup infini? Oui.
+				break; // Notre graph est coupé en deux... Lien d'un coup infini? Oui.
 	 
 			// Pour chaque voisin du noeud marqué
 			for( Map.Entry<Link, Integer> a : u.voisin.entrySet() ) {
 				v = a.getKey();
-	 
-				min = u.dist + a.getValue();
-				if (min < v.dist) {
+				if( v == null )
+					break; // Notre graph est coupé en deux... Pas encore reçu toute la LSDB.
+				
+				alt = u.dist + a.getValue();
+				alt = addMetric(u.dist, a.getValue());
+				
+				if( alt < v.dist ) {
 					// Il existe un chemin plus court
 	            	q.remove(v);
-	            	v.dist = min;
+	            	v.dist = alt;
 	            	v.prev = u;
 	            	q.add(v);
 				} 
 			}
 		}
 	}
-	public ArrayList<IPAddress> GetPathTo( IPAddress dst ) {
-		ArrayList<IPAddress> path = new ArrayList<IPAddress>();
+	public ArrayList<Adjacence> GetPathTo( IPAddress dst ) {
+		ArrayList<Adjacence> path = new ArrayList<Adjacence>();
 		Link elem = graph.get(dst);
 		
 		while( elem.prev != null && elem.prev != elem ) {
-			path.add(elem.src);
+			path.add(new Adjacence(elem.src, elem.dist));
 			elem = elem.prev;
 		}
 		return path;
+	}
+	public void GetAllPath( ) {
+		for(Link f:graph.values()){
+			System.out.println("A " + f.src);
+			ArrayList<Adjacence> path = new ArrayList<Adjacence>();
+			Link elem = graph.get(f.src);
+			
+			while( elem.prev != null && elem.prev != elem ) {
+				path.add(new Adjacence(elem.src, elem.dist));
+				elem = elem.prev;
+			}
+			System.out.println(path);
+		}
 	}
 	
 	public static class Link implements Comparable<Link> {
@@ -110,6 +127,18 @@ public class Dijkstra {
 		}
 		public int compareTo(Link dst) {
 			return Integer.compare(dist, dst.dist);
+		}
+		public String toString() {
+			String str;
+			
+			if (this == this.prev)
+	            str = this.src.toString();
+	        else if (this.prev == null)
+	        	str = this.src.toString() + "(non joignable)";
+	        else
+	        	str = this.prev.toString() + " -> " + this.src;
+
+			return str;
 		}
 	}
 }

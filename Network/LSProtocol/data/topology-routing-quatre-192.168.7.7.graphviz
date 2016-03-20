@@ -1,0 +1,24 @@
+graph "reso" {
+  graph [outputorder=nodesfirst, overlap="scale", mindist=5, K=1] ;
+  edge [labelfontsize=10, fontsize=8, labeldistance=1.0, len=2.0] ;
+  node [fontsize=11] ;
+  "R1" [shape=circle] ;
+  "R2" [shape=circle] ;
+  "R3" [shape=circle] ;
+  "R4" [shape=circle] ;
+  "R5" [shape=circle] ;
+  "R6" [shape=circle] ;
+  "R7" [shape=doublecircle] ;
+  "R8" [shape=circle] ;
+  "R2" -- "R1" [headlabel="eth0", taillabel="eth0", dir="both", arrowtail=none, arrowhead=none] ;
+  "R2" -- "R1" [headlabel="eth1", taillabel="eth1", dir="both", arrowtail=none, arrowhead=empty, penwidth=3] ;
+  "R8" -- "R1" [headlabel="eth2", taillabel="eth2", dir="both", arrowtail=empty, arrowhead=none, penwidth=3] ;
+  "R4" -- "R1" [headlabel="eth3", taillabel="eth2 (down)", dir="both", arrowtail=none, arrowhead=none] ;
+  "R3" -- "R2" [headlabel="eth2", taillabel="eth0", dir="both", arrowtail=none, arrowhead=empty, penwidth=3] ;
+  "R4" -- "R3" [headlabel="eth1", taillabel="eth0", dir="both", arrowtail=none, arrowhead=empty, penwidth=3] ;
+  "R5" -- "R4" [headlabel="eth1 (down)", taillabel="eth0", dir="both", arrowtail=none, arrowhead=none] ;
+  "R6" -- "R5" [headlabel="eth1", taillabel="eth0 (down)", dir="both", arrowtail=none, arrowhead=none] ;
+  "R7" -- "R6" [headlabel="eth1 (down)", taillabel="eth0", dir="both", arrowtail=none, arrowhead=none] ;
+  "R8" -- "R6" [headlabel="eth2", taillabel="eth0", dir="both", arrowtail=empty, arrowhead=none, penwidth=3] ;
+  "R8" -- "R7" [headlabel="eth1", taillabel="eth1", dir="both", arrowtail=none, arrowhead=empty, penwidth=3] ;
+}

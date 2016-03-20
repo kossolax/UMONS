@@ -1,0 +1,10 @@
+GeneratorModel for yakindu::java {
+
+	statechart default {
+
+		feature Outlet {
+			targetProject = "vendingMachine"
+			targetFolder = "src.states"
+		}
+	}
+}
