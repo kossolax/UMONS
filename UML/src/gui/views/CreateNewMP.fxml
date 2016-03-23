@@ -3,7 +3,6 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 
@@ -12,13 +11,13 @@
       <Label layoutX="14.0" layoutY="14.0" text="Matière première" />
       <TextField id="name" layoutX="14.0" layoutY="31.0" prefHeight="25.0" prefWidth="275.0" />
       <Label layoutX="14.0" layoutY="56.0" text="Quantité disponible" />
-      <Button layoutX="18.0" layoutY="158.0" mnemonicParsing="false" onAction="#handleExit" prefHeight="25.0" prefWidth="190.0" text="Annuler" />
+      <Button layoutX="18.0" layoutY="158.0" mnemonicParsing="false" onAction="#handleExit" prefHeight="25.0" prefWidth="71.0" text="Annuler" />
       <Button layoutX="219.0" layoutY="158.0" mnemonicParsing="false" onAction="#OnClick_Validate" prefHeight="25.0" prefWidth="71.0" text="Confirmer" />
-      <ComboBox layoutX="18.0" layoutY="189.0" prefHeight="25.0" prefWidth="190.0" />
+      <ComboBox layoutX="15.0" layoutY="189.0" prefHeight="25.0" prefWidth="190.0" />
       <Button layoutX="220.0" layoutY="189.0" mnemonicParsing="false" onAction="#OnClick_Validate" text="Supprimer" />
       <Label layoutX="16.0" layoutY="105.0" text="Type de stockage" />
-      <ComboBox id="type" layoutX="215.0" layoutY="73.0" prefHeight="25.0" prefWidth="71.0" />
-      <ComboBox id="storage" layoutX="16.0" layoutY="122.0" prefHeight="25.0" prefWidth="275.0" />
-      <TextField id="amount" layoutX="14.0" layoutY="73.0" prefHeight="25.0" prefWidth="190.0" />
+      <ComboBox id="type" layoutX="161.0" layoutY="73.0" prefHeight="25.0" prefWidth="125.0" />
+      <ComboBox id="storage" layoutX="13.0" layoutY="122.0" prefHeight="25.0" prefWidth="275.0" />
+      <TextField id="amount" layoutX="14.0" layoutY="73.0" prefHeight="25.0" prefWidth="125.0" />
    </children>
 </Pane>

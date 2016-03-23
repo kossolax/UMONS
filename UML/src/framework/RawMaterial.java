@@ -10,7 +10,15 @@ public class RawMaterial {
 	private TypeOfRawMaterial kind;
 	
 	public enum TypeOfRawMaterial {
-		unity,  centiliter, gram
+		unity ("Unité"),  centiliter ("Centilitre"), gram ("Gramme");
+		
+		private String name;       
+	    private TypeOfRawMaterial(String s) {
+	        name = s;
+	    }
+	    public String toString() {
+	    	return name;
+	    }
 	}
 	
 	public RawMaterial(int amount, TypeOfRawMaterial kind, Stockage contains) {
