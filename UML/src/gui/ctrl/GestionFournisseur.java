@@ -8,6 +8,9 @@ import java.util.Stack;
 import framework.Article;
 import framework.Category;
 import framework.Machine;
+import framework.RawMaterial;
+import framework.stockage.Classic;
+import framework.stockage.Stockage;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -71,7 +74,7 @@ public class GestionFournisseur extends Pane {
 		
 		return n;
     }
-    private void initialize(Stage stage){
+    private void initialize(Stage stage) {
     	TabPane tp = (TabPane)scene.lookup("#tabCategory");
     	tp.getTabs().clear();
     	
@@ -126,7 +129,7 @@ public class GestionFournisseur extends Pane {
     
     @FXML
     private void OnClick_NewMP() {
-        System.exit(0);
+    	Stockage mp = CreateNewMP.getNewMP(stage, machine);
     }
     
     

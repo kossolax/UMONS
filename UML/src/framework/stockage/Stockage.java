@@ -28,4 +28,8 @@ public class Stockage extends Module {
 		
 		amount += qt.getAmount();
 	}
+	
+	public String toString() {
+		return "Stockage";
+	}
 }

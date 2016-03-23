@@ -35,6 +35,9 @@ public class Machine {
 	public void addModule(Module module) {
 		modules.add(module);
 	}
+	public Collection<Module> getModules() {
+		return modules;
+	}
 	public int countModule() {
 		return modules.size();
 	}
