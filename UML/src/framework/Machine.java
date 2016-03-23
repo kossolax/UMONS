@@ -10,12 +10,11 @@ public class Machine {
 
 	private String name;
 	private Collection<Module> modules;
-	private Collection<Category> categories;
+	private Category category;
 	
 	public Machine(String name) {
 		this.name = name;
 		this.modules = new ArrayList<Module>();
-		this.categories = new ArrayList<Category>();
 	}
 	/**
 	 * Buy.
@@ -39,11 +38,11 @@ public class Machine {
 	public int countModule() {
 		return modules.size();
 	}
-	public void addCategory(Category category) {
-		categories.add(category);
+	public void setMainCategory(Category category) {
+		this.category = category;
 	}
-	public Collection<Category> getCategories() {
-		return categories;
+	public Category getCategory() {
+		return category;
 	}
 	public String toString() {
 		return name;

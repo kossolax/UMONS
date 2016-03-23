@@ -28,11 +28,6 @@
                   </AnchorPane>
             </content>
           </Tab>
-          <Tab text="Untitled Tab 2">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-            </content>
-          </Tab>
         </tabs>
       </TabPane>
       <Pane layoutX="561.0" layoutY="79.0" prefHeight="450.0" prefWidth="222.0" style="-fx-background-color: white;">

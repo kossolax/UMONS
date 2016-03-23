@@ -1,25 +1,27 @@
 package gui.ctrl;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.Stack;
 
 import framework.Article;
 import framework.Category;
 import framework.Machine;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.text.Font;
-import javafx.stage.Stage;
+import javafx.scene.control.TextInputDialog;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 
 
 public class GestionFournisseur extends Pane {    
@@ -27,10 +29,12 @@ public class GestionFournisseur extends Pane {
 	private Stage mainApp;
 	private Scene scene;
 	private Machine machine;
+	private Category focusCategory;
 	
     public GestionFournisseur(Stage stage, Machine machine) {
         this.mainApp = stage;
         this.machine = machine;
+        this.focusCategory = machine.getCategory();
         
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gui/views/GestionFournisseur.fxml"));
         fxmlLoader.setController(this);
@@ -49,42 +53,72 @@ public class GestionFournisseur extends Pane {
 			e.printStackTrace();
 		}
     }
-    private void initialize(Stage stage) {
+    
+    private Pane addNewArticle(FlowPane p, String str) {
+    	Pane n = null;
+		try {
+			n = (Pane)FXMLLoader.load(getClass().getResource("/gui/views/Article.fxml"));
+			((ImageView)n.lookup("#img")).setImage(new Image(""+getClass().getResource("/data/img/add.png")));
+			((Label)n.lookup("#txt")).setText(str);		
+			p.getChildren().add(n);
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return n;
+    }
+    private void initialize(Stage stage){
     	TabPane tp = (TabPane)scene.lookup("#tabCategory");
-    	for( Category c : machine.getCategories() ) {
+    	tp.getTabs().clear();
+    	
+    	Category c = focusCategory;
+    	do {
+    		final Category tmpC = c;
     		Tab tab = new Tab(c.toString());
-    		Pane p = new Pane();
-    		
-    		if( c.getArticles() != null ) {
-	    		for( Article a : c.getArticles() ) {
-	    			
-	    		}
-    		}
-    		
-    		Pane n = new Pane();
-    		
-    		Label l1 = new Label("Nouvel article");
-    		Label l2 = new Label("+");
-    		l1.setAlignment(Pos.CENTER);
-    		l2.setFont(new Font("System", 80));
+        	FlowPane p = new FlowPane();
+        	
+        	if( c.getCategories() != null ) {
+        		for( Category c2 : c.getCategories() ) {
+        			Pane n = addNewArticle(p, c2.toString());
+        			n.setOnMousePressed(new EventHandler<MouseEvent>() {
+                	    public void handle(MouseEvent e) {
+                	    	focusCategory = c2;
+                	    	initialize(stage);
+                	    }
+        			});
+        		}
+        	}
+        	
+        	Pane n = addNewArticle(p, "Catégorie");
     		n.setOnMousePressed(new EventHandler<MouseEvent>() {
         	    public void handle(MouseEvent e) {
-        	        System.out.println(e);
+        	    	TextInputDialog dialog = new TextInputDialog();
+        	    	dialog.setTitle("Création d'une nouvelle catégorie");
+        	    	dialog.setContentText("Comment doit s'appeller la nouvelle catégorie?");
+        	    	Optional<String> result = dialog.showAndWait();
+        	    	if( result.isPresent() && result.get().trim().length() > 0 ) {      	    		
+        	    		focusCategory = tmpC.addCategory(new Category(result.get().trim()));
+        	    		initialize(stage);
+        	    	}
         	    }
         	});
     		
-    		n.setPrefWidth(100.0);
-    		n.setPrefHeight(100.0);
-    		
-    		n.getChildren().add(l1);
-    		n.getChildren().add(l2);
-    		    		
-    		p.getChildren().add(n);
-    		tab.setContent(p);
-    		
-    		tp.getTabs().add( tab );
-    	}
+        	if( c.getArticles() != null ) {
+        		for( Article a : c.getArticles() ) {
+        			addNewArticle(p, a.toString());
+        		}
+    		}
+        	addNewArticle(p, "Article");
+        	tab.setContent(p);
+        	tp.getTabs().add( tab );
+        	
+        	c = c.getParent();
+    	} while( c != null );
     	
+    	
+    	
+    	/*
     	Tab tab = new Tab("Ajouter");
     	tp.getTabs().add( tab );
     	
@@ -98,6 +132,7 @@ public class GestionFournisseur extends Pane {
     			}
     		}
     	});
+    	*/
     	
     }
     @FXML

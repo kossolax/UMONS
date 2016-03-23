@@ -120,7 +120,7 @@ public class CreateNewMachine  {
     		return;
 		}
 		
-		machine.addCategory(new Category("Préconisé"));
+		machine.setMainCategory(new Category("Préconisé"));
 		returnValue = machine;
 		stage.close();
     }
