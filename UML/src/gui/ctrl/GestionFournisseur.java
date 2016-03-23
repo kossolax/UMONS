@@ -21,18 +21,19 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 
 public class GestionFournisseur extends Pane {    
     
-	private Stage mainApp;
+	private Stage mainApp, stage;
 	private Scene scene;
 	private Machine machine;
 	private Category focusCategory;
 	
-    public GestionFournisseur(Stage stage, Machine machine) {
-        this.mainApp = stage;
+    public GestionFournisseur(Stage parent, Machine machine) {
+        this.mainApp = parent;
         this.machine = machine;
         this.focusCategory = machine.getCategory();
         
@@ -40,11 +41,13 @@ public class GestionFournisseur extends Pane {
         fxmlLoader.setController(this);
         
         try {
+        	stage = new Stage();
             scene = new Scene(fxmlLoader.load()); 
-        	stage.setTitle("Création d'une nouvelle machine");
-        	stage.setScene(scene);
-        	stage.setResizable(false);
-        	
+            stage.setTitle("Création d'une nouvelle machine");
+            stage.setScene(scene);
+            stage.setResizable(false);
+            stage.initModality(Modality.APPLICATION_MODAL);
+
         	initialize(stage);
         	
         	stage.show();
@@ -114,30 +117,17 @@ public class GestionFournisseur extends Pane {
         	tp.getTabs().add( tab );
         	
         	c = c.getParent();
-    	} while( c != null );
-    	
-    	
-    	
-    	/*
-    	Tab tab = new Tab("Ajouter");
-    	tp.getTabs().add( tab );
-    	
-    	tp.getSelectionModel().selectedItemProperty().addListener(
-    		new ChangeListener<Tab>() {
-    		@Override
-    		public void changed(ObservableValue<? extends Tab> ov, Tab t, Tab t1) {
-    			if( t1 == tab ) {
-    				tp.getSelectionModel().select(t);
-    				System.out.println("in new tab...");
-    			}
-    		}
-    	});
-    	*/
-    	
+    	} while( c != null );    	
     }
     @FXML
     private void handleExit() {
+    	stage.close();
+    }
+    
+    @FXML
+    private void OnClick_NewMP() {
         System.exit(0);
     }
+    
     
 }

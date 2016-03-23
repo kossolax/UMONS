@@ -12,7 +12,7 @@
       </TabPane>
       <Pane layoutX="338.0" layoutY="395.0" prefHeight="205.0" prefWidth="262.0">
          <children>
-            <Button layoutX="9.0" layoutY="104.0" mnemonicParsing="false" text="Gestion des matières premières" />
+            <Button layoutX="9.0" layoutY="104.0" mnemonicParsing="false" onAction="#OnClick_NewMP" text="Gestion des matières premières" />
             <Button layoutX="9.0" layoutY="135.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="251.0" text="Gestion du monnayeur" />
             <Button layoutX="9.0" layoutY="165.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="251.0" text="Détruire la machine" />
          </children>

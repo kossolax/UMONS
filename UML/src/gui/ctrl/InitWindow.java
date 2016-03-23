@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class InitWindow extends Pane {    
@@ -25,6 +26,8 @@ public class InitWindow extends Pane {
         	stage.setTitle("UMONS - Framework Distributeur");
         	stage.setScene(scene);
         	stage.setResizable(false);
+        	
+        	
         	stage.show();
         } catch (IOException e) {
 			e.printStackTrace();
