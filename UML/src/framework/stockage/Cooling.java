@@ -1,6 +1,11 @@
 package framework.stockage;
 
 public class Cooling extends Stockage {
+	
+	public Cooling() {
+		super();
+	}
+	
 	public Cooling(int a) {
 		super(0, a);
 	}

@@ -4,7 +4,8 @@ import framework.stockage.Stockage;
 
 public class RawMaterial {
 	
-	private int amount, min, max;
+	private String name;
+	private int amount, min, max; 
 	private boolean variable;
 	private Stockage contains;
 	private TypeOfRawMaterial kind;
@@ -20,17 +21,27 @@ public class RawMaterial {
 	    	return name;
 	    }
 	}
-	
 	public RawMaterial(int amount, TypeOfRawMaterial kind, Stockage contains) {
 		this.amount = amount;
 		this.kind = kind;
 		this.contains = contains;
+		contains.setContains(this);
+	}
+	public RawMaterial(String name, int amount, TypeOfRawMaterial kind, Stockage contains) {
+		this.name = name;
+		this.amount = amount;
+		this.kind = kind;
+		this.contains = contains;
+		contains.setContains(this);
 	}
 	public Stockage getStock() {
 		return contains;
 	}
 	public int getAmount() {
 		return amount;
+	}
+	public String toString() {
+		return amount + " " + kind + " de "+ name + " dans "+ contains;
 	}
 
 }

@@ -52,7 +52,7 @@ public class GestionFournisseur extends Pane {
             stage.initModality(Modality.APPLICATION_MODAL);
 
         	initialize(stage);
-        	
+        	parent.toBack();
         	stage.show();
         	
         } catch (IOException e) {
@@ -129,7 +129,7 @@ public class GestionFournisseur extends Pane {
     
     @FXML
     private void OnClick_NewMP() {
-    	Stockage mp = CreateNewMP.getNewMP(stage, machine);
+    	CreateNewMP mp = new CreateNewMP(stage, machine);
     }
     
     

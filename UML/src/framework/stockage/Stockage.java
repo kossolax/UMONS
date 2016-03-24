@@ -3,11 +3,17 @@ package framework.stockage;
 import framework.RawMaterial;
 import framework.modules.Module;
 
-public class Stockage extends Module {
+public class Stockage extends Module implements Cloneable {
 
 	private int amount;
 	private int max;
+	private RawMaterial contains;
 	
+	public Stockage() {
+		avalaible = true;
+		amount = 0;
+		max = Integer.MAX_VALUE;
+	}
 	public Stockage(int amount, int max) {
 		this.avalaible = true;
 		this.amount = amount;
@@ -28,7 +34,12 @@ public class Stockage extends Module {
 		
 		amount += qt.getAmount();
 	}
-	
+	public void setContains(RawMaterial rw) {
+		contains = rw;
+	}
+	public RawMaterial getContains() {
+		return contains;
+	}
 	public String toString() {
 		return "Stockage";
 	}
