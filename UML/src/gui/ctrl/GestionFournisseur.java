@@ -115,7 +115,12 @@ public class GestionFournisseur extends Pane {
         			addNewArticle(p, a.toString());
         		}
     		}
-        	addNewArticle(p, "Article");
+        	n = addNewArticle(p, "Article");
+        	n.setOnMousePressed(new EventHandler<MouseEvent>() {
+        	    public void handle(MouseEvent e) {
+        	    	CreateNewArticle a = new CreateNewArticle(mainApp, machine, focusCategory);
+        	    }
+        	});
         	tab.setContent(p);
         	tp.getTabs().add( tab );
         	

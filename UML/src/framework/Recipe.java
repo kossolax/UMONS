@@ -17,6 +17,9 @@ public class Recipe {
 	public Collection<RawMaterial> getRecipe() {
 		return requireStock;
 	}
+	public void add(RawMaterial rw) {
+		requireStock.add(rw);
+	}
 	public void addRequiredModule(Module requireModule) {
 		this.requireModule.add(requireModule);
 	}

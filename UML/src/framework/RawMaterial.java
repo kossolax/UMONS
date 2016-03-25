@@ -40,6 +40,21 @@ public class RawMaterial {
 	public int getAmount() {
 		return amount;
 	}
+	public int getMin() {
+		return min;
+	}
+	public int getMax() {
+		return max;
+	}
+	public int setMin() {
+		return min;
+	}
+	public int setMax() {
+		return max;
+	}
+	public String getName() {
+		return name;
+	}
 	public String toString() {
 		return amount + " " + kind + " de "+ name + " dans "+ contains;
 	}
