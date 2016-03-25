@@ -1,15 +1,22 @@
 package framework;
 
+import java.io.File;
+import java.util.Collection;
 import java.util.Iterator;
 
 public class Article {
 	private String name;
 	private double price;
 	private Recipe recipe;
+	private File image;
+	
 	
 	public Article(String name, double price, Recipe recipe) {
 		this.name = name;
 		this.price = price;
+		this.recipe = recipe;
+	}
+	public Article(Recipe recipe) {
 		this.recipe = recipe;
 	}
 	
@@ -43,8 +50,28 @@ public class Article {
 		}
 		return this;
 	}
-
+	public Collection<RawMaterial> getRecipe() {
+		return recipe.getRecipe();
+	}
+	public void setRecipe(Recipe r) {
+		recipe = r;
+	}
 	public double getPrice() {
 		return price;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public File getImage() {
+		return image;
+	}
+	public void setImage(File image) {
+		this.image = image;
+	}
+	public void setPrice(double price) {
+		this.price = price;
 	}
 }

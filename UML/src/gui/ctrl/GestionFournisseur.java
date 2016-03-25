@@ -59,7 +59,20 @@ public class GestionFournisseur extends Pane {
 			e.printStackTrace();
 		}
     }
-    
+    private Pane addNewArticle(FlowPane p, Article a) {
+    	Pane n = null;
+		try {
+			n = (Pane)FXMLLoader.load(getClass().getResource("/gui/views/Article.fxml"));
+			((ImageView)n.lookup("#img")).setImage(new Image(a.getImage().toURI().toString()));
+			((Label)n.lookup("#txt")).setText(a.getName());		
+			p.getChildren().add(n);
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return n;
+    }
     private Pane addNewArticle(FlowPane p, String str) {
     	Pane n = null;
 		try {
@@ -112,13 +125,17 @@ public class GestionFournisseur extends Pane {
     		
         	if( c.getArticles() != null ) {
         		for( Article a : c.getArticles() ) {
-        			addNewArticle(p, a.toString());
+        			addNewArticle(p, a);
         		}
     		}
         	n = addNewArticle(p, "Article");
         	n.setOnMousePressed(new EventHandler<MouseEvent>() {
         	    public void handle(MouseEvent e) {
-        	    	CreateNewArticle a = new CreateNewArticle(mainApp, machine, focusCategory);
+        	    	Article a = CreateNewArticle.getNewArticle(stage, machine);
+        	    	if( a != null ) {
+        	    		focusCategory.addArticle(a);
+        	    		initialize(stage);
+        	    	}
         	    }
         	});
         	tab.setContent(p);

@@ -1,11 +1,13 @@
 package gui.ctrl;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import framework.Article;
 import framework.Category;
 import framework.Machine;
 import framework.RawMaterial;
@@ -40,8 +42,11 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -50,14 +55,19 @@ public class CreateNewArticle  {
 	private Stage mainApp, stage;
 	private Scene scene;
 	private Machine machine;
-	private Category category;
-	private Recipe recipe;
+	private Article article;
+	private static Article returnValue;
 	
-	public CreateNewArticle(Stage mainApp, Machine machine, Category category) {
+	public static Article getNewArticle(Stage mainApp, Machine machine) {
+		returnValue = null;
+		CreateNewArticle form = new CreateNewArticle(mainApp, machine);
+		return returnValue;
+	}
+	public CreateNewArticle(Stage mainApp, Machine machine) {
         this.mainApp = mainApp;
         this.machine = machine;
-        this.category = category;
-        this.recipe = new Recipe(new ArrayList<RawMaterial>());
+        this.article = new Article(new Recipe(new ArrayList<RawMaterial>()));
+        
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gui/views/CreateNewArticle.fxml"));
         fxmlLoader.setController(this);
         
@@ -71,7 +81,7 @@ public class CreateNewArticle  {
         	
         	initialize(stage);
         	
-        	stage.show();
+        	stage.showAndWait();
         	
         } catch (IOException e) {
 			e.printStackTrace();
@@ -80,20 +90,26 @@ public class CreateNewArticle  {
 	
 	private void initialize(Stage stage) {
 		TableView<RawMaterial> table = ((TableView)scene.lookup("#table"));
-		table.setPlaceholder(new Label("Double clique pour ajouter une matière première"));
-		table.setEditable(true);
-		TableColumn mp = new TableColumn("Matière première");
-		TableColumn min = new TableColumn("min");
-		TableColumn max = new TableColumn("max");
-		mp.setCellValueFactory(new PropertyValueFactory<>("name"));
-		min.setCellValueFactory(new PropertyValueFactory<>("min"));	
-		max.setCellValueFactory(new PropertyValueFactory<>("max"));
+		if( table.getColumns().isEmpty() ) {
+			table.setPlaceholder(new Label("Double clique pour ajouter une matière première"));
+			table.setEditable(true);
+			TableColumn mp = new TableColumn("Matière première");
+			TableColumn min = new TableColumn("min");
+			TableColumn max = new TableColumn("max");
+			mp.setCellValueFactory(new PropertyValueFactory<>("name"));
+			min.setCellValueFactory(new PropertyValueFactory<>("min"));	
+			max.setCellValueFactory(new PropertyValueFactory<>("max"));
+			
+			table.getColumns().addAll(mp, min, max);
+		}
 		
-		
-		ObservableList<RawMaterial> data = FXCollections.observableArrayList(recipe.getRecipe());
+		ObservableList<RawMaterial> data = FXCollections.observableArrayList(article.getRecipe());
 		table.setItems(data);
-        table.getColumns().addAll(mp, min, max);
-
+        
+        
+        if( article.getImage() != null ) {
+        	((ImageView)scene.lookup("#image")).setImage(new Image(article.getImage().toURI().toString()));
+        }
 	}
 	
 	@FXML
@@ -114,11 +130,63 @@ public class CreateNewArticle  {
 			dialog.setHeaderText("Choisissez une matière première");
 			Optional<RawMaterial> result = dialog.showAndWait();
 			if (result.isPresent()){
-			    TableView<RawMaterial> table = ((TableView)scene.lookup("#table"));
-			    table.getItems().add(result.get());
+				article.getRecipe().add(result.get());
+				initialize(stage);
 			}
 		}
 	}
+	@FXML
+    private void OnClick_Image() {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Selectionnez une image");
+		fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));                 
+		fileChooser.getExtensionFilters().addAll(
+			new FileChooser.ExtensionFilter("Toutes les images", "*.jpg", "*.gif", "*.bmp", "*.png"),
+			new FileChooser.ExtensionFilter("JPG", "*.jpg"),
+			new FileChooser.ExtensionFilter("GIF", "*.gif"),
+			new FileChooser.ExtensionFilter("BMP", "*.bmp"),
+			new FileChooser.ExtensionFilter("PNG", "*.png")
+		);
+		File file = fileChooser.showOpenDialog(stage);
+		if( file != null ) {
+			article.setImage(file);
+			initialize(stage);
+		}
+    }
+	@FXML
+    private void OnClick_Save() {
+		String name;
+		double price;
+		
+		try {
+	    	name = ((TextField)scene.lookup("#name")).getText().trim();
+	    	if( name.length() == 0 )
+	    		throw new Exception("nom de l'article");    	
+	    	price = Integer.parseInt(((TextField)scene.lookup("#price")).getText());
+    		if( price <= 0.0 )
+    			throw new Exception("prix de l'article"); 
+    		
+	    	article.setName(name);
+			article.setPrice(price);
+			returnValue = article;
+			stage.close();
+			
+    	} catch ( NumberFormatException e ) {
+    		
+    		Alert alert = new Alert(AlertType.ERROR);
+    		alert.setTitle("Erreur");
+    		alert.setHeaderText("Veuillez corriger le champs quantité");
+    		alert.show();
+    		return;
+    	} catch ( Exception e ) {
+    		
+    		Alert alert = new Alert(AlertType.ERROR);
+    		alert.setTitle("Erreur");
+    		alert.setHeaderText("Veuillez compléter le champs "+e.getMessage());
+    		alert.show();
+    		return;
+    	}
+    }
     @FXML
     private void handleExit() {
     	stage.close();
