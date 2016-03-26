@@ -40,7 +40,7 @@ public class GestionFournisseur extends Pane {
         this.machine = machine;
         this.focusCategory = machine.getCategory();
         
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gui/views/GestionFournisseur.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gui/views/gestion.fxml"));
         fxmlLoader.setController(this);
         
         try {

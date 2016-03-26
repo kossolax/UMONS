@@ -4,36 +4,20 @@
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="548.0" prefWidth="796.0" styleClass="background" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <TabPane layoutX="14.0" layoutY="79.0" prefHeight="450.0" prefWidth="536.0" style="-fx-background-color: white;" tabClosingPolicy="UNAVAILABLE">
-        <tabs>
-          <Tab text="Accueil">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <ScrollPane layoutX="14.0" layoutY="14.0" prefHeight="398.0" prefWidth="512.0">
-                          <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
-                          </content>
-                        </ScrollPane>
-                     </children>
-                  </AnchorPane>
-            </content>
-          </Tab>
+      <TabPane fx:id="tabCategory" layoutX="14.0" layoutY="79.0" prefHeight="450.0" prefWidth="536.0" style="-fx-background-color: white;" tabClosingPolicy="UNAVAILABLE">
+      	<tabs>
         </tabs>
       </TabPane>
       <Pane layoutX="561.0" layoutY="79.0" prefHeight="450.0" prefWidth="222.0" style="-fx-background-color: white;">
          <children>
-            <Button layoutX="14.0" layoutY="368.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="201.0" style="-fx-background-color: green; -fx-border-radius: 5; -fx-background-radius: 8; -fx-border-color: #4cae4c;" text="Acheter" />
-            <Button layoutX="14.0" layoutY="401.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="201.0" style="-fx-background-color: #d9534f; fx-border-radius: 5;" text="Annuler" />
+            <Button layoutX="14.0" layoutY="368.0" mnemonicParsing="false" onAction="#OnClick_NewMP" prefHeight="33.0" prefWidth="201.0" style="-fx-background-color: green; -fx-border-radius: 5; -fx-background-radius: 8; -fx-border-color: #4cae4c;" text="Nouvelle matière première" />
+            <Button layoutX="14.0" layoutY="401.0" mnemonicParsing="false" onAction="#handleExit" prefHeight="33.0" prefWidth="201.0" style="-fx-background-color: #d9534f; fx-border-radius: 5;" text="Fermer" />
          </children>
       </Pane>
       <Separator layoutX="14.0" layoutY="59.0" prefHeight="0.0" prefWidth="764.0" />
