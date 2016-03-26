@@ -34,11 +34,13 @@ public class VueUtilisateur extends Pane {
 	private Scene scene;
 	private Machine machine;
 	private Category focusCategory;
+	private Article focusArticle;
 	
     public VueUtilisateur(Stage parent, Machine machine) {
         this.mainApp = parent;
         this.machine = machine;
         this.focusCategory = machine.getCategory();
+        this.focusArticle = null;
         
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gui/views/utilisateur.fxml"));
         fxmlLoader.setController(this);
@@ -86,7 +88,8 @@ public class VueUtilisateur extends Pane {
         			Pane n = Utils.addNewArticle(p, a);
         			n.setOnMousePressed(new EventHandler<MouseEvent>() {
                 	    public void handle(MouseEvent e) {
-                	    	// TODO:
+                	    	focusArticle = a;
+                	    	updatePayement();
                 	    }
         			});
         		}
@@ -98,6 +101,24 @@ public class VueUtilisateur extends Pane {
         	c = c.getParent();
     	} while( c != null );    	
     }
+    private void updatePayement() {
+    	if( focusArticle != null ) {
+    		((ImageView)scene.lookup("#image")).setVisible(true);
+    		((Label)scene.lookup("#name")).setVisible(true);
+    		((Label)scene.lookup("#price")).setVisible(true);
+    		
+    		((ImageView)scene.lookup("#image")).setImage(new Image(focusArticle.getImage().toURI().toString()));
+    		((Label)scene.lookup("#name")).setText(focusArticle.getName());
+    		((Label)scene.lookup("#price")).setText(focusArticle.getPrice()+"€");
+    	}
+    	else {
+    		((ImageView)scene.lookup("#image")).setVisible(false);
+    		((Label)scene.lookup("#name")).setVisible(false);
+    		((Label)scene.lookup("#price")).setVisible(false);
+    	}
+    	
+    	((Label)scene.lookup("#solde")).setText("Solde: 0€");
+    }
     @FXML
     private void handleExit() {
     	stage.close();
@@ -106,5 +127,9 @@ public class VueUtilisateur extends Pane {
     private void OnClick_Buy() {
     	stage.close();
     }
-    
+    @FXML
+    private void OnClick_Cancel() {
+    	focusArticle = null;
+    	updatePayement();
+    }
 }
