@@ -9,16 +9,21 @@ import framework.Article;
 import framework.Category;
 import framework.Machine;
 import framework.RawMaterial;
+import framework.modules.Module;
+import framework.payement.Payment;
 import framework.stockage.Classic;
 import framework.stockage.Stockage;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -35,12 +40,14 @@ public class VueUtilisateur extends Pane {
 	private Machine machine;
 	private Category focusCategory;
 	private Article focusArticle;
+	private double solde;
 	
     public VueUtilisateur(Stage parent, Machine machine) {
         this.mainApp = parent;
         this.machine = machine;
         this.focusCategory = machine.getCategory();
         this.focusArticle = null;
+        this.solde = 0.0;
         
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gui/views/utilisateur.fxml"));
         fxmlLoader.setController(this);
@@ -117,7 +124,7 @@ public class VueUtilisateur extends Pane {
     		((Label)scene.lookup("#price")).setVisible(false);
     	}
     	
-    	((Label)scene.lookup("#solde")).setText("Solde: 0€");
+    	((Label)scene.lookup("#solde")).setText("Solde: "+solde+"€");
     }
     @FXML
     private void handleExit() {
@@ -125,7 +132,33 @@ public class VueUtilisateur extends Pane {
     }
     @FXML
     private void OnClick_Buy() {
-    	stage.close();
+    	if( focusArticle != null  ) {
+    		
+    		ChoiceDialog<Payment> dialog = new ChoiceDialog<Payment>();
+    		for( Module m : machine.getModules() ) {
+    			if( m instanceof Payment ) 
+    				dialog.getItems().add((Payment)m);
+    		}
+    			
+    		dialog.setTitle("Choisissez une matière première");
+    		dialog.setHeaderText("Choisissez une matière première");
+    		Optional<Payment> result = dialog.showAndWait();
+    		if (result.isPresent()){
+    			Payment p = result.get();
+    			if( machine.Buy(p, focusArticle) ) {
+    				Alert alert = new Alert(AlertType.CONFIRMATION);
+    	    		alert.setTitle("Achat");
+    	    		alert.setHeaderText("Votre achat s'est déroulé avec succès. Vous avez acheté: "+focusArticle);
+    	    		alert.show();
+    			}
+    			else {
+    				Alert alert = new Alert(AlertType.ERROR);
+    	    		alert.setTitle("Erreur");
+    	    		alert.setHeaderText("Le paiement a échoué.");
+    	    		alert.show();
+    			}
+    		}
+    	}
     }
     @FXML
     private void OnClick_Cancel() {
