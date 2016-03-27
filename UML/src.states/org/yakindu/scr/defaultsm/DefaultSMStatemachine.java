@@ -29,48 +29,6 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 			maintenance = true;
 		}
 
-		private boolean add;
-
-		public void raiseAdd() {
-			add = true;
-		}
-
-		private boolean delete;
-
-		public void raiseDelete() {
-			delete = true;
-		}
-
-		private boolean login;
-
-		public void raiseLogin() {
-			login = true;
-		}
-
-		private boolean create;
-
-		public void raiseCreate() {
-			create = true;
-		}
-
-		private boolean load;
-
-		public void raiseLoad() {
-			load = true;
-		}
-
-		private boolean alter;
-
-		public void raiseAlter() {
-			alter = true;
-		}
-
-		private boolean save;
-
-		public void raiseSave() {
-			save = true;
-		}
-
 		private double piece;
 
 		public double getPiece() {
@@ -91,28 +49,11 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 			this.itemPrice = value;
 		}
 
-		private long loginType;
-
-		public long getLoginType() {
-			return loginType;
-		}
-
-		public void setLoginType(long value) {
-			this.loginType = value;
-		}
-
 		protected void clearEvents() {
 			insertPiece = false;
 			addItem = false;
 			refound = false;
 			maintenance = false;
-			add = false;
-			delete = false;
-			login = false;
-			create = false;
-			load = false;
-			alter = false;
-			save = false;
 		}
 
 	}
@@ -122,9 +63,10 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 	private boolean initialized = false;
 
 	public enum State {
-		machine_Maintenance, machine_Maintenance_r1_Authentification, machine_Maintenance_r1_Stock, machine_Maintenance_r1_MachineManagement, machine_Maintenance_r1_CreateMachine, machine_Maintenance_r1_moduleManagement, machine_Maintenance_r1_ArticleManagement, machine_Machine, machine_Machine_r1_Standby, machine_Machine_r1_Selection, machine_Machine_r1_Distribute, coin_ATM_Standby, coin_ATM_Pay, coin_ATM_Withdraw, $NullState$
+		distributeur_Distributeur, distributeur_Distributeur_r1_distribution, distributeur_Distributeur_r1_Selection, distributeur_Distributeur_r1_Attente, distributeur_Maintenance, distributeur_Maintenance_r1_StandBy, monayeur_Attente, monayeur_Paiement, monayeur_rendreMonaie, $NullState$
 	};
 
+	private State[] historyVector = new State[1];
 	private final State[] stateVector = new State[2];
 
 	private int nextStateIndex;
@@ -187,14 +129,15 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 			stateVector[i] = State.$NullState$;
 		}
 
+		for (int i = 0; i < 1; i++) {
+			historyVector[i] = State.$NullState$;
+		}
 		clearEvents();
 		clearOutEvents();
 
 		sCInterface.setPiece(0.5);
 
 		sCInterface.setItemPrice(1);
-
-		sCInterface.setLoginType(0);
 
 		setTotalMoney(0);
 
@@ -213,15 +156,15 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 		if (timer == null) {
 			throw new IllegalStateException("timer not set.");
 		}
-		enterSequence_Machine_default();
+		enterSequence_Distributeur_default();
 
-		enterSequence_Coin_ATM_default();
+		enterSequence_Monayeur_default();
 	}
 
 	public void exit() {
-		exitSequence_Machine();
+		exitSequence_Distributeur();
 
-		exitSequence_Coin_ATM();
+		exitSequence_Monayeur();
 	}
 
 	/**
@@ -263,36 +206,26 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 	*/
 	public boolean isStateActive(State state) {
 		switch (state) {
-			case machine_Maintenance :
-				return stateVector[0].ordinal() >= State.machine_Maintenance.ordinal()
-						&& stateVector[0].ordinal() <= State.machine_Maintenance_r1_ArticleManagement.ordinal();
-			case machine_Maintenance_r1_Authentification :
-				return stateVector[0] == State.machine_Maintenance_r1_Authentification;
-			case machine_Maintenance_r1_Stock :
-				return stateVector[0] == State.machine_Maintenance_r1_Stock;
-			case machine_Maintenance_r1_MachineManagement :
-				return stateVector[0] == State.machine_Maintenance_r1_MachineManagement;
-			case machine_Maintenance_r1_CreateMachine :
-				return stateVector[0] == State.machine_Maintenance_r1_CreateMachine;
-			case machine_Maintenance_r1_moduleManagement :
-				return stateVector[0] == State.machine_Maintenance_r1_moduleManagement;
-			case machine_Maintenance_r1_ArticleManagement :
-				return stateVector[0] == State.machine_Maintenance_r1_ArticleManagement;
-			case machine_Machine :
-				return stateVector[0].ordinal() >= State.machine_Machine.ordinal()
-						&& stateVector[0].ordinal() <= State.machine_Machine_r1_Distribute.ordinal();
-			case machine_Machine_r1_Standby :
-				return stateVector[0] == State.machine_Machine_r1_Standby;
-			case machine_Machine_r1_Selection :
-				return stateVector[0] == State.machine_Machine_r1_Selection;
-			case machine_Machine_r1_Distribute :
-				return stateVector[0] == State.machine_Machine_r1_Distribute;
-			case coin_ATM_Standby :
-				return stateVector[1] == State.coin_ATM_Standby;
-			case coin_ATM_Pay :
-				return stateVector[1] == State.coin_ATM_Pay;
-			case coin_ATM_Withdraw :
-				return stateVector[1] == State.coin_ATM_Withdraw;
+			case distributeur_Distributeur :
+				return stateVector[0].ordinal() >= State.distributeur_Distributeur.ordinal()
+						&& stateVector[0].ordinal() <= State.distributeur_Distributeur_r1_Attente.ordinal();
+			case distributeur_Distributeur_r1_distribution :
+				return stateVector[0] == State.distributeur_Distributeur_r1_distribution;
+			case distributeur_Distributeur_r1_Selection :
+				return stateVector[0] == State.distributeur_Distributeur_r1_Selection;
+			case distributeur_Distributeur_r1_Attente :
+				return stateVector[0] == State.distributeur_Distributeur_r1_Attente;
+			case distributeur_Maintenance :
+				return stateVector[0].ordinal() >= State.distributeur_Maintenance.ordinal()
+						&& stateVector[0].ordinal() <= State.distributeur_Maintenance_r1_StandBy.ordinal();
+			case distributeur_Maintenance_r1_StandBy :
+				return stateVector[0] == State.distributeur_Maintenance_r1_StandBy;
+			case monayeur_Attente :
+				return stateVector[1] == State.monayeur_Attente;
+			case monayeur_Paiement :
+				return stateVector[1] == State.monayeur_Paiement;
+			case monayeur_rendreMonaie :
+				return stateVector[1] == State.monayeur_rendreMonaie;
 			default :
 				return false;
 		}
@@ -338,27 +271,6 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 	public void raiseMaintenance() {
 		sCInterface.raiseMaintenance();
 	}
-	public void raiseAdd() {
-		sCInterface.raiseAdd();
-	}
-	public void raiseDelete() {
-		sCInterface.raiseDelete();
-	}
-	public void raiseLogin() {
-		sCInterface.raiseLogin();
-	}
-	public void raiseCreate() {
-		sCInterface.raiseCreate();
-	}
-	public void raiseLoad() {
-		sCInterface.raiseLoad();
-	}
-	public void raiseAlter() {
-		sCInterface.raiseAlter();
-	}
-	public void raiseSave() {
-		sCInterface.raiseSave();
-	}
 
 	public double getPiece() {
 		return sCInterface.getPiece();
@@ -374,572 +286,352 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 	public void setItemPrice(double value) {
 		sCInterface.setItemPrice(value);
 	}
-	public long getLoginType() {
-		return sCInterface.getLoginType();
-	}
 
-	public void setLoginType(long value) {
-		sCInterface.setLoginType(value);
-	}
-
-	private boolean check_Machine_Maintenance_tr0_tr0() {
+	private boolean check_Distributeur_Distributeur_tr0_tr0() {
 		return sCInterface.maintenance;
 	}
 
-	private boolean check_Machine_Maintenance_r1_Authentification_tr0_tr0() {
-		return sCInterface.login;
-	}
-
-	private boolean check_Machine_Maintenance_r1_Stock_tr0_tr0() {
-		return sCInterface.add;
-	}
-
-	private boolean check_Machine_Maintenance_r1_Stock_tr1_tr1() {
-		return sCInterface.delete;
-	}
-
-	private boolean check_Machine_Maintenance_r1_Stock_tr2_tr2() {
-		return sCInterface.alter;
-	}
-
-	private boolean check_Machine_Maintenance_r1_MachineManagement_tr0_tr0() {
-		return sCInterface.create;
-	}
-
-	private boolean check_Machine_Maintenance_r1_MachineManagement_tr1_tr1() {
-		return sCInterface.load;
-	}
-
-	private boolean check_Machine_Maintenance_r1_MachineManagement_tr2_tr2() {
-		return sCInterface.save;
-	}
-
-	private boolean check_Machine_Maintenance_r1_CreateMachine_tr0_tr0() {
-		return sCInterface.add;
-	}
-
-	private boolean check_Machine_Maintenance_r1_moduleManagement_tr0_tr0() {
-		return sCInterface.add;
-	}
-
-	private boolean check_Machine_Maintenance_r1_moduleManagement_tr1_tr1() {
-		return sCInterface.delete;
-	}
-
-	private boolean check_Machine_Maintenance_r1_moduleManagement_tr2_tr2() {
-		return sCInterface.save;
-	}
-
-	private boolean check_Machine_Maintenance_r1_ArticleManagement_tr0_tr0() {
-		return sCInterface.delete;
-	}
-
-	private boolean check_Machine_Maintenance_r1_ArticleManagement_tr1_tr1() {
-		return sCInterface.add;
-	}
-
-	private boolean check_Machine_Maintenance_r1_ArticleManagement_tr2_tr2() {
-		return sCInterface.save;
-	}
-
-	private boolean check_Machine_Machine_tr0_tr0() {
-		return sCInterface.maintenance;
-	}
-
-	private boolean check_Machine_Machine_r1_Standby_tr0_tr0() {
-		return sCInterface.addItem;
-	}
-
-	private boolean check_Machine_Machine_r1_Selection_tr0_tr0() {
-		return getTotalPaid() >= getNeedMoney();
-	}
-
-	private boolean check_Machine_Machine_r1_Selection_tr1_tr1() {
+	private boolean check_Distributeur_Distributeur_r1_distribution_tr0_tr0() {
 		return timeEvents[0];
 	}
 
-	private boolean check_Machine_Machine_r1_Distribute_tr0_tr0() {
+	private boolean check_Distributeur_Distributeur_r1_Selection_tr0_tr0() {
+		return getTotalPaid() >= getNeedMoney();
+	}
+
+	private boolean check_Distributeur_Distributeur_r1_Selection_tr1_tr1() {
 		return timeEvents[1];
 	}
 
-	private boolean check_Coin_ATM_Standby_tr0_tr0() {
+	private boolean check_Distributeur_Distributeur_r1_Attente_tr0_tr0() {
+		return sCInterface.addItem;
+	}
+
+	private boolean check_Distributeur_Maintenance_r1_StandBy_tr0_tr0() {
+		return sCInterface.maintenance;
+	}
+
+	private boolean check_Distributeur_Maintenance_r1_StandBy_tr1_tr1() {
+		return getTotalPaid() > 0;
+	}
+
+	private boolean check_Monayeur_Attente_tr0_tr0() {
 		return sCInterface.insertPiece;
 	}
 
-	private boolean check_Coin_ATM_Pay_tr0_tr0() {
+	private boolean check_Monayeur_Paiement_tr0_tr0() {
 		return sCInterface.insertPiece;
 	}
 
-	private boolean check_Coin_ATM_Pay_tr1_tr1() {
+	private boolean check_Monayeur_Paiement_tr1_tr1() {
 		return sCInterface.refound;
 	}
 
-	private boolean check_Coin_ATM_Pay_tr2_tr2() {
-		return isStateActive(State.machine_Maintenance);
-	}
-
-	private boolean check_Coin_ATM_Withdraw_tr0_tr0() {
+	private boolean check_Monayeur_rendreMonaie_tr0_tr0() {
 		return getTotalPaid() == 0;
 	}
 
-	private boolean check_Machine_Maintenance_r1__choice_0_tr0_tr0() {
-		return sCInterface.getLoginType() == 0;
+	private void effect_Distributeur_Distributeur_tr0() {
+		exitSequence_Distributeur_Distributeur();
+
+		enterSequence_Distributeur_Maintenance_default();
 	}
 
-	private boolean check_Machine_Maintenance_r1__choice_0_tr1_tr1() {
-		return sCInterface.getLoginType() == 1;
+	private void effect_Distributeur_Distributeur_r1_distribution_tr0() {
+		exitSequence_Distributeur_Distributeur_r1_distribution();
+
+		enterSequence_Distributeur_Distributeur_r1_Attente_default();
 	}
 
-	private boolean check_Machine_Maintenance_r1__choice_0_tr2() {
-		return true;
+	private void effect_Distributeur_Distributeur_r1_Selection_tr0() {
+		exitSequence_Distributeur_Distributeur_r1_Selection();
+
+		enterSequence_Distributeur_Distributeur_r1_distribution_default();
 	}
 
-	private void effect_Machine_Maintenance_tr0() {
-		exitSequence_Machine_Maintenance();
+	private void effect_Distributeur_Distributeur_r1_Selection_tr1() {
+		exitSequence_Distributeur_Distributeur_r1_Selection();
 
-		enterSequence_Machine_Machine_default();
+		enterSequence_Distributeur_Distributeur_r1_Attente_default();
 	}
 
-	private void effect_Machine_Maintenance_r1_Authentification_tr0() {
-		exitSequence_Machine_Maintenance_r1_Authentification();
+	private void effect_Distributeur_Distributeur_r1_Attente_tr0() {
+		exitSequence_Distributeur_Distributeur_r1_Attente();
 
-		react_Machine_Maintenance_r1__choice_0();
+		enterSequence_Distributeur_Distributeur_r1_Selection_default();
 	}
 
-	private void effect_Machine_Maintenance_r1_Stock_tr0() {
-		exitSequence_Machine_Maintenance_r1_Stock();
+	private void effect_Distributeur_Maintenance_r1_StandBy_tr0() {
+		exitSequence_Distributeur_Maintenance();
 
-		enterSequence_Machine_Maintenance_r1_Stock_default();
+		react_Distributeur_Distributeur_r1_hist();
 	}
 
-	private void effect_Machine_Maintenance_r1_Stock_tr1() {
-		exitSequence_Machine_Maintenance_r1_Stock();
+	private void effect_Distributeur_Maintenance_r1_StandBy_tr1() {
+		exitSequence_Distributeur_Maintenance_r1_StandBy();
 
-		enterSequence_Machine_Maintenance_r1_Stock_default();
+		enterSequence_Distributeur_Maintenance_r1_StandBy_default();
 	}
 
-	private void effect_Machine_Maintenance_r1_Stock_tr2() {
-		exitSequence_Machine_Maintenance_r1_Stock();
+	private void effect_Monayeur_Attente_tr0() {
+		exitSequence_Monayeur_Attente();
 
-		enterSequence_Machine_Maintenance_r1_ArticleManagement_default();
+		enterSequence_Monayeur_Paiement_default();
 	}
 
-	private void effect_Machine_Maintenance_r1_MachineManagement_tr0() {
-		exitSequence_Machine_Maintenance_r1_MachineManagement();
+	private void effect_Monayeur_Paiement_tr0() {
+		exitSequence_Monayeur_Paiement();
 
-		enterSequence_Machine_Maintenance_r1_CreateMachine_default();
+		enterSequence_Monayeur_Paiement_default();
 	}
 
-	private void effect_Machine_Maintenance_r1_MachineManagement_tr1() {
-		exitSequence_Machine_Maintenance_r1_MachineManagement();
+	private void effect_Monayeur_Paiement_tr1() {
+		exitSequence_Monayeur_Paiement();
 
-		enterSequence_Machine_Maintenance_r1_moduleManagement_default();
+		enterSequence_Monayeur_rendreMonaie_default();
 	}
 
-	private void effect_Machine_Maintenance_r1_MachineManagement_tr2() {
-		exitSequence_Machine_Maintenance_r1_MachineManagement();
+	private void effect_Monayeur_rendreMonaie_tr0() {
+		exitSequence_Monayeur_rendreMonaie();
 
-		enterSequence_Machine_Maintenance_r1_MachineManagement_default();
+		enterSequence_Monayeur_Attente_default();
 	}
 
-	private void effect_Machine_Maintenance_r1_CreateMachine_tr0() {
-		exitSequence_Machine_Maintenance_r1_CreateMachine();
+	/* Entry action for state 'distribution'. */
+	private void entryAction_Distributeur_Distributeur_r1_distribution() {
 
-		enterSequence_Machine_Maintenance_r1_moduleManagement_default();
-	}
-
-	private void effect_Machine_Maintenance_r1_moduleManagement_tr0() {
-		exitSequence_Machine_Maintenance_r1_moduleManagement();
-
-		enterSequence_Machine_Maintenance_r1_moduleManagement_default();
-	}
-
-	private void effect_Machine_Maintenance_r1_moduleManagement_tr1() {
-		exitSequence_Machine_Maintenance_r1_moduleManagement();
-
-		enterSequence_Machine_Maintenance_r1_moduleManagement_default();
-	}
-
-	private void effect_Machine_Maintenance_r1_moduleManagement_tr2() {
-		exitSequence_Machine_Maintenance_r1_moduleManagement();
-
-		enterSequence_Machine_Maintenance_r1_MachineManagement_default();
-	}
-
-	private void effect_Machine_Maintenance_r1_ArticleManagement_tr0() {
-		exitSequence_Machine_Maintenance_r1_ArticleManagement();
-
-		enterSequence_Machine_Maintenance_r1_ArticleManagement_default();
-	}
-
-	private void effect_Machine_Maintenance_r1_ArticleManagement_tr1() {
-		exitSequence_Machine_Maintenance_r1_ArticleManagement();
-
-		enterSequence_Machine_Maintenance_r1_ArticleManagement_default();
-	}
-
-	private void effect_Machine_Maintenance_r1_ArticleManagement_tr2() {
-		exitSequence_Machine_Maintenance_r1_ArticleManagement();
-
-		enterSequence_Machine_Maintenance_r1_Stock_default();
-	}
-
-	private void effect_Machine_Machine_tr0() {
-		exitSequence_Machine_Machine();
-
-		sCInterface.raiseRefound();
-
-		enterSequence_Machine_Maintenance_default();
-	}
-
-	private void effect_Machine_Machine_r1_Standby_tr0() {
-		exitSequence_Machine_Machine_r1_Standby();
-
-		enterSequence_Machine_Machine_r1_Selection_default();
-	}
-
-	private void effect_Machine_Machine_r1_Selection_tr0() {
-		exitSequence_Machine_Machine_r1_Selection();
-
-		enterSequence_Machine_Machine_r1_Distribute_default();
-	}
-
-	private void effect_Machine_Machine_r1_Selection_tr1() {
-		exitSequence_Machine_Machine_r1_Selection();
-
-		enterSequence_Machine_Machine_r1_Standby_default();
-	}
-
-	private void effect_Machine_Machine_r1_Distribute_tr0() {
-		exitSequence_Machine_Machine_r1_Distribute();
-
-		enterSequence_Machine_Machine_r1_Standby_default();
-	}
-
-	private void effect_Coin_ATM_Standby_tr0() {
-		exitSequence_Coin_ATM_Standby();
-
-		enterSequence_Coin_ATM_Pay_default();
-	}
-
-	private void effect_Coin_ATM_Pay_tr0() {
-		exitSequence_Coin_ATM_Pay();
-
-		enterSequence_Coin_ATM_Pay_default();
-	}
-
-	private void effect_Coin_ATM_Pay_tr1() {
-		exitSequence_Coin_ATM_Pay();
-
-		enterSequence_Coin_ATM_Withdraw_default();
-	}
-
-	private void effect_Coin_ATM_Pay_tr2() {
-		exitSequence_Coin_ATM_Pay();
-
-		enterSequence_Coin_ATM_Withdraw_default();
-	}
-
-	private void effect_Coin_ATM_Withdraw_tr0() {
-		exitSequence_Coin_ATM_Withdraw();
-
-		enterSequence_Coin_ATM_Standby_default();
-	}
-
-	private void effect_Machine_Maintenance_r1__choice_0_tr0() {
-		enterSequence_Machine_Maintenance_r1_Stock_default();
-	}
-
-	private void effect_Machine_Maintenance_r1__choice_0_tr1() {
-		enterSequence_Machine_Maintenance_r1_MachineManagement_default();
-	}
-
-	private void effect_Machine_Maintenance_r1__choice_0_tr2() {
-		enterSequence_Machine_Maintenance_r1_Authentification_default();
-	}
-
-	/* Entry action for state 'Standby'. */
-	private void entryAction_Machine_Machine_r1_Standby() {
-		setNeedMoney(0);
-	}
-
-	/* Entry action for state 'Selection'. */
-	private void entryAction_Machine_Machine_r1_Selection() {
-
-		timer.setTimer(this, 0, 10 * 1000, false);
-
-		setNeedMoney(getNeedMoney() + sCInterface.itemPrice);
-	}
-
-	/* Entry action for state 'Distribute'. */
-	private void entryAction_Machine_Machine_r1_Distribute() {
-
-		timer.setTimer(this, 1, 1 * 1000, false);
+		timer.setTimer(this, 0, 1 * 1000, false);
 
 		setTotalPaid(getTotalPaid() - needMoney);
 	}
 
-	/* Entry action for state 'Pay'. */
-	private void entryAction_Coin_ATM_Pay() {
+	/* Entry action for state 'Selection'. */
+	private void entryAction_Distributeur_Distributeur_r1_Selection() {
+
+		timer.setTimer(this, 1, 10 * 1000, false);
+
+		setNeedMoney(getNeedMoney() + sCInterface.itemPrice);
+	}
+
+	/* Entry action for state 'Attente'. */
+	private void entryAction_Distributeur_Distributeur_r1_Attente() {
+		setNeedMoney(0);
+	}
+
+	/* Entry action for state 'StandBy'. */
+	private void entryAction_Distributeur_Maintenance_r1_StandBy() {
+		sCInterface.raiseRefound();
+	}
+
+	/* Entry action for state 'Paiement'. */
+	private void entryAction_Monayeur_Paiement() {
 		setTotalMoney(getTotalMoney() + sCInterface.piece);
 
 		setTotalPaid(getTotalPaid() + sCInterface.piece);
 	}
 
-	/* Entry action for state 'Withdraw'. */
-	private void entryAction_Coin_ATM_Withdraw() {
+	/* Entry action for state 'rendreMonaie'. */
+	private void entryAction_Monayeur_rendreMonaie() {
 		setTotalMoney(getTotalMoney() - totalPaid);
 
 		setTotalPaid(0);
 	}
 
-	/* Exit action for state 'Selection'. */
-	private void exitAction_Machine_Machine_r1_Selection() {
+	/* Exit action for state 'distribution'. */
+	private void exitAction_Distributeur_Distributeur_r1_distribution() {
 		timer.unsetTimer(this, 0);
-	}
-
-	/* Exit action for state 'Distribute'. */
-	private void exitAction_Machine_Machine_r1_Distribute() {
-		timer.unsetTimer(this, 1);
 
 		sCInterface.raiseRefound();
 	}
 
-	/* 'default' enter sequence for state Maintenance */
-	private void enterSequence_Machine_Maintenance_default() {
-		enterSequence_Machine_Maintenance_r1_default();
+	/* Exit action for state 'Selection'. */
+	private void exitAction_Distributeur_Distributeur_r1_Selection() {
+		timer.unsetTimer(this, 1);
 	}
 
-	/* 'default' enter sequence for state Authentification */
-	private void enterSequence_Machine_Maintenance_r1_Authentification_default() {
-		nextStateIndex = 0;
-		stateVector[0] = State.machine_Maintenance_r1_Authentification;
+	/* 'default' enter sequence for state Distributeur */
+	private void enterSequence_Distributeur_Distributeur_default() {
+		enterSequence_Distributeur_Distributeur_r1_default();
 	}
 
-	/* 'default' enter sequence for state Stock */
-	private void enterSequence_Machine_Maintenance_r1_Stock_default() {
-		nextStateIndex = 0;
-		stateVector[0] = State.machine_Maintenance_r1_Stock;
-	}
-
-	/* 'default' enter sequence for state MachineManagement */
-	private void enterSequence_Machine_Maintenance_r1_MachineManagement_default() {
-		nextStateIndex = 0;
-		stateVector[0] = State.machine_Maintenance_r1_MachineManagement;
-	}
-
-	/* 'default' enter sequence for state CreateMachine */
-	private void enterSequence_Machine_Maintenance_r1_CreateMachine_default() {
-		nextStateIndex = 0;
-		stateVector[0] = State.machine_Maintenance_r1_CreateMachine;
-	}
-
-	/* 'default' enter sequence for state moduleManagement */
-	private void enterSequence_Machine_Maintenance_r1_moduleManagement_default() {
-		nextStateIndex = 0;
-		stateVector[0] = State.machine_Maintenance_r1_moduleManagement;
-	}
-
-	/* 'default' enter sequence for state ArticleManagement */
-	private void enterSequence_Machine_Maintenance_r1_ArticleManagement_default() {
-		nextStateIndex = 0;
-		stateVector[0] = State.machine_Maintenance_r1_ArticleManagement;
-	}
-
-	/* 'default' enter sequence for state Machine */
-	private void enterSequence_Machine_Machine_default() {
-		enterSequence_Machine_Machine_r1_default();
-	}
-
-	/* 'default' enter sequence for state Standby */
-	private void enterSequence_Machine_Machine_r1_Standby_default() {
-		entryAction_Machine_Machine_r1_Standby();
+	/* 'default' enter sequence for state distribution */
+	private void enterSequence_Distributeur_Distributeur_r1_distribution_default() {
+		entryAction_Distributeur_Distributeur_r1_distribution();
 
 		nextStateIndex = 0;
-		stateVector[0] = State.machine_Machine_r1_Standby;
+		stateVector[0] = State.distributeur_Distributeur_r1_distribution;
+
+		historyVector[0] = stateVector[0];
 	}
 
 	/* 'default' enter sequence for state Selection */
-	private void enterSequence_Machine_Machine_r1_Selection_default() {
-		entryAction_Machine_Machine_r1_Selection();
+	private void enterSequence_Distributeur_Distributeur_r1_Selection_default() {
+		entryAction_Distributeur_Distributeur_r1_Selection();
 
 		nextStateIndex = 0;
-		stateVector[0] = State.machine_Machine_r1_Selection;
+		stateVector[0] = State.distributeur_Distributeur_r1_Selection;
+
+		historyVector[0] = stateVector[0];
 	}
 
-	/* 'default' enter sequence for state Distribute */
-	private void enterSequence_Machine_Machine_r1_Distribute_default() {
-		entryAction_Machine_Machine_r1_Distribute();
+	/* 'default' enter sequence for state Attente */
+	private void enterSequence_Distributeur_Distributeur_r1_Attente_default() {
+		entryAction_Distributeur_Distributeur_r1_Attente();
 
 		nextStateIndex = 0;
-		stateVector[0] = State.machine_Machine_r1_Distribute;
+		stateVector[0] = State.distributeur_Distributeur_r1_Attente;
+
+		historyVector[0] = stateVector[0];
 	}
 
-	/* 'default' enter sequence for state Standby */
-	private void enterSequence_Coin_ATM_Standby_default() {
+	/* 'default' enter sequence for state Maintenance */
+	private void enterSequence_Distributeur_Maintenance_default() {
+		enterSequence_Distributeur_Maintenance_r1_default();
+	}
+
+	/* 'default' enter sequence for state StandBy */
+	private void enterSequence_Distributeur_Maintenance_r1_StandBy_default() {
+		entryAction_Distributeur_Maintenance_r1_StandBy();
+
+		nextStateIndex = 0;
+		stateVector[0] = State.distributeur_Maintenance_r1_StandBy;
+	}
+
+	/* 'default' enter sequence for state Attente */
+	private void enterSequence_Monayeur_Attente_default() {
 		nextStateIndex = 1;
-		stateVector[1] = State.coin_ATM_Standby;
+		stateVector[1] = State.monayeur_Attente;
 	}
 
-	/* 'default' enter sequence for state Pay */
-	private void enterSequence_Coin_ATM_Pay_default() {
-		entryAction_Coin_ATM_Pay();
+	/* 'default' enter sequence for state Paiement */
+	private void enterSequence_Monayeur_Paiement_default() {
+		entryAction_Monayeur_Paiement();
 
 		nextStateIndex = 1;
-		stateVector[1] = State.coin_ATM_Pay;
+		stateVector[1] = State.monayeur_Paiement;
 	}
 
-	/* 'default' enter sequence for state Withdraw */
-	private void enterSequence_Coin_ATM_Withdraw_default() {
-		entryAction_Coin_ATM_Withdraw();
+	/* 'default' enter sequence for state rendreMonaie */
+	private void enterSequence_Monayeur_rendreMonaie_default() {
+		entryAction_Monayeur_rendreMonaie();
 
 		nextStateIndex = 1;
-		stateVector[1] = State.coin_ATM_Withdraw;
+		stateVector[1] = State.monayeur_rendreMonaie;
 	}
 
-	/* 'default' enter sequence for region Machine */
-	private void enterSequence_Machine_default() {
-		react_Machine__entry_Default();
+	/* 'default' enter sequence for region Distributeur */
+	private void enterSequence_Distributeur_default() {
+		react_Distributeur__entry_Default();
 	}
 
 	/* 'default' enter sequence for region r1 */
-	private void enterSequence_Machine_Maintenance_r1_default() {
-		react_Machine_Maintenance_r1__entry_Default();
+	private void enterSequence_Distributeur_Distributeur_r1_default() {
+		react_Distributeur_Distributeur_r1__entry_Default();
+	}
+
+	/* shallow enterSequence with history in child r1 */
+	private void shallowEnterSequence_Distributeur_Distributeur_r1() {
+		switch (historyVector[0]) {
+			case distributeur_Distributeur_r1_distribution :
+				enterSequence_Distributeur_Distributeur_r1_distribution_default();
+				break;
+
+			case distributeur_Distributeur_r1_Selection :
+				enterSequence_Distributeur_Distributeur_r1_Selection_default();
+				break;
+
+			case distributeur_Distributeur_r1_Attente :
+				enterSequence_Distributeur_Distributeur_r1_Attente_default();
+				break;
+
+			default :
+				break;
+		}
 	}
 
 	/* 'default' enter sequence for region r1 */
-	private void enterSequence_Machine_Machine_r1_default() {
-		react_Machine_Machine_r1__entry_Default();
+	private void enterSequence_Distributeur_Maintenance_r1_default() {
+		react_Distributeur_Maintenance_r1__entry_Default();
 	}
 
-	/* 'default' enter sequence for region Coin-ATM */
-	private void enterSequence_Coin_ATM_default() {
-		react_Coin_ATM__entry_Default();
+	/* 'default' enter sequence for region Monayeur */
+	private void enterSequence_Monayeur_default() {
+		react_Monayeur__entry_Default();
 	}
 
-	/* Default exit sequence for state Maintenance */
-	private void exitSequence_Machine_Maintenance() {
-		exitSequence_Machine_Maintenance_r1();
+	/* Default exit sequence for state Distributeur */
+	private void exitSequence_Distributeur_Distributeur() {
+		exitSequence_Distributeur_Distributeur_r1();
 	}
 
-	/* Default exit sequence for state Authentification */
-	private void exitSequence_Machine_Maintenance_r1_Authentification() {
+	/* Default exit sequence for state distribution */
+	private void exitSequence_Distributeur_Distributeur_r1_distribution() {
 		nextStateIndex = 0;
 		stateVector[0] = State.$NullState$;
-	}
 
-	/* Default exit sequence for state Stock */
-	private void exitSequence_Machine_Maintenance_r1_Stock() {
-		nextStateIndex = 0;
-		stateVector[0] = State.$NullState$;
-	}
-
-	/* Default exit sequence for state MachineManagement */
-	private void exitSequence_Machine_Maintenance_r1_MachineManagement() {
-		nextStateIndex = 0;
-		stateVector[0] = State.$NullState$;
-	}
-
-	/* Default exit sequence for state CreateMachine */
-	private void exitSequence_Machine_Maintenance_r1_CreateMachine() {
-		nextStateIndex = 0;
-		stateVector[0] = State.$NullState$;
-	}
-
-	/* Default exit sequence for state moduleManagement */
-	private void exitSequence_Machine_Maintenance_r1_moduleManagement() {
-		nextStateIndex = 0;
-		stateVector[0] = State.$NullState$;
-	}
-
-	/* Default exit sequence for state ArticleManagement */
-	private void exitSequence_Machine_Maintenance_r1_ArticleManagement() {
-		nextStateIndex = 0;
-		stateVector[0] = State.$NullState$;
-	}
-
-	/* Default exit sequence for state Machine */
-	private void exitSequence_Machine_Machine() {
-		exitSequence_Machine_Machine_r1();
-	}
-
-	/* Default exit sequence for state Standby */
-	private void exitSequence_Machine_Machine_r1_Standby() {
-		nextStateIndex = 0;
-		stateVector[0] = State.$NullState$;
+		exitAction_Distributeur_Distributeur_r1_distribution();
 	}
 
 	/* Default exit sequence for state Selection */
-	private void exitSequence_Machine_Machine_r1_Selection() {
+	private void exitSequence_Distributeur_Distributeur_r1_Selection() {
 		nextStateIndex = 0;
 		stateVector[0] = State.$NullState$;
 
-		exitAction_Machine_Machine_r1_Selection();
+		exitAction_Distributeur_Distributeur_r1_Selection();
 	}
 
-	/* Default exit sequence for state Distribute */
-	private void exitSequence_Machine_Machine_r1_Distribute() {
+	/* Default exit sequence for state Attente */
+	private void exitSequence_Distributeur_Distributeur_r1_Attente() {
 		nextStateIndex = 0;
 		stateVector[0] = State.$NullState$;
-
-		exitAction_Machine_Machine_r1_Distribute();
 	}
 
-	/* Default exit sequence for state Standby */
-	private void exitSequence_Coin_ATM_Standby() {
+	/* Default exit sequence for state Maintenance */
+	private void exitSequence_Distributeur_Maintenance() {
+		exitSequence_Distributeur_Maintenance_r1();
+	}
+
+	/* Default exit sequence for state StandBy */
+	private void exitSequence_Distributeur_Maintenance_r1_StandBy() {
+		nextStateIndex = 0;
+		stateVector[0] = State.$NullState$;
+	}
+
+	/* Default exit sequence for state Attente */
+	private void exitSequence_Monayeur_Attente() {
 		nextStateIndex = 1;
 		stateVector[1] = State.$NullState$;
 	}
 
-	/* Default exit sequence for state Pay */
-	private void exitSequence_Coin_ATM_Pay() {
+	/* Default exit sequence for state Paiement */
+	private void exitSequence_Monayeur_Paiement() {
 		nextStateIndex = 1;
 		stateVector[1] = State.$NullState$;
 	}
 
-	/* Default exit sequence for state Withdraw */
-	private void exitSequence_Coin_ATM_Withdraw() {
+	/* Default exit sequence for state rendreMonaie */
+	private void exitSequence_Monayeur_rendreMonaie() {
 		nextStateIndex = 1;
 		stateVector[1] = State.$NullState$;
 	}
 
-	/* Default exit sequence for region Machine */
-	private void exitSequence_Machine() {
+	/* Default exit sequence for region Distributeur */
+	private void exitSequence_Distributeur() {
 		switch (stateVector[0]) {
-			case machine_Maintenance_r1_Authentification :
-				exitSequence_Machine_Maintenance_r1_Authentification();
+			case distributeur_Distributeur_r1_distribution :
+				exitSequence_Distributeur_Distributeur_r1_distribution();
 				break;
 
-			case machine_Maintenance_r1_Stock :
-				exitSequence_Machine_Maintenance_r1_Stock();
+			case distributeur_Distributeur_r1_Selection :
+				exitSequence_Distributeur_Distributeur_r1_Selection();
 				break;
 
-			case machine_Maintenance_r1_MachineManagement :
-				exitSequence_Machine_Maintenance_r1_MachineManagement();
+			case distributeur_Distributeur_r1_Attente :
+				exitSequence_Distributeur_Distributeur_r1_Attente();
 				break;
 
-			case machine_Maintenance_r1_CreateMachine :
-				exitSequence_Machine_Maintenance_r1_CreateMachine();
-				break;
-
-			case machine_Maintenance_r1_moduleManagement :
-				exitSequence_Machine_Maintenance_r1_moduleManagement();
-				break;
-
-			case machine_Maintenance_r1_ArticleManagement :
-				exitSequence_Machine_Maintenance_r1_ArticleManagement();
-				break;
-
-			case machine_Machine_r1_Standby :
-				exitSequence_Machine_Machine_r1_Standby();
-				break;
-
-			case machine_Machine_r1_Selection :
-				exitSequence_Machine_Machine_r1_Selection();
-				break;
-
-			case machine_Machine_r1_Distribute :
-				exitSequence_Machine_Machine_r1_Distribute();
+			case distributeur_Maintenance_r1_StandBy :
+				exitSequence_Distributeur_Maintenance_r1_StandBy();
 				break;
 
 			default :
@@ -948,30 +640,18 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 	}
 
 	/* Default exit sequence for region r1 */
-	private void exitSequence_Machine_Maintenance_r1() {
+	private void exitSequence_Distributeur_Distributeur_r1() {
 		switch (stateVector[0]) {
-			case machine_Maintenance_r1_Authentification :
-				exitSequence_Machine_Maintenance_r1_Authentification();
+			case distributeur_Distributeur_r1_distribution :
+				exitSequence_Distributeur_Distributeur_r1_distribution();
 				break;
 
-			case machine_Maintenance_r1_Stock :
-				exitSequence_Machine_Maintenance_r1_Stock();
+			case distributeur_Distributeur_r1_Selection :
+				exitSequence_Distributeur_Distributeur_r1_Selection();
 				break;
 
-			case machine_Maintenance_r1_MachineManagement :
-				exitSequence_Machine_Maintenance_r1_MachineManagement();
-				break;
-
-			case machine_Maintenance_r1_CreateMachine :
-				exitSequence_Machine_Maintenance_r1_CreateMachine();
-				break;
-
-			case machine_Maintenance_r1_moduleManagement :
-				exitSequence_Machine_Maintenance_r1_moduleManagement();
-				break;
-
-			case machine_Maintenance_r1_ArticleManagement :
-				exitSequence_Machine_Maintenance_r1_ArticleManagement();
+			case distributeur_Distributeur_r1_Attente :
+				exitSequence_Distributeur_Distributeur_r1_Attente();
 				break;
 
 			default :
@@ -980,18 +660,10 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 	}
 
 	/* Default exit sequence for region r1 */
-	private void exitSequence_Machine_Machine_r1() {
+	private void exitSequence_Distributeur_Maintenance_r1() {
 		switch (stateVector[0]) {
-			case machine_Machine_r1_Standby :
-				exitSequence_Machine_Machine_r1_Standby();
-				break;
-
-			case machine_Machine_r1_Selection :
-				exitSequence_Machine_Machine_r1_Selection();
-				break;
-
-			case machine_Machine_r1_Distribute :
-				exitSequence_Machine_Machine_r1_Distribute();
+			case distributeur_Maintenance_r1_StandBy :
+				exitSequence_Distributeur_Maintenance_r1_StandBy();
 				break;
 
 			default :
@@ -999,19 +671,19 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 		}
 	}
 
-	/* Default exit sequence for region Coin-ATM */
-	private void exitSequence_Coin_ATM() {
+	/* Default exit sequence for region Monayeur */
+	private void exitSequence_Monayeur() {
 		switch (stateVector[1]) {
-			case coin_ATM_Standby :
-				exitSequence_Coin_ATM_Standby();
+			case monayeur_Attente :
+				exitSequence_Monayeur_Attente();
 				break;
 
-			case coin_ATM_Pay :
-				exitSequence_Coin_ATM_Pay();
+			case monayeur_Paiement :
+				exitSequence_Monayeur_Paiement();
 				break;
 
-			case coin_ATM_Withdraw :
-				exitSequence_Coin_ATM_Withdraw();
+			case monayeur_rendreMonaie :
+				exitSequence_Monayeur_rendreMonaie();
 				break;
 
 			default :
@@ -1019,201 +691,105 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 		}
 	}
 
-	/* The reactions of state Authentification. */
-	private void react_Machine_Maintenance_r1_Authentification() {
-		if (check_Machine_Maintenance_tr0_tr0()) {
-			effect_Machine_Maintenance_tr0();
+	/* The reactions of state distribution. */
+	private void react_Distributeur_Distributeur_r1_distribution() {
+		if (check_Distributeur_Distributeur_tr0_tr0()) {
+			effect_Distributeur_Distributeur_tr0();
 		} else {
-			if (check_Machine_Maintenance_r1_Authentification_tr0_tr0()) {
-				effect_Machine_Maintenance_r1_Authentification_tr0();
-			}
-		}
-	}
-
-	/* The reactions of state Stock. */
-	private void react_Machine_Maintenance_r1_Stock() {
-		if (check_Machine_Maintenance_tr0_tr0()) {
-			effect_Machine_Maintenance_tr0();
-		} else {
-			if (check_Machine_Maintenance_r1_Stock_tr0_tr0()) {
-				effect_Machine_Maintenance_r1_Stock_tr0();
-			} else {
-				if (check_Machine_Maintenance_r1_Stock_tr1_tr1()) {
-					effect_Machine_Maintenance_r1_Stock_tr1();
-				} else {
-					if (check_Machine_Maintenance_r1_Stock_tr2_tr2()) {
-						effect_Machine_Maintenance_r1_Stock_tr2();
-					}
-				}
-			}
-		}
-	}
-
-	/* The reactions of state MachineManagement. */
-	private void react_Machine_Maintenance_r1_MachineManagement() {
-		if (check_Machine_Maintenance_tr0_tr0()) {
-			effect_Machine_Maintenance_tr0();
-		} else {
-			if (check_Machine_Maintenance_r1_MachineManagement_tr0_tr0()) {
-				effect_Machine_Maintenance_r1_MachineManagement_tr0();
-			} else {
-				if (check_Machine_Maintenance_r1_MachineManagement_tr1_tr1()) {
-					effect_Machine_Maintenance_r1_MachineManagement_tr1();
-				} else {
-					if (check_Machine_Maintenance_r1_MachineManagement_tr2_tr2()) {
-						effect_Machine_Maintenance_r1_MachineManagement_tr2();
-					}
-				}
-			}
-		}
-	}
-
-	/* The reactions of state CreateMachine. */
-	private void react_Machine_Maintenance_r1_CreateMachine() {
-		if (check_Machine_Maintenance_tr0_tr0()) {
-			effect_Machine_Maintenance_tr0();
-		} else {
-			if (check_Machine_Maintenance_r1_CreateMachine_tr0_tr0()) {
-				effect_Machine_Maintenance_r1_CreateMachine_tr0();
-			}
-		}
-	}
-
-	/* The reactions of state moduleManagement. */
-	private void react_Machine_Maintenance_r1_moduleManagement() {
-		if (check_Machine_Maintenance_tr0_tr0()) {
-			effect_Machine_Maintenance_tr0();
-		} else {
-			if (check_Machine_Maintenance_r1_moduleManagement_tr0_tr0()) {
-				effect_Machine_Maintenance_r1_moduleManagement_tr0();
-			} else {
-				if (check_Machine_Maintenance_r1_moduleManagement_tr1_tr1()) {
-					effect_Machine_Maintenance_r1_moduleManagement_tr1();
-				} else {
-					if (check_Machine_Maintenance_r1_moduleManagement_tr2_tr2()) {
-						effect_Machine_Maintenance_r1_moduleManagement_tr2();
-					}
-				}
-			}
-		}
-	}
-
-	/* The reactions of state ArticleManagement. */
-	private void react_Machine_Maintenance_r1_ArticleManagement() {
-		if (check_Machine_Maintenance_tr0_tr0()) {
-			effect_Machine_Maintenance_tr0();
-		} else {
-			if (check_Machine_Maintenance_r1_ArticleManagement_tr0_tr0()) {
-				effect_Machine_Maintenance_r1_ArticleManagement_tr0();
-			} else {
-				if (check_Machine_Maintenance_r1_ArticleManagement_tr1_tr1()) {
-					effect_Machine_Maintenance_r1_ArticleManagement_tr1();
-				} else {
-					if (check_Machine_Maintenance_r1_ArticleManagement_tr2_tr2()) {
-						effect_Machine_Maintenance_r1_ArticleManagement_tr2();
-					}
-				}
-			}
-		}
-	}
-
-	/* The reactions of state Standby. */
-	private void react_Machine_Machine_r1_Standby() {
-		if (check_Machine_Machine_tr0_tr0()) {
-			effect_Machine_Machine_tr0();
-		} else {
-			if (check_Machine_Machine_r1_Standby_tr0_tr0()) {
-				effect_Machine_Machine_r1_Standby_tr0();
+			if (check_Distributeur_Distributeur_r1_distribution_tr0_tr0()) {
+				effect_Distributeur_Distributeur_r1_distribution_tr0();
 			}
 		}
 	}
 
 	/* The reactions of state Selection. */
-	private void react_Machine_Machine_r1_Selection() {
-		if (check_Machine_Machine_tr0_tr0()) {
-			effect_Machine_Machine_tr0();
+	private void react_Distributeur_Distributeur_r1_Selection() {
+		if (check_Distributeur_Distributeur_tr0_tr0()) {
+			effect_Distributeur_Distributeur_tr0();
 		} else {
-			if (check_Machine_Machine_r1_Selection_tr0_tr0()) {
-				effect_Machine_Machine_r1_Selection_tr0();
+			if (check_Distributeur_Distributeur_r1_Selection_tr0_tr0()) {
+				effect_Distributeur_Distributeur_r1_Selection_tr0();
 			} else {
-				if (check_Machine_Machine_r1_Selection_tr1_tr1()) {
-					effect_Machine_Machine_r1_Selection_tr1();
+				if (check_Distributeur_Distributeur_r1_Selection_tr1_tr1()) {
+					effect_Distributeur_Distributeur_r1_Selection_tr1();
 				}
 			}
 		}
 	}
 
-	/* The reactions of state Distribute. */
-	private void react_Machine_Machine_r1_Distribute() {
-		if (check_Machine_Machine_tr0_tr0()) {
-			effect_Machine_Machine_tr0();
+	/* The reactions of state Attente. */
+	private void react_Distributeur_Distributeur_r1_Attente() {
+		if (check_Distributeur_Distributeur_tr0_tr0()) {
+			effect_Distributeur_Distributeur_tr0();
 		} else {
-			if (check_Machine_Machine_r1_Distribute_tr0_tr0()) {
-				effect_Machine_Machine_r1_Distribute_tr0();
+			if (check_Distributeur_Distributeur_r1_Attente_tr0_tr0()) {
+				effect_Distributeur_Distributeur_r1_Attente_tr0();
 			}
 		}
 	}
 
-	/* The reactions of state Standby. */
-	private void react_Coin_ATM_Standby() {
-		if (check_Coin_ATM_Standby_tr0_tr0()) {
-			effect_Coin_ATM_Standby_tr0();
-		}
-	}
-
-	/* The reactions of state Pay. */
-	private void react_Coin_ATM_Pay() {
-		if (check_Coin_ATM_Pay_tr0_tr0()) {
-			effect_Coin_ATM_Pay_tr0();
+	/* The reactions of state StandBy. */
+	private void react_Distributeur_Maintenance_r1_StandBy() {
+		if (check_Distributeur_Maintenance_r1_StandBy_tr0_tr0()) {
+			effect_Distributeur_Maintenance_r1_StandBy_tr0();
 		} else {
-			if (check_Coin_ATM_Pay_tr1_tr1()) {
-				effect_Coin_ATM_Pay_tr1();
-			} else {
-				if (check_Coin_ATM_Pay_tr2_tr2()) {
-					effect_Coin_ATM_Pay_tr2();
-				}
+			if (check_Distributeur_Maintenance_r1_StandBy_tr1_tr1()) {
+				effect_Distributeur_Maintenance_r1_StandBy_tr1();
 			}
 		}
 	}
 
-	/* The reactions of state Withdraw. */
-	private void react_Coin_ATM_Withdraw() {
-		if (check_Coin_ATM_Withdraw_tr0_tr0()) {
-			effect_Coin_ATM_Withdraw_tr0();
+	/* The reactions of state Attente. */
+	private void react_Monayeur_Attente() {
+		if (check_Monayeur_Attente_tr0_tr0()) {
+			effect_Monayeur_Attente_tr0();
 		}
 	}
 
-	/* The reactions of state null. */
-	private void react_Machine_Maintenance_r1__choice_0() {
-		if (check_Machine_Maintenance_r1__choice_0_tr0_tr0()) {
-			effect_Machine_Maintenance_r1__choice_0_tr0();
+	/* The reactions of state Paiement. */
+	private void react_Monayeur_Paiement() {
+		if (check_Monayeur_Paiement_tr0_tr0()) {
+			effect_Monayeur_Paiement_tr0();
 		} else {
-			if (check_Machine_Maintenance_r1__choice_0_tr1_tr1()) {
-				effect_Machine_Maintenance_r1__choice_0_tr1();
-			} else {
-				effect_Machine_Maintenance_r1__choice_0_tr2();
+			if (check_Monayeur_Paiement_tr1_tr1()) {
+				effect_Monayeur_Paiement_tr1();
 			}
 		}
 	}
 
-	/* Default react sequence for initial entry  */
-	private void react_Machine_Maintenance_r1__entry_Default() {
-		enterSequence_Machine_Maintenance_r1_Authentification_default();
+	/* The reactions of state rendreMonaie. */
+	private void react_Monayeur_rendreMonaie() {
+		if (check_Monayeur_rendreMonaie_tr0_tr0()) {
+			effect_Monayeur_rendreMonaie_tr0();
+		}
 	}
 
 	/* Default react sequence for initial entry  */
-	private void react_Machine_Machine_r1__entry_Default() {
-		enterSequence_Machine_Machine_r1_Standby_default();
+	private void react_Distributeur_Distributeur_r1__entry_Default() {
+		enterSequence_Distributeur_Distributeur_r1_Attente_default();
+	}
+
+	/* Default react sequence for shallow history entry hist */
+	private void react_Distributeur_Distributeur_r1_hist() {
+		/* Enter the region with shallow history */
+		if (historyVector[0] != State.$NullState$) {
+			shallowEnterSequence_Distributeur_Distributeur_r1();
+		}
 	}
 
 	/* Default react sequence for initial entry  */
-	private void react_Machine__entry_Default() {
-		enterSequence_Machine_Maintenance_default();
+	private void react_Distributeur__entry_Default() {
+		enterSequence_Distributeur_Distributeur_default();
 	}
 
 	/* Default react sequence for initial entry  */
-	private void react_Coin_ATM__entry_Default() {
-		enterSequence_Coin_ATM_Standby_default();
+	private void react_Distributeur_Maintenance_r1__entry_Default() {
+		enterSequence_Distributeur_Maintenance_r1_StandBy_default();
+	}
+
+	/* Default react sequence for initial entry  */
+	private void react_Monayeur__entry_Default() {
+		enterSequence_Monayeur_Attente_default();
 	}
 
 	public void runCycle() {
@@ -1226,41 +802,26 @@ public class DefaultSMStatemachine implements IDefaultSMStatemachine {
 		for (nextStateIndex = 0; nextStateIndex < stateVector.length; nextStateIndex++) {
 
 			switch (stateVector[nextStateIndex]) {
-				case machine_Maintenance_r1_Authentification :
-					react_Machine_Maintenance_r1_Authentification();
+				case distributeur_Distributeur_r1_distribution :
+					react_Distributeur_Distributeur_r1_distribution();
 					break;
-				case machine_Maintenance_r1_Stock :
-					react_Machine_Maintenance_r1_Stock();
+				case distributeur_Distributeur_r1_Selection :
+					react_Distributeur_Distributeur_r1_Selection();
 					break;
-				case machine_Maintenance_r1_MachineManagement :
-					react_Machine_Maintenance_r1_MachineManagement();
+				case distributeur_Distributeur_r1_Attente :
+					react_Distributeur_Distributeur_r1_Attente();
 					break;
-				case machine_Maintenance_r1_CreateMachine :
-					react_Machine_Maintenance_r1_CreateMachine();
+				case distributeur_Maintenance_r1_StandBy :
+					react_Distributeur_Maintenance_r1_StandBy();
 					break;
-				case machine_Maintenance_r1_moduleManagement :
-					react_Machine_Maintenance_r1_moduleManagement();
+				case monayeur_Attente :
+					react_Monayeur_Attente();
 					break;
-				case machine_Maintenance_r1_ArticleManagement :
-					react_Machine_Maintenance_r1_ArticleManagement();
+				case monayeur_Paiement :
+					react_Monayeur_Paiement();
 					break;
-				case machine_Machine_r1_Standby :
-					react_Machine_Machine_r1_Standby();
-					break;
-				case machine_Machine_r1_Selection :
-					react_Machine_Machine_r1_Selection();
-					break;
-				case machine_Machine_r1_Distribute :
-					react_Machine_Machine_r1_Distribute();
-					break;
-				case coin_ATM_Standby :
-					react_Coin_ATM_Standby();
-					break;
-				case coin_ATM_Pay :
-					react_Coin_ATM_Pay();
-					break;
-				case coin_ATM_Withdraw :
-					react_Coin_ATM_Withdraw();
+				case monayeur_rendreMonaie :
+					react_Monayeur_rendreMonaie();
 					break;
 				default :
 					// $NullState$
