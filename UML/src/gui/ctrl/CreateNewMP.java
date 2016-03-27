@@ -101,7 +101,7 @@ public class CreateNewMP  {
 
     		ns.setAvalaible(true);    		
     		RawMaterial rw = new RawMaterial(name, qt, type, ns);
-    		ns.Add(rw);
+    		ns.Add(rw.getAmount());
         	machine.addModule((Module)ns);
         	
         	ComboBox<RawMaterial> cb2 = (ComboBox<RawMaterial>)scene.lookup("#stockage");

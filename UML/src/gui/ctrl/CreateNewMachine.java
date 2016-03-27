@@ -7,6 +7,7 @@ import framework.Machine;
 import framework.modules.Boiler;
 import framework.modules.Water;
 import framework.payement.Carte;
+import framework.payement.Coin;
 import framework.payement.Token;
 import framework.stockage.Classic;
 import framework.stockage.Cooling;
@@ -105,8 +106,17 @@ public class CreateNewMachine  {
 		if( ((CheckBox)scene.lookup("#btnClassic")).isSelected() )
 			machine.addModule( new Classic(Integer.MAX_VALUE) );
 		
-		//if( ((CheckBox)scene.lookup("#btnPiece")).isSelected() )
-			//	machine.addModule( new aCoin.Coin(Integer.MAX_VALUE) );
+		if( ((CheckBox)scene.lookup("#btnPiece")).isSelected() ) {
+			Coin c = new Coin(machine);
+			c.addModule(0.05);
+			c.addModule(0.1);
+			c.addModule(0.2);
+			c.addModule(0.5);
+			c.addModule(1.0);
+			c.addModule(2.0);
+			
+			machine.addModule( c );
+		}
 		if( ((CheckBox)scene.lookup("#btnCarte")).isSelected() )
 			machine.addModule( new Token() );
 		if( ((CheckBox)scene.lookup("#btnToken")).isSelected() )

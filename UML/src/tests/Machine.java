@@ -22,7 +22,7 @@ public class Machine {
 		try {
 			Stockage stock = new Classic(100);
 			RawMaterial cofeee = new RawMaterial(5, TypeOfRawMaterial.gram, stock);
-			stock.Add(cofeee);
+			stock.Add(cofeee.getAmount());
 			Collection<RawMaterial> recette = new ArrayList<RawMaterial>();
 			recette.add(cofeee);
 			Article cafe = new Article("Café", 1.0, new Recipe(recette));

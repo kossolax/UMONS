@@ -10,12 +10,17 @@ import framework.Category;
 import framework.Machine;
 import framework.RawMaterial;
 import framework.modules.Module;
+import framework.payement.Carte;
+import framework.payement.Coin;
 import framework.payement.Payment;
+import framework.payement.Token;
 import framework.stockage.Classic;
 import framework.stockage.Stockage;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceDialog;
@@ -106,7 +111,27 @@ public class VueUtilisateur extends Pane {
         	tp.getTabs().add( tab );
         	
         	c = c.getParent();
-    	} while( c != null );    	
+    	} while( c != null );
+    	
+    	((ImageView)scene.lookup("#PayByCard")).setVisible(false);
+    	((ImageView)scene.lookup("#PayByCoin")).setVisible(false);
+    	((ImageView)scene.lookup("#PayByTokken")).setVisible(false);
+    	for( Module m : machine.getModules() ) {
+			if( m instanceof Payment ) {
+				if( m instanceof Carte ) {
+					((ImageView)scene.lookup("#PayByCard")).setVisible(true);
+					((Node)scene.lookup("#PayByCard")).setUserData((Payment)m);
+				}
+				else if( m instanceof Coin ) {
+					((ImageView)scene.lookup("#PayByCoin")).setVisible(true);
+					((Node)scene.lookup("#PayByCoin")).setUserData((Payment)m);
+				}
+				else if( m instanceof Token ) {
+					((ImageView)scene.lookup("#PayByTokken")).setVisible(true);
+					((Node)scene.lookup("#PayByTokken")).setUserData((Payment)m);
+				}
+			}
+    	}
     }
     private void updatePayement() {
     	if( focusArticle != null ) {
@@ -131,32 +156,44 @@ public class VueUtilisateur extends Pane {
     	stage.close();
     }
     @FXML
-    private void OnClick_Buy() {
-    	if( focusArticle != null  ) {
-    		
-    		ChoiceDialog<Payment> dialog = new ChoiceDialog<Payment>();
+    private void OnClick_Buy(Event e) {
+    	
+    	Node node = ((Node) e.getTarget());
+    	Payment p = (Payment)node.getUserData();
+    	
+    	System.out.println("yop" + p+" "+node);
+    	if( p instanceof Coin ) {
+    		Coin c = null;
     		for( Module m : machine.getModules() ) {
-    			if( m instanceof Payment ) 
-    				dialog.getItems().add((Payment)m);
+    			if( m instanceof Coin ) 
+    				c = (Coin) m;
     		}
-    			
-    		dialog.setTitle("Choisissez une matière première");
-    		dialog.setHeaderText("Choisissez une matière première");
-    		Optional<Payment> result = dialog.showAndWait();
-    		if (result.isPresent()){
-    			Payment p = result.get();
-    			if( machine.Buy(p, focusArticle) ) {
-    				Alert alert = new Alert(AlertType.CONFIRMATION);
-    	    		alert.setTitle("Achat");
-    	    		alert.setHeaderText("Votre achat s'est déroulé avec succès. Vous avez acheté: "+focusArticle);
-    	    		alert.show();
-    			}
-    			else {
-    				Alert alert = new Alert(AlertType.ERROR);
-    	    		alert.setTitle("Erreur");
-    	    		alert.setHeaderText("Le paiement a échoué.");
-    	    		alert.show();
-    			}
+    		
+    		if( c != null ) {
+	    		ChoiceDialog<Double> dialog = new ChoiceDialog<Double>();
+	    		dialog.getItems().setAll(c.getModules());
+	    		dialog.setTitle("Choisissez une pièce");
+	    		dialog.setHeaderText("Choisissez une pièce");
+	    		Optional<Double> result = dialog.showAndWait();
+	    		if (result.isPresent()){
+	    			solde += c.insertPiece(result.get());
+	    			updatePayement();
+	    		}
+    		}
+    	}
+    	
+    	if( focusArticle != null  ) {
+    		if( machine.Buy(p, focusArticle) ) {
+    			Alert alert = new Alert(AlertType.CONFIRMATION);
+    	    	alert.setTitle("Achat");
+    	    	alert.setHeaderText("Votre achat s'est déroulé avec succès. Vous avez acheté: "+focusArticle);
+    	    	alert.show();
+    		}
+    		else {
+    			Alert alert = new Alert(AlertType.ERROR);
+    	    	alert.setTitle("Erreur");
+    	    	alert.setHeaderText("Le paiement a échoué.");
+    	    	alert.show();
     		}
     	}
     }

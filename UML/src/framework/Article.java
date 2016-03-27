@@ -42,7 +42,7 @@ public class Article {
 				if( !materials.getStock().isAvalaible() )
 					throw new Exception();
 				
-				materials.getStock().Substract(materials);
+				materials.getStock().Substract(materials.getAmount());
 			} catch ( Exception e ) {
 				// TODO: Que faire dans ce cas? Il était sensé avoir la bonne quantité, mais...
 				return null;

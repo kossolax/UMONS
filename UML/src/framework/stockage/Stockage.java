@@ -22,17 +22,17 @@ public class Stockage extends Module implements Cloneable {
 	public int getAmount() {
 		return amount;
 	}
-	public void Substract(RawMaterial qt) throws Exception {
-		if( amount-qt.getAmount() < 0 )
+	public void Substract(int val) throws Exception {
+		if( amount-val < 0 )
 			throw new Exception();
 		
-		amount -= qt.getAmount();
+		amount -= val;
 	}
-	public void Add(RawMaterial qt) throws Exception {
-		if( amount+qt.getAmount() > max )
+	public void Add(int val) throws Exception {
+		if( amount+val > max )
 			throw new Exception();
 		
-		amount += qt.getAmount();
+		amount += val;
 	}
 	public void setContains(RawMaterial rw) {
 		contains = rw;

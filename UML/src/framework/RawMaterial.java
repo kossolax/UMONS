@@ -11,7 +11,7 @@ public class RawMaterial {
 	private TypeOfRawMaterial kind;
 	
 	public enum TypeOfRawMaterial {
-		unity ("Unité"),  centiliter ("Centilitre"), gram ("Gramme");
+		unity ("Unité"),  centiliter ("Centilitre"), gram ("Gramme"), money("€");
 		
 		private String name;       
 	    private TypeOfRawMaterial(String s) {

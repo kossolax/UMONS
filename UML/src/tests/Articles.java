@@ -20,7 +20,7 @@ public class Articles {
 		try {
 			Stockage stock = new Classic(1000);
 			RawMaterial cafeine = new RawMaterial(5, TypeOfRawMaterial.gram, stock);
-			stock.Add(cafeine);
+			stock.Add(cafeine.getAmount());
 			
 			
 			Collection<RawMaterial> recette = new ArrayList<RawMaterial>();
@@ -48,7 +48,8 @@ public class Articles {
 	public void testDelivery() {
 		try {
 			Stockage stock = new Classic(1000);
-			stock.Add(new RawMaterial(8, TypeOfRawMaterial.gram, stock));
+			RawMaterial m = new RawMaterial(8, TypeOfRawMaterial.gram, stock);
+			stock.Add(m.getAmount());
 			
 			Collection<RawMaterial> recette = new ArrayList<RawMaterial>();
 			recette.add(new RawMaterial(3, TypeOfRawMaterial.gram, stock));
