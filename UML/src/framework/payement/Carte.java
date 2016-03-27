@@ -3,7 +3,7 @@ package framework.payement;
 
 public class Carte extends Payment {
 
-	public boolean pay() {
+	public boolean pay(double price) {
 		return false;
 	}
 	public String toString() {

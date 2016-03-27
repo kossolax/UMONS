@@ -157,33 +157,24 @@ public class VueUtilisateur extends Pane {
     }
     @FXML
     private void OnClick_Buy(Event e) {
+       	Payment p = (Payment)((Node)e.getTarget()).getUserData();
     	
-    	Node node = ((Node) e.getTarget());
-    	Payment p = (Payment)node.getUserData();
-    	
-    	System.out.println("yop" + p+" "+node);
     	if( p instanceof Coin ) {
-    		Coin c = null;
-    		for( Module m : machine.getModules() ) {
-    			if( m instanceof Coin ) 
-    				c = (Coin) m;
-    		}
+    		Coin c = (Coin)p;
     		
-    		if( c != null ) {
-	    		ChoiceDialog<Double> dialog = new ChoiceDialog<Double>();
-	    		dialog.getItems().setAll(c.getModules());
-	    		dialog.setTitle("Choisissez une pièce");
-	    		dialog.setHeaderText("Choisissez une pièce");
-	    		Optional<Double> result = dialog.showAndWait();
-	    		if (result.isPresent()){
-	    			solde += c.insertPiece(result.get());
-	    			updatePayement();
-	    		}
-    		}
+    		ChoiceDialog<Double> dialog = new ChoiceDialog<Double>();
+	    	dialog.getItems().setAll(c.getModules());
+	    	dialog.setTitle("Choisissez une pièce");
+	    	dialog.setHeaderText("Choisissez une pièce");
+	    	Optional<Double> result = dialog.showAndWait();
+	    	if (result.isPresent()){
+	    		solde += c.insertPiece(result.get());
+	    		updatePayement();
+	    	}
     	}
     	
     	if( focusArticle != null  ) {
-    		if( machine.Buy(p, focusArticle) ) {
+    		if( machine.Buy(p, focusArticle, solde) ) {
     			Alert alert = new Alert(AlertType.CONFIRMATION);
     	    	alert.setTitle("Achat");
     	    	alert.setHeaderText("Votre achat s'est déroulé avec succès. Vous avez acheté: "+focusArticle);

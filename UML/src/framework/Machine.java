@@ -26,17 +26,18 @@ public class Machine {
 	 * @param payement the kind of payement
 	 * @param article the article
 	 */
-	public boolean Buy(Payment payement, Article article) {
+	public boolean Buy(Payment payement, Article article, double solde) {
 		boolean res = false;
 		
 		logger.debug("--------------------------------------------------");
 		logger.debug("Attempt to buy" + article + " with " + payement);
 		
 		if( article.isAvailaible() ) {
-			logger.debug("Article is available");
-			double price = article.getPrice();
 			
-			if( payement.pay() ) {
+			double price = article.getPrice() - solde;
+			logger.debug("Solde is " +solde +" article cost "+ article.getPrice() + " missing "+ price);
+			
+			if( payement.pay(price) ) {
 				logger.debug("payement validated");
 				
 				res = ( article.delivery() != null );
@@ -45,7 +46,7 @@ public class Machine {
 		if( res )
 			logger.debug("Article has been delivered");
 		else
-			logger.debug("Article is not available");
+			logger.debug("Article has not been delivered");
 		
 		return res;
 	}

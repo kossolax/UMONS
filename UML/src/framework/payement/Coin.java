@@ -39,7 +39,9 @@ public class Coin extends Payment {
 		}
 		return val;
 	}
-	public boolean pay() {
+	public boolean pay(double price) {
+		if( price <= 0.0 )
+			return true;
 		return false;
 	}
 	public String toString() {

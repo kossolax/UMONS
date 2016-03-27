@@ -28,8 +28,8 @@ public class Machine {
 			Article cafe = new Article("Café", 1.0, new Recipe(recette));
 			
 			framework.Machine machine = new framework.Machine("cc");
-			assertTrue(machine.Buy(new Token(), cafe));
-			assertFalse(machine.Buy(new Token(), cafe));
+			assertTrue(machine.Buy(new Token(), cafe, 0.0));
+			assertFalse(machine.Buy(new Token(), cafe, 0.0));
 		} catch (Exception e ) {
 			fail(e.getMessage());
 		}
