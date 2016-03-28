@@ -1,6 +1,7 @@
 package gui.ctrl;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 
 import framework.Category;
 import framework.Machine;
@@ -97,7 +98,7 @@ public class CreateNewMP  {
     	
     		qt = Integer.parseInt(((TextField)scene.lookup("#amount")).getText());
     		
-    		Stockage ns = s.getClass().newInstance();
+    		Stockage ns = s.getClass().getDeclaredConstructor(int.class).newInstance(Integer.MAX_VALUE);
 
     		ns.setAvalaible(true);    		
     		RawMaterial rw = new RawMaterial(name, qt, type, ns);
@@ -117,7 +118,7 @@ public class CreateNewMP  {
     		alert.show();
     		return;
     	} catch ( Exception e ) {
-    		
+    		e.printStackTrace();
     		Alert alert = new Alert(AlertType.ERROR);
     		alert.setTitle("Erreur");
     		alert.setHeaderText("Veuillez compléter le champs "+e.getMessage());

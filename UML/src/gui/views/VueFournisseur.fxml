@@ -16,9 +16,13 @@
       </TabPane>
       <Pane layoutX="561.0" layoutY="79.0" prefHeight="450.0" prefWidth="222.0" style="-fx-background-color: white;">
          <children>
-            <Button layoutX="14.0" layoutY="330.0" mnemonicParsing="false" onAction="#OnClick_NewMP" prefHeight="33.0" prefWidth="201.0" text="Matière première" />
+            <Button layoutX="14.0" layoutY="156.0" mnemonicParsing="false" onAction="#OnClick_NewMP" prefHeight="33.0" prefWidth="201.0" text="Nouvelle matière première" />
             <Button layoutX="14.0" layoutY="401.0" mnemonicParsing="false" onAction="#handleExit" prefHeight="33.0" prefWidth="201.0" style="-fx-background-color: #d9534f; fx-border-radius: 5;" text="Fermer" />
             <Button layoutX="14.0" layoutY="367.0" mnemonicParsing="false" onAction="#OnClick_VueUtilisateur" prefHeight="33.0" prefWidth="201.0" style="-fx-background-color: green; -fx-border-radius: 5; -fx-background-radius: 8; -fx-border-color: #4cae4c;" text="Lancer la machine" />
+            <Button fx:id="moduleEnable" layoutX="11.0" layoutY="47.0" mnemonicParsing="false" onAction="#OnClick_SwitchModule" prefHeight="33.0" prefWidth="201.0" text="Activer un module" />
+            <Button fx:id="moduleDisable" layoutX="11.0" layoutY="80.0" mnemonicParsing="false" onAction="#OnClick_SwitchModule" prefHeight="33.0" prefWidth="201.0" text="Désactiver un module" />
+            <Button layoutX="11.0" layoutY="14.0" mnemonicParsing="false" onAction="#OnClick_NewMP" prefHeight="33.0" prefWidth="201.0" text="Nouveau module" />
+            <Button layoutX="14.0" layoutY="189.0" mnemonicParsing="false" onAction="#OnClick_AddMP" prefHeight="33.0" prefWidth="201.0" text="Gestion des stocks" />
          </children>
       </Pane>
       <Separator layoutX="14.0" layoutY="59.0" prefHeight="0.0" prefWidth="764.0" />

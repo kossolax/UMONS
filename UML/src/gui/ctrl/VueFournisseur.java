@@ -9,12 +9,17 @@ import framework.Article;
 import framework.Category;
 import framework.Machine;
 import framework.RawMaterial;
+import framework.modules.Module;
+import framework.payement.Payment;
 import framework.stockage.Classic;
 import framework.stockage.Stockage;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -124,6 +129,42 @@ public class VueFournisseur extends Pane {
     @FXML
     private void OnClick_NewMP() {
     	CreateNewMP mp = new CreateNewMP(stage, machine);
+    }
+    @FXML
+    private void OnClick_SwitchModule(Event e) {
+    	boolean enable = ((Node)e.getTarget()).getId().equals("moduleEnable") ;
+    	
+    	ChoiceDialog<Module> dialog = new ChoiceDialog<Module>();
+    	
+    	for( Module m : machine.getModules() ) {
+    		if( !m.isAvalaible() && enable ) 
+    			dialog.getItems().add(m);
+    		else if( m.isAvalaible() && !enable ) 
+    			dialog.getItems().add(m);
+    	}
+    	
+    	dialog.setTitle("Choisissez un module");
+    	dialog.setHeaderText("Choisissez un module");
+    	Optional<Module> result = dialog.showAndWait();
+    	if (result.isPresent()){
+    		Module res = result.get();
+    		
+    		if( res instanceof Stockage && ((Stockage) res).getContains() == null ) {
+    			// Type de stockage générique -> On désactive tout les modules identiques.
+    			for( Module m : machine.getModules() ) {
+    				if( res.getClass().equals(m.getClass()) ) {
+    					m.setAvalaible( enable );
+    				}
+    			}
+    		}
+    		else {
+    			res.setAvalaible( enable );
+    		}
+    	}
+    }
+    @FXML
+    private void OnClick_AddMP() {
+    	// TODO:
     }
     @FXML
     private void OnClick_VueUtilisateur() {

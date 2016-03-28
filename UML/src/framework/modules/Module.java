@@ -7,6 +7,7 @@ public abstract class Module {
 	
 	public Module() {
 		this.avalaible = true;
+		this.name = getClass().getName();
 	}
 	public Module(String name) {
 		this.avalaible = true;
@@ -20,6 +21,12 @@ public abstract class Module {
 	}
 	public String toString() {
 		return name;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

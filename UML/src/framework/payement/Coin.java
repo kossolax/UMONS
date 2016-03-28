@@ -17,6 +17,7 @@ public class Coin extends Payment {
 	public Coin(Machine machine) {
 		this.piece = new Hashtable<Double, Stockage>();
 		this.machine = machine;
+		setName("Pièce");
 	}
 	public void addModule(double val) {
 		
@@ -43,9 +44,6 @@ public class Coin extends Payment {
 		if( price <= 0.0 )
 			return true;
 		return false;
-	}
-	public String toString() {
-		return "Pièce";
 	}
 	public Collection<Double> getModules() {
 		ArrayList<Double>val = new ArrayList<Double>();

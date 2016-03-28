@@ -2,7 +2,7 @@ package framework.modules;
 
 public class Water extends Module {
 	public Water(boolean status) {
-		super("Eau");
+		super();
 		this.avalaible = status;
 	}
 }

@@ -9,12 +9,8 @@ public class Stockage extends Module implements Cloneable {
 	private int max;
 	private RawMaterial contains;
 	
-	public Stockage() {
-		avalaible = true;
-		amount = 0;
-		max = Integer.MAX_VALUE;
-	}
 	public Stockage(int amount, int max) {
+		super();
 		this.avalaible = true;
 		this.amount = amount;
 		this.max = max;
@@ -41,6 +37,9 @@ public class Stockage extends Module implements Cloneable {
 		return contains;
 	}
 	public String toString() {
-		return "Stockage";
+		String ret = getName();
+		if( contains != null )
+			ret += ": " + contains.getName();
+		return ret;
 	}
 }
