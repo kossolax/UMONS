@@ -1,5 +1,6 @@
 package framework;
 
+import java.io.File;
 import java.util.*;
 
 public class Category {
@@ -7,6 +8,7 @@ public class Category {
 	private Collection<Category> subCategories;
 	private Category parent;
 	private String name;
+	private File image;
 	
 	public Category(String name) {
 		this.name = name;
@@ -14,8 +16,9 @@ public class Category {
 		this.subCategories = new ArrayList<Category>();
 	}
 	
-	public void addArticle(Article a) {
+	public Category addArticle(Article a) {
 		belong.add(a);
+		return this;
 	}
 	public Collection<Article> getArticles() {
 		return belong;
@@ -39,5 +42,15 @@ public class Category {
 	}
 	public String getName() {
 		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public File getImage() {
+		return image;
+	}
+
+	public void setImage(File image) {
+		this.image = image;
 	}
 }

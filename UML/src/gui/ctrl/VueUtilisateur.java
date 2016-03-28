@@ -54,7 +54,7 @@ public class VueUtilisateur extends Pane {
         this.focusArticle = null;
         this.solde = 0.0;
         
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gui/views/utilisateur.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gui/views/VueUtilisateur.fxml"));
         fxmlLoader.setController(this);
         
         try {
@@ -85,7 +85,7 @@ public class VueUtilisateur extends Pane {
         	
         	if( c.getCategories() != null ) {
         		for( Category c2 : c.getCategories() ) {
-        			Pane n = Utils.addNewCategory(p, c2);
+        			Pane n = Utils.addNewArticle(p, c2);
         			n.setOnMousePressed(new EventHandler<MouseEvent>() {
                 	    public void handle(MouseEvent e) {
                 	    	focusCategory = c2;
@@ -179,6 +179,7 @@ public class VueUtilisateur extends Pane {
     	    	alert.setTitle("Achat");
     	    	alert.setHeaderText("Votre achat s'est déroulé avec succès. Vous avez acheté: "+focusArticle);
     	    	alert.show();
+    	    	solde = 0;
     		}
     		else {
     			Alert alert = new Alert(AlertType.ERROR);

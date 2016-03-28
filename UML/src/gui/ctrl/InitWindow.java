@@ -47,7 +47,7 @@ public class InitWindow extends Pane {
     private void OnClick_Load() {
 		Machine machine = ((ComboBox<Machine>)scene.lookup("#CBMachineList")).getValue();
     	if( machine != null ) {
-    		GestionFournisseur f = new GestionFournisseur(mainApp, machine);
+    		VueFournisseur f = new VueFournisseur(mainApp, machine);
     	}
     }
     @FXML
