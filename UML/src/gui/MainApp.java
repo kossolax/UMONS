@@ -1,9 +1,5 @@
 package gui;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-
 import gui.ctrl.InitWindow;
 import javafx.application.Application;
 import javafx.stage.Stage;
