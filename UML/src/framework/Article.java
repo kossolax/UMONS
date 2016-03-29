@@ -6,12 +6,12 @@ import java.util.Iterator;
 
 public class Article {
 	private String name;
-	private double price;
+	private int price;
 	private Recipe recipe;
 	private File image;
 	
 	
-	public Article(String name, double price, Recipe recipe) {
+	public Article(String name, int price, Recipe recipe) {
 		this.name = name;
 		this.price = price;
 		this.recipe = recipe;
@@ -71,7 +71,7 @@ public class Article {
 	public void setImage(File image) {
 		this.image = image;
 	}
-	public void setPrice(double price) {
+	public void setPrice(int price) {
 		this.price = price;
 	}
 	public String toString() {

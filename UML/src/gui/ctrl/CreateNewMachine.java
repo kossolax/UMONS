@@ -108,13 +108,12 @@ public class CreateNewMachine  {
 		
 		if( ((CheckBox)scene.lookup("#btnPiece")).isSelected() ) {
 			Coin c = new Coin(machine);
-			c.addModule(0.05);
-			c.addModule(0.1);
-			c.addModule(0.2);
-			c.addModule(0.5);
-			c.addModule(1.0);
-			c.addModule(2.0);
-			
+			c.addModule(5);
+			c.addModule(10);
+			c.addModule(20);
+			c.addModule(50);
+			c.addModule(100);
+			c.addModule(200);
 			machine.addModule( c );
 		}
 		if( ((CheckBox)scene.lookup("#btnCarte")).isSelected() )

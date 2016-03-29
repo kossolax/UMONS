@@ -26,7 +26,7 @@ public class Articles {
 			Collection<RawMaterial> recette = new ArrayList<RawMaterial>();
 			Recipe recipe = new Recipe(recette);
 			Boiler boil = new Boiler(true);
-			Article cafe = new Article("Café", 1.0, recipe);
+			Article cafe = new Article("Café", 100, recipe);
 			recipe.addRequiredModule(boil);
 			recette.add(cafeine);
 			
@@ -36,7 +36,7 @@ public class Articles {
 			
 			Collection<RawMaterial> recette2 = new ArrayList<RawMaterial>();
 			recette2.add(new RawMaterial(6, TypeOfRawMaterial.gram, stock));
-			Article cafe2 = new Article("Café fort", 1.0, new Recipe(recette2));
+			Article cafe2 = new Article("Café fort", 100, new Recipe(recette2));
 			
 			assertFalse(cafe2.isAvailaible());
 		} catch ( Exception e ){
@@ -53,7 +53,7 @@ public class Articles {
 			
 			Collection<RawMaterial> recette = new ArrayList<RawMaterial>();
 			recette.add(new RawMaterial(3, TypeOfRawMaterial.gram, stock));
-			Article cafe = new Article("Café", 1.0, new Recipe(recette));
+			Article cafe = new Article("Café", 100, new Recipe(recette));
 	
 			assertTrue(cafe.delivery() != null);
 			assertTrue(stock.getAmount() == 5);

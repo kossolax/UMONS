@@ -45,14 +45,14 @@ public class VueUtilisateur extends Pane {
 	private Machine machine;
 	private Category focusCategory;
 	private Article focusArticle;
-	private double solde;
+	private int solde;
 	
     public VueUtilisateur(Stage parent, Machine machine) {
         this.mainApp = parent;
         this.machine = machine;
         this.focusCategory = machine.getCategory();
         this.focusArticle = null;
-        this.solde = 0.0;
+        this.solde = 0;
         
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gui/views/VueUtilisateur.fxml"));
         fxmlLoader.setController(this);
@@ -162,13 +162,14 @@ public class VueUtilisateur extends Pane {
     	if( p instanceof Coin ) {
     		Coin c = (Coin)p;
     		
-    		ChoiceDialog<Double> dialog = new ChoiceDialog<Double>();
+    		ChoiceDialog<Integer> dialog = new ChoiceDialog<Integer>();
 	    	dialog.getItems().setAll(c.getModules());
 	    	dialog.setTitle("Choisissez une pièce");
 	    	dialog.setHeaderText("Choisissez une pièce");
-	    	Optional<Double> result = dialog.showAndWait();
+	    	Optional<Integer> result = dialog.showAndWait();
 	    	if (result.isPresent()){
-	    		solde += c.insertPiece(result.get());
+	    		if( c.insertPiece(result.get()) );
+	    			solde += result.get();
 	    		updatePayement();
 	    	}
     	}

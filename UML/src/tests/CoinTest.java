@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
+import framework.payement.Coin;
+
 public class CoinTest {
 	
 	int compute(int[] val, int[] cnt, int[] res, int amount) {
@@ -105,4 +107,37 @@ public class CoinTest {
 			assertTrue(left == 0);
 		}
 	}
+	@Test(timeout=1000)
+	public void testCoin6() {
+		framework.Machine machine = new framework.Machine("hello");
+		Coin c = new Coin(machine);
+		c.addModule(1);
+		c.addModule(2);
+		c.addModule(5);
+		c.addModule(10);
+		c.addModule(20);
+		c.addModule(50);
+		c.addModule(100);
+		c.addModule(200);
+		machine.addModule( c );
+		
+		c.insertPiece(100);
+		c.insertPiece(50);
+		c.insertPiece(20);c.insertPiece(20);c.insertPiece(20);
+		c.insertPiece(20);c.insertPiece(20);c.insertPiece(20);
+		c.insertPiece(2);c.insertPiece(2);
+		c.insertPiece(2);c.insertPiece(2);
+		c.insertPiece(1);
+		
+		
+		ArrayList<Integer> res = c.refund(110);
+		assertTrue( res.size() == 4 );
+		int sum = 0;
+		for( Integer a : res ) {
+			sum += a;
+		}
+		assertTrue( sum == 110 );
+	}
+	
+
 }

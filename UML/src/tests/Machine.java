@@ -25,7 +25,7 @@ public class Machine {
 			stock.Add(cofeee.getAmount());
 			Collection<RawMaterial> recette = new ArrayList<RawMaterial>();
 			recette.add(cofeee);
-			Article cafe = new Article("Café", 1.0, new Recipe(recette));
+			Article cafe = new Article("Café", 10, new Recipe(recette));
 			
 			framework.Machine machine = new framework.Machine("cc");
 			assertTrue(machine.Buy(new Token(), cafe, 0.0));

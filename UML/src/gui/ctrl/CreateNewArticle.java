@@ -156,7 +156,7 @@ public class CreateNewArticle  {
 	@FXML
     private void OnClick_Save() {
 		String name;
-		double price;
+		int price;
 		
 		try {
 	    	name = ((TextField)scene.lookup("#name")).getText().trim();
