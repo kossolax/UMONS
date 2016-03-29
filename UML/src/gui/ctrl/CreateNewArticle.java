@@ -102,7 +102,30 @@ public class CreateNewArticle  {
 			table.setPlaceholder(new Label("Double clique pour ajouter une matière première"));
 			TableColumn mp = new TableColumn("Name");
 			TableColumn max = new TableColumn("max");
-			try{
+			max.setCellValueFactory(
+		            new PropertyValueFactory<RawMaterial, Integer>("max"));
+			max.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<Integer>(){
+
+			        @Override
+			        public String toString(Integer object) {
+			            return object.toString();
+			        }
+
+			        @Override
+			        public Integer fromString(String string) {
+			            return Integer.parseInt(string);
+			        }
+
+			    }));
+				max.setOnEditCommit(
+	                     new EventHandler<CellEditEvent<RawMaterial, Integer>>() {
+	                         public void handle(CellEditEvent<RawMaterial, Integer> t) {
+	                             ((RawMaterial) t.getTableView().getItems().get(
+	                                     t.getTablePosition().getRow())
+	                                     ).setMax((int)t.getNewValue());
+	                         }
+	                     });
+			
 			TableColumn min = new TableColumn("min");
 			min.setCellValueFactory(
 	            new PropertyValueFactory<RawMaterial, Integer>("min"));
@@ -130,13 +153,9 @@ public class CreateNewArticle  {
                      
 			mp.setCellValueFactory(new PropertyValueFactory<>("name"));
 			//min.setCellValueFactory(new PropertyValueFactory<>("min"));	
-			max.setCellValueFactory(new PropertyValueFactory<>("max"));
+			//max.setCellValueFactory(new PropertyValueFactory<>("max"));
 			
 			table.getColumns().addAll(mp, min, max);
-			}catch(Exception f){
-				f.printStackTrace();
-				//System.out.println(f);
-			}
 		}
 		
 		ObservableList<RawMaterial> data = FXCollections.observableArrayList(article.getRecipe());
