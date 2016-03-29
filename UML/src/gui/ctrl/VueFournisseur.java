@@ -164,7 +164,7 @@ public class VueFournisseur extends Pane {
     }
     @FXML
     private void OnClick_AddMP() {
-    	// TODO:
+    	GestionStock s = new GestionStock(stage, machine);
     }
     @FXML
     private void OnClick_VueUtilisateur() {

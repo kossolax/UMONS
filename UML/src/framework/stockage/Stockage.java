@@ -39,7 +39,7 @@ public class Stockage extends Module implements Cloneable {
 	public String toString() {
 		String ret = getName();
 		if( contains != null )
-			ret += ": " + contains.getName();
+			ret += ": " + contains.getName() + " "+ amount;
 		return ret;
 	}
 }
