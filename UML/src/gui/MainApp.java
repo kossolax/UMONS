@@ -21,15 +21,23 @@ public class MainApp extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {		
-		
     	state = new VendingMachineStatemachine();
     	state.setTimer(new TimerService());
     	state.init();
-    	state.enter();
     	RuntimeService.getInstance().registerStatemachine(state, 100);
+    	
+    	
+    	state.enter();
     	state.runCycle();
     	
     	InitWindow w = new InitWindow(stage);
+    }
+    @Override
+    public void stop() {
+    	RuntimeService.getInstance().cancelTimer();
+    	state.exit();
+    	state = null;
+    	System.exit(0);
     }
     public static VendingMachineStatemachine getState() {
     	return state;

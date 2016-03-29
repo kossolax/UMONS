@@ -3,27 +3,20 @@ package gui.ctrl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
-import java.util.Stack;
-
-import org.yakindu.scr.RuntimeService;
-import org.yakindu.scr.vendingmachine.IVendingMachineStatemachine;
 import org.yakindu.scr.vendingmachine.IVendingMachineStatemachine.SCInterfaceListener;
 import org.yakindu.scr.vendingmachine.IVendingMachineStatemachine.SCInterfaceOperationCallback;
 
 import framework.Article;
 import framework.Category;
 import framework.Machine;
-import framework.RawMaterial;
 import framework.modules.Module;
 import framework.payement.Carte;
 import framework.payement.Coin;
 import framework.payement.Payment;
 import framework.payement.Token;
-import framework.stockage.Classic;
-import framework.stockage.Stockage;
 import gui.MainApp;
+import javafx.application.Platform;
 import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -33,7 +26,6 @@ import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -52,6 +44,7 @@ public class VueUtilisateur extends Pane  {
 	private Category focusCategory;
 	private Article focusArticle;
 	private boolean pass;
+	private Coin coin = null;
 	
     public VueUtilisateur(Stage parent, Machine machine) {
         this.mainApp = parent;
@@ -71,36 +64,36 @@ public class VueUtilisateur extends Pane  {
             stage.initModality(Modality.APPLICATION_MODAL);
 
         	initialize(stage);
+        	bindYakindo();
+        	
         	parent.toBack();
         	stage.show();
-        	
-        	MainApp.getState().getSCInterface().getListeners().add(new SCInterfaceListener() {
-				@Override
-				public void onRefoundRaised() {
-					System.out.println("hello");
-					for( Module m : machine.getModules() ) {
-						if( m instanceof Coin ) {
-							ArrayList<Integer> coin = ((Coin) m).refund((int)MainApp.getState().getSCInterface().getTotalPaid());
-							System.out.println(coin);
-							MainApp.getState().getSCInterface().setTotalPaid(0);
-						}
-					}
-				}
-        	});
-        	MainApp.getState().getSCInterface().setSCInterfaceOperationCallback(new SCInterfaceOperationCallback() {
-				public boolean validate() {
-					if( pass ) {
-						pass = false;
-						return true;
-					}
-					
-					return false;
-				}
-        	});
         	
         } catch (IOException e) {
 			e.printStackTrace();
 		}
+    }
+    private void bindYakindo() {
+    	MainApp.getState().getSCInterface().getListeners().clear();
+    	MainApp.getState().getSCInterface().getListeners().add(new SCInterfaceListener() {
+			@Override
+			public void onRefoundRaised() {
+				System.out.println("hello");
+				if( coin != null ) {
+					ArrayList<Integer> c = coin.refund((int)MainApp.getState().getSCInterface().getTotalPaid());
+					System.out.println(c);
+					focusArticle = null;
+					MainApp.getState().getSCInterface().setTotalPaid(0);
+					Platform.runLater(() -> updatePayement());
+				}
+			}
+    	});
+    	MainApp.getState().getSCInterface().setSCInterfaceOperationCallback(new SCInterfaceOperationCallback() {
+			public boolean validate() {
+				if( pass ) { pass = false; return true; }
+				return false;
+			}
+    	});
     }
     
     private void initialize(Stage stage) {
@@ -116,28 +109,22 @@ public class VueUtilisateur extends Pane  {
         	if( c.getCategories() != null ) {
         		for( Category c2 : c.getCategories() ) {
         			Pane n = Utils.addNewArticle(p, c2);
-        			n.setOnMousePressed(new EventHandler<MouseEvent>() {
-                	    public void handle(MouseEvent e) {
-                	    	focusCategory = c2;
-                	    	initialize(stage);
-                	    }
-        			});
+        			n.setOnMousePressed((MouseEvent e) -> { focusCategory = c2; initialize(stage); });
         		}
         	}
     		
         	if( c.getArticles() != null ) {
         		for( Article a : c.getArticles() ) {
         			Pane n = Utils.addNewArticle(p, a);
-        			n.setOnMousePressed(new EventHandler<MouseEvent>() {
-                	    public void handle(MouseEvent e) {
+        			n.setOnMousePressed((MouseEvent e) -> {
+                	    MainApp.getState().getSCInterface().setItemPrice(a.getPrice());
+                	    MainApp.getState().getSCInterface().raiseAddItem();
+                	    MainApp.getState().runCycle();
                 	    	
-                	    	MainApp.getState().getSCInterface().setItemPrice(a.getPrice());
-                	    	MainApp.getState().getSCInterface().raiseAddItem();
-                	    	MainApp.getState().runCycle();
-                	    	
-                	    	focusArticle = a;
-                	    	updatePayement();
-                	    }
+                	    focusArticle = a;
+                	    updatePayement();
+                	    
+                	    if( coin != null ) validatePay(coin);
         			});
         		}
     		}
@@ -158,6 +145,7 @@ public class VueUtilisateur extends Pane  {
 					((Node)scene.lookup("#PayByCard")).setUserData((Payment)m);
 				}
 				else if( m instanceof Coin ) {
+					coin = (Coin) m;
 					((ImageView)scene.lookup("#PayByCoin")).setVisible(true);
 					((Node)scene.lookup("#PayByCoin")).setUserData((Payment)m);
 				}
@@ -184,11 +172,11 @@ public class VueUtilisateur extends Pane  {
     		((Label)scene.lookup("#price")).setVisible(false);
     	}
     	
-    	
     	((Label)scene.lookup("#solde")).setText("Solde: "+MainApp.getState().getSCInterface().getTotalPaid()+" €");
     }
     @FXML
     private void handleExit() {
+    	System.out.println("hello");
     	MainApp.getState().getSCInterface().raiseMaintenance();
 		MainApp.getState().runCycle();
     	stage.close();
@@ -196,8 +184,8 @@ public class VueUtilisateur extends Pane  {
     @FXML
     private void OnClick_Buy(Event e) {
        	Payment p = (Payment)((Node)e.getTarget()).getUserData();
-    	
-    	if( p instanceof Coin ) {
+       	
+       	if( p instanceof Coin ) {
     		Coin c = (Coin)p;
     		
     		ChoiceDialog<Integer> dialog = new ChoiceDialog<Integer>();
@@ -214,7 +202,10 @@ public class VueUtilisateur extends Pane  {
 	    		updatePayement();
 	    	}
     	}
-    	
+       	
+       	validatePay(p);
+    }
+    private void validatePay(Payment p) {
     	if( focusArticle != null  ) {
     		Machine.Delivery d =  machine.Buy(p, focusArticle, Math.toIntExact(MainApp.getState().getSCInterface().getTotalPaid()));
     		
@@ -223,23 +214,9 @@ public class VueUtilisateur extends Pane  {
     			Alert alert = new Alert(AlertType.CONFIRMATION);
     	    	alert.setTitle("Achat");
     	    	alert.setHeaderText("Votre achat s'est déroulé avec succès.");
-    	    	if( d.getOther() != null ) {
+    	    	if( d.getOther() != null && d.getOther() instanceof ArrayList ) {
     	    		alert.setContentText("La machine a aussi distribué: " + d.getOther());
-    	    		
-    	    		if( d.getOther() instanceof ArrayList ) {
-    	    			ArrayList<Object> refund = (ArrayList<Object>) d.getOther();
-    	    			/*if( refund.size() > 0 && refund.get(0) instanceof Integer ) {
-    	    				for( Object a : refund ) {
-    	    					solde -= (Integer)a;
-    	    				}
-    	    			}*/	
-    	    		}
     	    	}
-    	    	
-    	    	//solde -= d.getArticle().getPrice();
-    	    	focusArticle = null;
-    	    	updatePayement();
-    	    	
     	    	alert.show();
     	    }
     		else {
@@ -252,13 +229,7 @@ public class VueUtilisateur extends Pane  {
     }
     @FXML
     private void OnClick_Cancel() {
-    	focusArticle = null;
-    	updatePayement();
+    	focusCategory = null;
+    	MainApp.getState().getSCInterface().raiseForceRefound();
     }
-   
-    
-    
-    
-    
-   
 }
