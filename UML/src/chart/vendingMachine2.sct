@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmlns:sgraph="http://www.yakindu.org/sct/sgraph/2.0.0">
-  <sgraph:Statechart xmi:id="_17wj0Hy-EeWDvsdBeJMddQ" specification="interface:&#xD;&#xA;in event insertPiece&#xD;&#xA;in event addItem&#xD;&#xA;in event refound&#xD;&#xA;in event maintenance&#xD;&#xA;in event add&#xD;&#xA;in event delete&#xD;&#xA;in event login&#xD;&#xA;in event create&#xD;&#xA;in event load&#xD;&#xA;in event alter&#xD;&#xA;in event save&#xD;&#xA;in event logout&#xD;&#xA;&#xD;&#xA;var piece : integer = 1&#xD;&#xA;var itemPrice : integer = 1&#xD;&#xA;var loginType : integer = 0&#xD;&#xA;var totalPaid : integer = 0&#xD;&#xA;&#xD;&#xA;internal:&#xD;&#xA;var needMoney : integer = 0&#xD;&#xA;var totalMoney : integer = 0&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&#xA;" name="vendingMachine">
+  <sgraph:Statechart xmi:id="_17wj0Hy-EeWDvsdBeJMddQ" specification="interface:&#xD;&#xA;in event insertPiece&#xD;&#xA;in event addItem&#xD;&#xA;in event maintenance&#xD;&#xA;in event add&#xD;&#xA;in event delete&#xD;&#xA;in event login&#xD;&#xA;in event create&#xD;&#xA;in event load&#xD;&#xA;in event alter&#xD;&#xA;in event save&#xD;&#xA;in event logout&#xD;&#xA;out event refound&#xD;&#xA;&#xD;&#xA;var piece : integer = 1&#xD;&#xA;var itemPrice : integer = 1&#xD;&#xA;var loginType : integer = 0&#xD;&#xA;var totalPaid : integer = 0&#xD;&#xA;&#xD;&#xA;internal:&#xD;&#xA;var needMoney : integer = 0&#xD;&#xA;var totalMoney : integer = 0&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&#xA;" name="vendingMachine">
     <regions xmi:id="_18VLkHy-EeWDvsdBeJMddQ" name="Machine">
       <vertices xsi:type="sgraph:State" xmi:id="_bElVsH1xEeWP5PqnHj8_-w" name="Maintenance" incomingTransitions="_iXcBEJ8XEeW_a7Nkc4nixg _KOTzAJ8ZEeW_a7Nkc4nixg">
         <outgoingTransitions xmi:id="_SGEHgJ8bEeW_a7Nkc4nixg" specification="maintenance" target="_BYWJ0J8XEeW_a7Nkc4nixg"/>
@@ -71,7 +71,7 @@
       </vertices>
       <vertices xsi:type="sgraph:State" xmi:id="_D8L_kJ8XEeW_a7Nkc4nixg" specification="entry / totalMoney += piece;&#xD;&#xA;totalPaid += piece" name="Pay" incomingTransitions="_D8Kxf58XEeW_a7Nkc4nixg _D8Mmtp8XEeW_a7Nkc4nixg">
         <outgoingTransitions xmi:id="_D8Mmtp8XEeW_a7Nkc4nixg" specification="insertPiece" target="_D8L_kJ8XEeW_a7Nkc4nixg"/>
-        <outgoingTransitions xmi:id="_D8Mmup8XEeW_a7Nkc4nixg" specification="refound" target="_D8Ob0J8XEeW_a7Nkc4nixg"/>
+        <outgoingTransitions xmi:id="_D8Mmup8XEeW_a7Nkc4nixg" specification="refound&#xD;&#xA;" target="_D8Ob0J8XEeW_a7Nkc4nixg"/>
         <outgoingTransitions xmi:id="_s2H9oKCwEeWrYJyNUKwhfw" specification="[active(Machine.Maintenance)]" target="_D8Ob0J8XEeW_a7Nkc4nixg"/>
       </vertices>
       <vertices xsi:type="sgraph:State" xmi:id="_D8Ob0J8XEeW_a7Nkc4nixg" specification="entry / totalMoney -= totalPaid;&#xD;&#xA;totalPaid = 0" name="Withdraw" incomingTransitions="_D8Mmup8XEeW_a7Nkc4nixg _s2H9oKCwEeWrYJyNUKwhfw">
@@ -627,7 +627,7 @@
     <edges xmi:id="_D8W-sJ8XEeW_a7Nkc4nixg" type="Transition" element="_D8Mmup8XEeW_a7Nkc4nixg" source="_i1o4sZ8aEeW_a7Nkc4nixg" target="_i1o4vZ8aEeW_a7Nkc4nixg">
       <children xsi:type="notation:DecorationNode" xmi:id="_D8W-tJ8XEeW_a7Nkc4nixg" type="TransitionExpression">
         <styles xsi:type="notation:ShapeStyle" xmi:id="_D8W-tZ8XEeW_a7Nkc4nixg"/>
-        <layoutConstraint xsi:type="notation:Location" xmi:id="_D8W-tp8XEeW_a7Nkc4nixg" x="-12" y="1"/>
+        <layoutConstraint xsi:type="notation:Location" xmi:id="_D8W-tp8XEeW_a7Nkc4nixg" x="-5" y="-54"/>
       </children>
       <styles xsi:type="notation:ConnectorStyle" xmi:id="_D8W-sZ8XEeW_a7Nkc4nixg" lineColor="4210752"/>
       <styles xsi:type="notation:FontStyle" xmi:id="_D8W-s58XEeW_a7Nkc4nixg" fontName="Verdana"/>

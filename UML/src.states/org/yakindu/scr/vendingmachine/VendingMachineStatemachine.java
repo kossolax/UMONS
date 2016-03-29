@@ -1,9 +1,17 @@
 package org.yakindu.scr.vendingmachine;
+import java.util.LinkedList;
+import java.util.List;
 import org.yakindu.scr.ITimer;
 
 public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 
 	protected class SCInterfaceImpl implements SCInterface {
+
+		private List<SCInterfaceListener> listeners = new LinkedList<SCInterfaceListener>();
+
+		public List<SCInterfaceListener> getListeners() {
+			return listeners;
+		}
 
 		private boolean insertPiece;
 
@@ -15,12 +23,6 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 
 		public void raiseAddItem() {
 			addItem = true;
-		}
-
-		private boolean refound;
-
-		public void raiseRefound() {
-			refound = true;
 		}
 
 		private boolean maintenance;
@@ -77,6 +79,19 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 			logout = true;
 		}
 
+		private boolean refound;
+
+		public boolean isRaisedRefound() {
+			return refound;
+		}
+
+		protected void raiseRefound() {
+			refound = true;
+			for (SCInterfaceListener listener : listeners) {
+				listener.onRefoundRaised();
+			}
+		}
+
 		private long piece;
 
 		public long getPiece() {
@@ -120,7 +135,6 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 		protected void clearEvents() {
 			insertPiece = false;
 			addItem = false;
-			refound = false;
 			maintenance = false;
 			add = false;
 			delete = false;
@@ -132,6 +146,9 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 			logout = false;
 		}
 
+		protected void clearOutEvents() {
+			refound = false;
+		}
 	}
 
 	protected SCInterfaceImpl sCInterface;
@@ -251,6 +268,7 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 	* This method resets the outgoing events.
 	*/
 	protected void clearOutEvents() {
+		sCInterface.clearOutEvents();
 	}
 
 	/**
@@ -327,9 +345,6 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 	public void raiseAddItem() {
 		sCInterface.raiseAddItem();
 	}
-	public void raiseRefound() {
-		sCInterface.raiseRefound();
-	}
 	public void raiseMaintenance() {
 		sCInterface.raiseMaintenance();
 	}
@@ -356,6 +371,9 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 	}
 	public void raiseLogout() {
 		sCInterface.raiseLogout();
+	}
+	public boolean isRaisedRefound() {
+		return sCInterface.isRaisedRefound();
 	}
 
 	public long getPiece() {

@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Stack;
 
+import org.yakindu.scr.RuntimeService;
+import org.yakindu.scr.vendingmachine.IVendingMachineStatemachine;
+import org.yakindu.scr.vendingmachine.IVendingMachineStatemachine.SCInterfaceListener;
+
 import framework.Article;
 import framework.Category;
 import framework.Machine;
@@ -39,7 +43,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 
-public class VueUtilisateur extends Pane {    
+public class VueUtilisateur extends Pane  {    
     
 	private Stage mainApp, stage;
 	private Scene scene;
@@ -68,12 +72,28 @@ public class VueUtilisateur extends Pane {
         	parent.toBack();
         	stage.show();
         	
+        	MainApp.getState().getSCInterface().getListeners().add(new SCInterfaceListener() {
+				@Override
+				public void onRefoundRaised() {
+					System.out.println("hello");
+					for( Module m : machine.getModules() ) {
+						if( m instanceof Coin ) {
+							ArrayList<Integer> coin = ((Coin) m).refund((int)MainApp.getState().getSCInterface().getTotalPaid());
+							System.out.println(coin);
+							MainApp.getState().getSCInterface().setTotalPaid(0);
+						}
+					}
+				}
+        		
+        	});
+        	
         } catch (IOException e) {
 			e.printStackTrace();
 		}
     }
     
     private void initialize(Stage stage) {
+    	
     	TabPane tp = (TabPane)scene.lookup("#tabCategory");
     	tp.getTabs().clear();
     	
@@ -100,8 +120,8 @@ public class VueUtilisateur extends Pane {
         			n.setOnMousePressed(new EventHandler<MouseEvent>() {
                 	    public void handle(MouseEvent e) {
                 	    	
-                	    	MainApp.getState().setItemPrice(a.getPrice());
-                	    	MainApp.getState().raiseAddItem();
+                	    	MainApp.getState().getSCInterface().setItemPrice(a.getPrice());
+                	    	MainApp.getState().getSCInterface().raiseAddItem();
                 	    	MainApp.getState().runCycle();
                 	    	
                 	    	focusArticle = a;
@@ -154,7 +174,7 @@ public class VueUtilisateur extends Pane {
     	}
     	
     	
-    	((Label)scene.lookup("#solde")).setText("Solde: "+MainApp.getState().getTotalPaid()+" €");
+    	((Label)scene.lookup("#solde")).setText("Solde: "+MainApp.getState().getSCInterface().getTotalPaid()+" €");
     }
     @FXML
     private void handleExit() {
@@ -176,8 +196,9 @@ public class VueUtilisateur extends Pane {
 	    	Optional<Integer> result = dialog.showAndWait();
 	    	if (result.isPresent()){
 	    		if( c.insertPiece(result.get()) ) {
-	    			MainApp.getState().setPiece( result.get() );
-	    			MainApp.getState().raiseInsertPiece();
+	    			MainApp.getState().getSCInterface().setPiece( result.get() );
+	    			MainApp.getState().getSCInterface().raiseInsertPiece();
+	    			MainApp.getState().runCycle();
 	    			//solde += result.get();
 	    		}
 	    		updatePayement();
@@ -185,7 +206,7 @@ public class VueUtilisateur extends Pane {
     	}
     	
     	if( focusArticle != null  ) {
-    		Machine.Delivery d =  machine.Buy(p, focusArticle, Math.toIntExact(MainApp.getState().getTotalPaid()));
+    		Machine.Delivery d =  machine.Buy(p, focusArticle, Math.toIntExact(MainApp.getState().getSCInterface().getTotalPaid()));
     		
     		if( d.getArticle() != null ) {
     			Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -223,4 +244,10 @@ public class VueUtilisateur extends Pane {
     	focusArticle = null;
     	updatePayement();
     }
+   
+    
+    
+    
+    
+   
 }
