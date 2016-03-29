@@ -17,6 +17,7 @@ public interface IVendingMachineStatemachine extends ITimerCallback, IStatemachi
 		public void raiseAlter();
 		public void raiseSave();
 		public void raiseLogout();
+		public void raiseForceRefound();
 		public boolean isRaisedRefound();
 		public long getPiece();
 		public void setPiece(long value);

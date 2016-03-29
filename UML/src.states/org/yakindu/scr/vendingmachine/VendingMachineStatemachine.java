@@ -85,6 +85,12 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 			logout = true;
 		}
 
+		private boolean forceRefound;
+
+		public void raiseForceRefound() {
+			forceRefound = true;
+		}
+
 		private boolean refound;
 
 		public boolean isRaisedRefound() {
@@ -150,6 +156,7 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 			alter = false;
 			save = false;
 			logout = false;
+			forceRefound = false;
 		}
 
 		protected void clearOutEvents() {
@@ -171,7 +178,7 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 
 	private ITimer timer;
 
-	private final boolean[] timeEvents = new boolean[2];
+	private final boolean[] timeEvents = new boolean[1];
 
 	private long needMoney;
 
@@ -378,6 +385,9 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 	public void raiseLogout() {
 		sCInterface.raiseLogout();
 	}
+	public void raiseForceRefound() {
+		sCInterface.raiseForceRefound();
+	}
 	public boolean isRaisedRefound() {
 		return sCInterface.isRaisedRefound();
 	}
@@ -429,10 +439,6 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 
 	private boolean check_Machine_Maintenance_r1_Stock_tr2_tr2() {
 		return sCInterface.alter;
-	}
-
-	private boolean check_Machine_Maintenance_r1_Stock_tr3_tr3() {
-		return sCInterface.logout;
 	}
 
 	private boolean check_Machine_Maintenance_r1_MachineManagement_tr0_tr0() {
@@ -492,11 +498,11 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 	}
 
 	private boolean check_Machine_Machine_r1_Selection_tr1_tr1() {
-		return timeEvents[0];
+		return sCInterface.refound;
 	}
 
 	private boolean check_Machine_Machine_r1_Distribute_tr0_tr0() {
-		return timeEvents[1];
+		return timeEvents[0];
 	}
 
 	private boolean check_Coin_ATM_Standby_tr0_tr0() {
@@ -513,6 +519,10 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 
 	private boolean check_Coin_ATM_Pay_tr2_tr2() {
 		return isStateActive(State.machine_Maintenance);
+	}
+
+	private boolean check_Coin_ATM_Pay_tr3_tr3() {
+		return sCInterface.forceRefound;
 	}
 
 	private boolean check_Coin_ATM_Withdraw_tr0_tr0() {
@@ -559,12 +569,6 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 		exitSequence_Machine_Maintenance_r1_Stock();
 
 		enterSequence_Machine_Maintenance_r1_ArticleManagement_default();
-	}
-
-	private void effect_Machine_Maintenance_r1_Stock_tr3() {
-		exitSequence_Machine_Maintenance_r1_Stock();
-
-		enterSequence_Machine_Maintenance_r1_Authentification_default();
 	}
 
 	private void effect_Machine_Maintenance_r1_MachineManagement_tr0() {
@@ -656,8 +660,6 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 	private void effect_Machine_Machine_r1_Selection_tr1() {
 		exitSequence_Machine_Machine_r1_Selection();
 
-		sCInterface.raiseRefound();
-
 		enterSequence_Machine_Machine_r1_Standby_default();
 	}
 
@@ -691,6 +693,14 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 		enterSequence_Coin_ATM_Withdraw_default();
 	}
 
+	private void effect_Coin_ATM_Pay_tr3() {
+		exitSequence_Coin_ATM_Pay();
+
+		sCInterface.raiseRefound();
+
+		enterSequence_Coin_ATM_Withdraw_default();
+	}
+
 	private void effect_Coin_ATM_Withdraw_tr0() {
 		exitSequence_Coin_ATM_Withdraw();
 
@@ -716,16 +726,13 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 
 	/* Entry action for state 'Selection'. */
 	private void entryAction_Machine_Machine_r1_Selection() {
-
-		timer.setTimer(this, 0, 5 * 1000, false);
-
 		setNeedMoney(getNeedMoney() + sCInterface.itemPrice);
 	}
 
 	/* Entry action for state 'Distribute'. */
 	private void entryAction_Machine_Machine_r1_Distribute() {
 
-		timer.setTimer(this, 1, 1 * 1000, false);
+		timer.setTimer(this, 0, 1 * 1000, false);
 
 		sCInterface.setTotalPaid(sCInterface.getTotalPaid() - needMoney);
 	}
@@ -744,14 +751,9 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 		sCInterface.setTotalPaid(0);
 	}
 
-	/* Exit action for state 'Selection'. */
-	private void exitAction_Machine_Machine_r1_Selection() {
-		timer.unsetTimer(this, 0);
-	}
-
 	/* Exit action for state 'Distribute'. */
 	private void exitAction_Machine_Machine_r1_Distribute() {
-		timer.unsetTimer(this, 1);
+		timer.unsetTimer(this, 0);
 
 		sCInterface.raiseRefound();
 	}
@@ -924,8 +926,6 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 	private void exitSequence_Machine_Machine_r1_Selection() {
 		nextStateIndex = 0;
 		stateVector[0] = State.$NullState$;
-
-		exitAction_Machine_Machine_r1_Selection();
 	}
 
 	/* Default exit sequence for state Distribute */
@@ -1094,10 +1094,6 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 				} else {
 					if (check_Machine_Maintenance_r1_Stock_tr2_tr2()) {
 						effect_Machine_Maintenance_r1_Stock_tr2();
-					} else {
-						if (check_Machine_Maintenance_r1_Stock_tr3_tr3()) {
-							effect_Machine_Maintenance_r1_Stock_tr3();
-						}
 					}
 				}
 			}
@@ -1230,6 +1226,10 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 			} else {
 				if (check_Coin_ATM_Pay_tr2_tr2()) {
 					effect_Coin_ATM_Pay_tr2();
+				} else {
+					if (check_Coin_ATM_Pay_tr3_tr3()) {
+						effect_Coin_ATM_Pay_tr3();
+					}
 				}
 			}
 		}
