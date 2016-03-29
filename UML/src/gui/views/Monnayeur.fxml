@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="262.0" prefWidth="359.0" styleClass="background" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ImageView id="coin2" fitHeight="78.0" fitWidth="80.0" layoutX="52.0" layoutY="79.0" onMouseClicked="#onClick2Euro" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../data/img/2.gif" />
+         </image>
+      </ImageView>
+      <ImageView id="coin1" fitHeight="69.0" fitWidth="60.0" layoutX="150.0" layoutY="88.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../data/img/1.gif" />
+         </image>
+      </ImageView>
+      <ImageView id="coin50" fitHeight="94.0" fitWidth="80.0" layoutX="221.0" layoutY="78.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../data/img/50.gif" />
+         </image>
+      </ImageView>
+      <ImageView id="coin20" fitHeight="60.0" fitWidth="68.0" layoutX="62.0" layoutY="174.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../data/img/20.gif" />
+         </image>
+      </ImageView>
+      <ImageView id="coin10" fitHeight="60.0" fitWidth="45.0" layoutX="158.0" layoutY="181.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../data/img/10.gif" />
+         </image>
+      </ImageView>
+      <ImageView id="coin5" fitHeight="46.0" fitWidth="53.0" layoutX="238.0" layoutY="181.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../data/img/5.gif" />
+         </image>
+      </ImageView>
+      <Label layoutX="27.0" layoutY="33.0" text="Insert coin" />
+   </children>
+</Pane>
