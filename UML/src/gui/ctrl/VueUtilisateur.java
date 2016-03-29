@@ -175,13 +175,31 @@ public class VueUtilisateur extends Pane {
     	}
     	
     	if( focusArticle != null  ) {
-    		if( machine.Buy(p, focusArticle, solde) ) {
+    		Machine.Delivery d =  machine.Buy(p, focusArticle, solde);
+    		
+    		if( d.getArticle() != null ) {
     			Alert alert = new Alert(AlertType.CONFIRMATION);
     	    	alert.setTitle("Achat");
-    	    	alert.setHeaderText("Votre achat s'est déroulé avec succès. Vous avez acheté: "+focusArticle);
+    	    	alert.setHeaderText("Votre achat s'est déroulé avec succès.");
+    	    	if( d.getOther() != null ) {
+    	    		alert.setContentText("La machine a aussi distribué: " + d.getOther());
+    	    		
+    	    		if( d.getOther() instanceof ArrayList ) {
+    	    			ArrayList<Object> refund = (ArrayList<Object>) d.getOther();
+    	    			if( refund.size() > 0 && refund.get(0) instanceof Integer ) {
+    	    				for( Object a : refund ) {
+    	    					solde -= (Integer)a;
+    	    				}
+    	    			}   			
+    	    		}
+    	    	}
+    	    	
+    	    	solde -= d.getArticle().getPrice();
+    	    	focusArticle = null;
+    	    	updatePayement();
+    	    	
     	    	alert.show();
-    	    	solde = 0;
-    		}
+    	    }
     		else {
     			Alert alert = new Alert(AlertType.ERROR);
     	    	alert.setTitle("Erreur");

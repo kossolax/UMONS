@@ -10,7 +10,8 @@ import framework.modules.Module;
 import framework.payement.Payment;
 
 public class Machine {
-
+	
+	
 	private String name;
 	private Collection<Module> modules;
 	private Category category;
@@ -20,35 +21,52 @@ public class Machine {
 		this.name = name;
 		this.modules = new ArrayList<Module>();
 	}
+	
+	 public class Delivery {
+		 private final Article a;
+		 private final Object o;
+		 public Delivery(Article a, Object o) {         
+		        this.a= a;
+		        this.o= o;
+		 }
+		 public Article getArticle() {
+			 return a;
+		 }
+		 public Object getOther() {
+			 return o;
+		 }
+	}
 	/**
 	 * Buy.
 	 *
 	 * @param payement the kind of payement
 	 * @param article the article
 	 */
-	public boolean Buy(Payment payement, Article article, double solde) {
-		boolean res = false;
+	public Delivery Buy(Payment payement, Article article, int solde) {
+		Article deliveryArticle = null;
+		Object other = null;
 		
 		logger.debug("--------------------------------------------------");
 		logger.debug("Attempt to buy" + article + " with " + payement);
 		
 		if( article.isAvailaible() ) {
 			
-			double price = article.getPrice() - solde;
+			int price = article.getPrice() - solde;
 			logger.debug("Solde is " +solde +" article cost "+ article.getPrice() + " missing "+ price);
 			
-			if( payement.pay(price) ) {
+			other = payement.pay(price);
+			if( other != null ) {
 				logger.debug("payement validated");
 				
-				res = ( article.delivery() != null );
+				deliveryArticle = article.delivery();
 			}
 		}
-		if( res )
+		if( deliveryArticle != null )
 			logger.debug("Article has been delivered");
 		else
 			logger.debug("Article has not been delivered");
 		
-		return res;
+		return new Delivery(deliveryArticle, other);
 	}
 	
 	public void addModule(Module module) {

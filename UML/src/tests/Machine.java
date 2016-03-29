@@ -8,6 +8,7 @@ import java.util.Collection;
 import org.junit.Test;
 
 import framework.Article;
+import framework.Machine.Delivery;
 import framework.RawMaterial;
 import framework.Recipe;
 import framework.RawMaterial.TypeOfRawMaterial;
@@ -28,8 +29,11 @@ public class Machine {
 			Article cafe = new Article("Café", 10, new Recipe(recette));
 			
 			framework.Machine machine = new framework.Machine("cc");
-			assertTrue(machine.Buy(new Token(), cafe, 0.0));
-			assertFalse(machine.Buy(new Token(), cafe, 0.0));
+			Delivery d1 = machine.Buy(new Token(), cafe, 0);
+			Delivery d2 = machine.Buy(new Token(), cafe, 0);
+			
+			assertFalse( d1.getArticle()  == null );
+			assertTrue( d2.getArticle() == null );
 		} catch (Exception e ) {
 			fail(e.getMessage());
 		}

@@ -12,8 +12,8 @@ public class Token extends Payment {
 	public Token() {
 		setName("Jeton");
 	}
-	public boolean pay(double price) {
+	public Object pay(int price) {
 		logger.debug("Payement validated using tokken");
-		return true;
+		return Boolean.TRUE;
 	}
 }

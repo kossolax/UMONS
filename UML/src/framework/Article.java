@@ -56,7 +56,7 @@ public class Article {
 	public void setRecipe(Recipe r) {
 		recipe = r;
 	}
-	public double getPrice() {
+	public int getPrice() {
 		return price;
 	}
 	public String getName() {

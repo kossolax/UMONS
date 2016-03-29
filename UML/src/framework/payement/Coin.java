@@ -50,56 +50,68 @@ public class Coin extends Payment {
 		}
 		return true;
 	}
-	public boolean pay(double price) {
-		if( price <= 0.0 )
-			return true;
-		return false;
+	public Object pay(int price) {
+		if( price == 0 )
+			return Boolean.TRUE;
+		else if( price < 0.0 )
+			return refund(-price);
+		return null;
 	}
 	public Collection<Integer> getModules() {
 		return new ArrayList<Integer>(piece.keySet());
 	}
 	public ArrayList<Integer> refund(int amount) {
-		Set<Integer> keys = piece.keySet();
-		Integer[] val = keys.toArray(new Integer[keys.size()]);
-		Integer[] res = new Integer[val.length];
-		int length = val.length;
-		
-		int i = 0;
-		int j;
-		int tmp;
-		
-		while( i < length && amount != 0 ) {			
+		try {
+			Set<Integer> keys = piece.keySet();
+			Integer[] val = keys.toArray(new Integer[keys.size()]);
+			Integer[] res = new Integer[val.length];
+			int length = val.length;
 			
-			for(j=0; j<length; j++)
-				res[j] = 0;
+			int i = 0;
+			int j;
+			int tmp;
 			
-			tmp = amount;
-			j = i;
-			while ( tmp > 0 && j < length ) {				
-				while( j < length && (val[j] > tmp || piece.get(val[j]).getAmount()-res[j] <= 0) ) j++;
-				if( j >= length )
-					break;
+			while( i < length && amount != 0 ) {			
+				
+				for(j=0; j<length; j++)
+					res[j] = 0;
+				
+				tmp = amount;
+				j = i;
+				while ( tmp > 0 && j < length ) {				
+					while( j < length && (val[j] > tmp || piece.get(val[j]).getAmount()-res[j] <= 0) ) j++;
+					if( j >= length )
+						break;
+					
+					
+					res[j]++;
+					tmp = tmp - val[j];
+				}
 				
 				
-				res[j]++;
-				tmp = tmp - val[j];
+				if( tmp == 0 )
+					amount = 0;
+				i++;
 			}
 			
 			
-			if( tmp == 0 )
-				amount = 0;
-			i++;
-		}
-		
-		
-		ArrayList<Integer> refund = new ArrayList<Integer>();
-		if( amount == 0 ) {
-			for(i=0; i<length; i++) {
-				for(j=0; j<res[i]; j++) {
-					refund.add(val[i]);
+			ArrayList<Integer> refund = new ArrayList<Integer>();
+			if( amount == 0 ) {
+				for(i=0; i<length; i++) {
+					for(j=0; j<res[i]; j++) {
+						refund.add(val[i]);
+						piece.get(val[i]).Substract(1);
+					}
 				}
 			}
+			else {
+				return null;
+			}
+			
+			return refund;
+		} catch (Exception e) {
+			// Est nécessaire pour la compilation car substract throw une erreur.
 		}
-		return refund;
+		return null;
 	}
 }
