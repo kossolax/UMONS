@@ -65,7 +65,7 @@ public class VueUtilisateur extends Pane  {
         try {
         	stage = new Stage();
             scene = new Scene(fxmlLoader.load()); 
-            stage.setTitle("Création d'une nouvelle machine");
+            stage.setTitle("Interface utilisateur");
             stage.setScene(scene);
             stage.setResizable(false);
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -168,7 +168,7 @@ public class VueUtilisateur extends Pane  {
 			}
     	}
     }
-    private void updatePayement() {
+    public void updatePayement() {
     	if( focusArticle != null ) {
     		((ImageView)scene.lookup("#image")).setVisible(true);
     		((Label)scene.lookup("#name")).setVisible(true);
@@ -196,7 +196,7 @@ public class VueUtilisateur extends Pane  {
     @FXML
     private void OnClick_Buy(Event e) {
        	Payment p = (Payment)((Node)e.getTarget()).getUserData();
-    	
+       //	VueMonnayeur v = new VueMonnayeur(stage, machine);
     	if( p instanceof Coin ) {
     		Coin c = (Coin)p;
     		

@@ -55,11 +55,11 @@ public class RawMaterial {
 	public int getMax() {
 		return max;
 	}
-	public int setMin() {
-		return min;
+	public void setMin(int _min) {
+		this.min = _min;
 	}
-	public int setMax() {
-		return max;
+	public void setMax(int _max) {
+		this.max = _max;
 	}
 	public String getName() {
 		return name;

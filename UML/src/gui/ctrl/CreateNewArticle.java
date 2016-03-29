@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import javax.security.auth.callback.Callback;
+
 import framework.Article;
 import framework.Category;
 import framework.Machine;
@@ -24,6 +26,7 @@ import framework.stockage.Stockage;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -49,6 +52,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 public class CreateNewArticle  {    
     
@@ -90,22 +94,54 @@ public class CreateNewArticle  {
 	
 	private void initialize(Stage stage) {
 		TableView<RawMaterial> table = ((TableView)scene.lookup("#table"));
+	
+		table.setEditable(true);
+
+        
 		if( table.getColumns().isEmpty() ) {
 			table.setPlaceholder(new Label("Double clique pour ajouter une matière première"));
-			table.setEditable(true);
-			TableColumn mp = new TableColumn("Matière première");
-			TableColumn min = new TableColumn("min");
+			TableColumn mp = new TableColumn("Name");
 			TableColumn max = new TableColumn("max");
+			try{
+			TableColumn min = new TableColumn("min");
+			min.setCellValueFactory(
+	            new PropertyValueFactory<RawMaterial, Integer>("min"));
+			min.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<Integer>(){
+
+		        @Override
+		        public String toString(Integer object) {
+		            return object.toString();
+		        }
+
+		        @Override
+		        public Integer fromString(String string) {
+		            return Integer.parseInt(string);
+		        }
+
+		    }));
+			 min.setOnEditCommit(
+                     new EventHandler<CellEditEvent<RawMaterial, Integer>>() {
+                         public void handle(CellEditEvent<RawMaterial, Integer> t) {
+                             ((RawMaterial) t.getTableView().getItems().get(
+                                     t.getTablePosition().getRow())
+                                     ).setMin((int)t.getNewValue());
+                         }
+                     });
+                     
 			mp.setCellValueFactory(new PropertyValueFactory<>("name"));
-			min.setCellValueFactory(new PropertyValueFactory<>("min"));	
+			//min.setCellValueFactory(new PropertyValueFactory<>("min"));	
 			max.setCellValueFactory(new PropertyValueFactory<>("max"));
 			
 			table.getColumns().addAll(mp, min, max);
+			}catch(Exception f){
+				f.printStackTrace();
+				//System.out.println(f);
+			}
 		}
 		
 		ObservableList<RawMaterial> data = FXCollections.observableArrayList(article.getRecipe());
 		table.setItems(data);
-        
+table.setEditable(true);
         
         if( article.getImage() != null ) {
         	((ImageView)scene.lookup("#image")).setImage(new Image(article.getImage().toURI().toString()));
