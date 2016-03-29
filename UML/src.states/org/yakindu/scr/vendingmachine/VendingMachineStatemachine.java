@@ -13,6 +13,12 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 			return listeners;
 		}
 
+		private SCInterfaceOperationCallback operationCallback;
+
+		public void setSCInterfaceOperationCallback(SCInterfaceOperationCallback operationCallback) {
+			this.operationCallback = operationCallback;
+		}
+
 		private boolean insertPiece;
 
 		public void raiseInsertPiece() {
@@ -482,7 +488,7 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 	}
 
 	private boolean check_Machine_Machine_r1_Selection_tr0_tr0() {
-		return sCInterface.getTotalPaid() >= getNeedMoney();
+		return sCInterface.getTotalPaid() >= getNeedMoney() && sCInterface.operationCallback.validate();
 	}
 
 	private boolean check_Machine_Machine_r1_Selection_tr1_tr1() {
@@ -650,6 +656,8 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 	private void effect_Machine_Machine_r1_Selection_tr1() {
 		exitSequence_Machine_Machine_r1_Selection();
 
+		sCInterface.raiseRefound();
+
 		enterSequence_Machine_Machine_r1_Standby_default();
 	}
 
@@ -709,7 +717,7 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 	/* Entry action for state 'Selection'. */
 	private void entryAction_Machine_Machine_r1_Selection() {
 
-		timer.setTimer(this, 0, 10 * 1000, false);
+		timer.setTimer(this, 0, 5 * 1000, false);
 
 		setNeedMoney(getNeedMoney() + sCInterface.itemPrice);
 	}

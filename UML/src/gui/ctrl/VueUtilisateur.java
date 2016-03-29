@@ -8,6 +8,7 @@ import java.util.Stack;
 import org.yakindu.scr.RuntimeService;
 import org.yakindu.scr.vendingmachine.IVendingMachineStatemachine;
 import org.yakindu.scr.vendingmachine.IVendingMachineStatemachine.SCInterfaceListener;
+import org.yakindu.scr.vendingmachine.IVendingMachineStatemachine.SCInterfaceOperationCallback;
 
 import framework.Article;
 import framework.Category;
@@ -50,6 +51,7 @@ public class VueUtilisateur extends Pane  {
 	private Machine machine;
 	private Category focusCategory;
 	private Article focusArticle;
+	private boolean pass;
 	
     public VueUtilisateur(Stage parent, Machine machine) {
         this.mainApp = parent;
@@ -84,7 +86,16 @@ public class VueUtilisateur extends Pane  {
 						}
 					}
 				}
-        		
+        	});
+        	MainApp.getState().getSCInterface().setSCInterfaceOperationCallback(new SCInterfaceOperationCallback() {
+				public boolean validate() {
+					if( pass ) {
+						pass = false;
+						return true;
+					}
+					
+					return false;
+				}
         	});
         	
         } catch (IOException e) {
@@ -199,7 +210,6 @@ public class VueUtilisateur extends Pane  {
 	    			MainApp.getState().getSCInterface().setPiece( result.get() );
 	    			MainApp.getState().getSCInterface().raiseInsertPiece();
 	    			MainApp.getState().runCycle();
-	    			//solde += result.get();
 	    		}
 	    		updatePayement();
 	    	}
@@ -209,6 +219,7 @@ public class VueUtilisateur extends Pane  {
     		Machine.Delivery d =  machine.Buy(p, focusArticle, Math.toIntExact(MainApp.getState().getSCInterface().getTotalPaid()));
     		
     		if( d.getArticle() != null ) {
+    			pass = true;
     			Alert alert = new Alert(AlertType.CONFIRMATION);
     	    	alert.setTitle("Achat");
     	    	alert.setHeaderText("Votre achat s'est déroulé avec succès.");

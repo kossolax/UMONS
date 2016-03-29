@@ -28,10 +28,15 @@ public interface IVendingMachineStatemachine extends ITimerCallback, IStatemachi
 		public void setTotalPaid(long value);
 		public List<SCInterfaceListener> getListeners();
 
+		public void setSCInterfaceOperationCallback(SCInterfaceOperationCallback operationCallback);
 	}
 
 	public interface SCInterfaceListener {
 		public void onRefoundRaised();
+	}
+
+	public interface SCInterfaceOperationCallback {
+		public boolean validate();
 	}
 
 	public SCInterface getSCInterface();
