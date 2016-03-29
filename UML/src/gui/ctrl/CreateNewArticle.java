@@ -130,7 +130,7 @@ public class CreateNewArticle  {
 			dialog.setHeaderText("Choisissez une matière première");
 			Optional<RawMaterial> result = dialog.showAndWait();
 			if (result.isPresent()){
-				article.getRecipe().add(result.get());
+				article.getRecipe().add(new RawMaterial(result.get()));
 				initialize(stage);
 			}
 		}

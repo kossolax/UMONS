@@ -34,6 +34,15 @@ public class RawMaterial {
 		this.contains = contains;
 		contains.setContains(this);
 	}
+	public RawMaterial(RawMaterial r) {
+		this.name = r.name;
+		this.amount = r.amount;
+		this.min = r.min;
+		this.max = r.max;
+		this.variable = r.variable;
+		this.contains = r.contains;
+		this.kind = r.kind;
+	}
 	public Stockage getStock() {
 		return contains;
 	}
