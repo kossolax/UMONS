@@ -16,6 +16,7 @@ import framework.payement.Payment;
 import framework.payement.Token;
 import framework.stockage.Classic;
 import framework.stockage.Stockage;
+import gui.MainApp;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -45,14 +46,12 @@ public class VueUtilisateur extends Pane {
 	private Machine machine;
 	private Category focusCategory;
 	private Article focusArticle;
-	private int solde;
 	
     public VueUtilisateur(Stage parent, Machine machine) {
         this.mainApp = parent;
         this.machine = machine;
         this.focusCategory = machine.getCategory();
         this.focusArticle = null;
-        this.solde = 0;
         
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gui/views/VueUtilisateur.fxml"));
         fxmlLoader.setController(this);
@@ -100,6 +99,11 @@ public class VueUtilisateur extends Pane {
         			Pane n = Utils.addNewArticle(p, a);
         			n.setOnMousePressed(new EventHandler<MouseEvent>() {
                 	    public void handle(MouseEvent e) {
+                	    	
+                	    	MainApp.getState().setItemPrice(a.getPrice());
+                	    	MainApp.getState().raiseAddItem();
+                	    	MainApp.getState().runCycle();
+                	    	
                 	    	focusArticle = a;
                 	    	updatePayement();
                 	    }
@@ -149,10 +153,13 @@ public class VueUtilisateur extends Pane {
     		((Label)scene.lookup("#price")).setVisible(false);
     	}
     	
-    	((Label)scene.lookup("#solde")).setText("Solde: "+solde+"€");
+    	
+    	((Label)scene.lookup("#solde")).setText("Solde: "+MainApp.getState().getTotalPaid()+" €");
     }
     @FXML
     private void handleExit() {
+    	MainApp.getState().getSCInterface().raiseMaintenance();
+		MainApp.getState().runCycle();
     	stage.close();
     }
     @FXML
@@ -168,14 +175,17 @@ public class VueUtilisateur extends Pane {
 	    	dialog.setHeaderText("Choisissez une pièce");
 	    	Optional<Integer> result = dialog.showAndWait();
 	    	if (result.isPresent()){
-	    		if( c.insertPiece(result.get()) );
-	    			solde += result.get();
+	    		if( c.insertPiece(result.get()) ) {
+	    			MainApp.getState().setPiece( result.get() );
+	    			MainApp.getState().raiseInsertPiece();
+	    			//solde += result.get();
+	    		}
 	    		updatePayement();
 	    	}
     	}
     	
     	if( focusArticle != null  ) {
-    		Machine.Delivery d =  machine.Buy(p, focusArticle, solde);
+    		Machine.Delivery d =  machine.Buy(p, focusArticle, Math.toIntExact(MainApp.getState().getTotalPaid()));
     		
     		if( d.getArticle() != null ) {
     			Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -186,15 +196,15 @@ public class VueUtilisateur extends Pane {
     	    		
     	    		if( d.getOther() instanceof ArrayList ) {
     	    			ArrayList<Object> refund = (ArrayList<Object>) d.getOther();
-    	    			if( refund.size() > 0 && refund.get(0) instanceof Integer ) {
+    	    			/*if( refund.size() > 0 && refund.get(0) instanceof Integer ) {
     	    				for( Object a : refund ) {
     	    					solde -= (Integer)a;
     	    				}
-    	    			}   			
+    	    			}*/	
     	    		}
     	    	}
     	    	
-    	    	solde -= d.getArticle().getPrice();
+    	    	//solde -= d.getArticle().getPrice();
     	    	focusArticle = null;
     	    	updatePayement();
     	    	

@@ -1,10 +1,14 @@
 GeneratorModel for yakindu::java {
 
-	statechart default {
+	statechart vendingMachine {
 
 		feature Outlet {
 			targetProject = "vendingMachine"
 			targetFolder = "src.states"
+		}
+		
+		feature GeneralFeatures {
+			TimerService = true
 		}
 	}
 }

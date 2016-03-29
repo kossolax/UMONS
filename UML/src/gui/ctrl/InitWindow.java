@@ -2,6 +2,7 @@ package gui.ctrl;
 
 import java.io.IOException;
 import framework.Machine;
+import gui.MainApp;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -37,6 +38,11 @@ public class InitWindow extends Pane {
 	@SuppressWarnings("unchecked")
 	@FXML
     private void OnClick_Create() {
+		
+		MainApp.getState().getSCInterface().setLoginType(1);
+		MainApp.getState().getSCInterface().raiseLogin();
+		MainApp.getState().runCycle();
+		
     	Machine machine = CreateNewMachine.getNewMachine(mainApp);
     	if( machine != null ) {
     		((ComboBox<Machine>)scene.lookup("#CBMachineList")).getItems().add(machine);
@@ -45,6 +51,11 @@ public class InitWindow extends Pane {
 	@SuppressWarnings("unchecked")
 	@FXML
     private void OnClick_Load() {
+		
+		MainApp.getState().getSCInterface().setLoginType(0);
+		MainApp.getState().getSCInterface().raiseLogin();
+		MainApp.getState().runCycle();
+		
 		Machine machine = ((ComboBox<Machine>)scene.lookup("#CBMachineList")).getValue();
     	if( machine != null ) {
     		VueFournisseur f = new VueFournisseur(mainApp, machine);

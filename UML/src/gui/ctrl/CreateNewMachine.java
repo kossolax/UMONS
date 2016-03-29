@@ -12,6 +12,7 @@ import framework.payement.Token;
 import framework.stockage.Classic;
 import framework.stockage.Cooling;
 import framework.stockage.Freeze;
+import gui.MainApp;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -33,6 +34,10 @@ public class CreateNewMachine  {
 	public static Machine getNewMachine(Stage mainApp) {
 		returnValue = null;
 		CreateNewMachine form = new CreateNewMachine(mainApp);
+		
+		
+		MainApp.getState().getSCInterface().raiseLogout();
+		MainApp.getState().runCycle();
 		return returnValue;
 	}
 	

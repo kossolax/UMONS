@@ -13,6 +13,7 @@ import framework.modules.Module;
 import framework.payement.Payment;
 import framework.stockage.Classic;
 import framework.stockage.Stockage;
+import gui.MainApp;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -123,7 +124,9 @@ public class VueFournisseur extends Pane {
     }
     @FXML
     private void handleExit() {
-    	stage.close();
+    	MainApp.getState().getSCInterface().raiseLogout();
+		MainApp.getState().runCycle();
+		stage.close();
     }
     
     @FXML
@@ -168,6 +171,9 @@ public class VueFournisseur extends Pane {
     }
     @FXML
     private void OnClick_VueUtilisateur() {
+    	MainApp.getState().getSCInterface().raiseMaintenance();
+		MainApp.getState().runCycle();
+		
     	VueUtilisateur v = new VueUtilisateur(stage, machine);
     }
     
