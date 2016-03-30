@@ -147,7 +147,7 @@ public class CreateNewArticle  {
 		
 		ObservableList<RawMaterial> data = FXCollections.observableArrayList(article.getRecipe());
 		table.setItems(data);
-table.setEditable(true);
+		table.setEditable(true);
         
         if( article.getImage() != null ) {
         	((ImageView)scene.lookup("#image")).setImage(new Image(article.getImage().toURI().toString()));
@@ -207,6 +207,8 @@ table.setEditable(true);
 	    	price = Integer.parseInt(((TextField)scene.lookup("#price")).getText());
     		if( price <= 0.0 )
     			throw new Exception("prix de l'article"); 
+    		if( article.getImage() == null )
+    			throw new Exception("Image");
     		
 	    	article.setName(name);
 			article.setPrice(price);
@@ -217,7 +219,7 @@ table.setEditable(true);
     		
     		Alert alert = new Alert(AlertType.ERROR);
     		alert.setTitle("Erreur");
-    		alert.setHeaderText("Veuillez corriger le champs quantité");
+    		alert.setHeaderText("Veuillez corriger le champs prix de l'article");
     		alert.show();
     		return;
     	} catch ( Exception e ) {
