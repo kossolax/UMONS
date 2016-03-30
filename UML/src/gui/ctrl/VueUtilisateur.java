@@ -87,10 +87,10 @@ public class VueUtilisateur extends Pane  {
 				System.out.println("refound raised event");
 				if( coin != null ) {
 					ArrayList<Integer> c = coin.refund((int)MainApp.getState().getSCInterface().getTotalPaid());
-					System.out.println(c);
 					focusArticle = null;
 					MainApp.getState().getSCInterface().setTotalPaid(0);
 					Platform.runLater(() -> updatePayement());
+					Platform.runLater(() -> Utils.showPopUp(c));
 				}
 			}
     	});
@@ -213,10 +213,11 @@ public class VueUtilisateur extends Pane  {
     			Alert alert = new Alert(AlertType.CONFIRMATION);
     	    	alert.setTitle("Achat");
     	    	alert.setHeaderText("Votre achat s'est déroulé avec succés.");
-    	    	if( d.getOther() != null && d.getOther() instanceof ArrayList ) {
-    	    		alert.setContentText("La machine a aussi distribué: " + d.getOther());
-    	    	}
-    	    	alert.show();
+    	    	alert.showAndWait();
+    	    	
+    	    	Utils.showPopUp(d.getArticle());
+    	    	if( d.getOther() != null && d.getOther() instanceof ArrayList )
+    	    		Utils.showPopUp(d.getOther());
     	    }
     		else {
     			Alert alert = new Alert(AlertType.ERROR);
