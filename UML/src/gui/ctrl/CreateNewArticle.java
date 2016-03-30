@@ -80,15 +80,15 @@ public class CreateNewArticle  {
 	
 	
 	private void initialize(Stage stage) {
-		TableView<RawMaterial> table = ((TableView)scene.lookup("#table"));
+		TableView<RawMaterial> table = ((TableView<RawMaterial>)scene.lookup("#table"));
 	
 		table.setEditable(true);
 
         
 		if( table.getColumns().isEmpty() ) {
 			table.setPlaceholder(new Label("Double clique pour ajouter une matière première"));
-			TableColumn mp = new TableColumn("Name");
-			TableColumn max = new TableColumn("max");
+			TableColumn<RawMaterial, String> mp = new TableColumn<RawMaterial, String>("Name");
+			TableColumn<RawMaterial, Integer> max = new TableColumn<RawMaterial, Integer>("max");
 			max.setCellValueFactory(
 		            new PropertyValueFactory<RawMaterial, Integer>("max"));
 			max.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<Integer>(){
@@ -113,7 +113,7 @@ public class CreateNewArticle  {
 	                         }
 	                     });
 			
-			TableColumn min = new TableColumn("min");
+			TableColumn<RawMaterial, Integer> min = new TableColumn<RawMaterial, Integer>("min");
 			min.setCellValueFactory(
 	            new PropertyValueFactory<RawMaterial, Integer>("min"));
 			min.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<Integer>(){
@@ -166,14 +166,22 @@ public class CreateNewArticle  {
 						lst.add(((Stockage)m).getContains());
 				}
 			}
-
-			ChoiceDialog<RawMaterial> dialog = new ChoiceDialog<RawMaterial>(lst.iterator().next(), lst);
-			dialog.setTitle("Choisissez une matière première");
-			dialog.setHeaderText("Choisissez une matière première");
-			Optional<RawMaterial> result = dialog.showAndWait();
-			if (result.isPresent()){
-				article.getRecipe().add(new RawMaterial(result.get()));
-				initialize(stage);
+			
+			if( lst.size() == 0 ) {
+				Alert alert = new Alert(AlertType.ERROR);
+	    		alert.setTitle("Erreur");
+	    		alert.setHeaderText("Vous n'avez ajouté aucune matière première dans cette machine.");
+	    		alert.show();
+			}
+			else {
+				ChoiceDialog<RawMaterial> dialog = new ChoiceDialog<RawMaterial>(lst.iterator().next(), lst);
+				dialog.setTitle("Choisissez une matière première");
+				dialog.setHeaderText("Choisissez une matière première");
+				Optional<RawMaterial> result = dialog.showAndWait();
+				if (result.isPresent()){
+					article.getRecipe().add(new RawMaterial(result.get()));
+					initialize(stage);
+				}
 			}
 		}
 	}
