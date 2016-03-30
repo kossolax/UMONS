@@ -4,6 +4,8 @@ import java.io.IOException;
 import framework.Machine;
 import framework.modules.Module;
 import framework.stockage.Stockage;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,7 +23,6 @@ public class GestionStock  {
 	private Stage mainApp, stage;
 	private Scene scene;
 	private Machine machine;
-	
 	public GestionStock(Stage mainApp, Machine machine) {
         this.mainApp = mainApp;
         this.machine = machine;
@@ -47,7 +48,7 @@ public class GestionStock  {
 	
 	private void initialize(Stage stage) {
 		ComboBox<Stockage> cb = (ComboBox<Stockage>)scene.lookup("#stockage");
-		
+		cb.getItems().clear();
 		for( Module m : machine.getModules() ) {
 			if( m instanceof Stockage ) {
 				if( ((Stockage) m).getContains() != null )
@@ -69,6 +70,8 @@ public class GestionStock  {
 	    		s.Substract(-qt);
 	    	
     		((TextField)scene.lookup("#amount")).setText("");
+    		
+    		initialize(stage);
         	
     	} catch ( NumberFormatException e ) {
     		Alert alert = new Alert(AlertType.ERROR);
