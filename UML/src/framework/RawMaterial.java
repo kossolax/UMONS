@@ -56,10 +56,14 @@ public class RawMaterial {
 		return max;
 	}
 	public void setMin(int _min) {
+		if(_min > this.max) this.max = _min;
 		this.min = _min;
+		updateAmount();
 	}
 	public void setMax(int _max) {
+		if(_max < this.min) this.min = _max;
 		this.max = _max;
+		updateAmount();
 	}
 	public String getName() {
 		return name;
@@ -67,5 +71,10 @@ public class RawMaterial {
 	public String toString() {
 		return amount + " " + kind + " de "+ name + " dans "+ contains;
 	}
-
+	public void updateAmount() {
+		this.amount = (getMax() - getMin())/2 + getMin();
+	}
+	public void setAmount(int intValue) {
+		this.amount = intValue;
+	}
 }

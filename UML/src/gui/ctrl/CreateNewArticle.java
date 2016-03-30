@@ -97,6 +97,7 @@ public class CreateNewArticle  {
 			max.setOnEditCommit(new EventHandler<CellEditEvent<RawMaterial, Integer>>() {
 				public void handle(CellEditEvent<RawMaterial, Integer> t) {
 					((RawMaterial) t.getTableView().getItems().get(t.getTablePosition().getRow())).setMax((int)t.getNewValue());
+					table.refresh();
 				}
 			});
 			
@@ -105,6 +106,7 @@ public class CreateNewArticle  {
 			min.setOnEditCommit(new EventHandler<CellEditEvent<RawMaterial, Integer>>() {
 				public void handle(CellEditEvent<RawMaterial, Integer> t) {
 					((RawMaterial) t.getTableView().getItems().get(t.getTablePosition().getRow())).setMin((int)t.getNewValue());
+					table.refresh();
 				}
 			});
 				

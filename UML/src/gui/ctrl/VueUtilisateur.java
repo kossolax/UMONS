@@ -2,6 +2,7 @@ package gui.ctrl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.yakindu.scr.vendingmachine.IVendingMachineStatemachine.SCInterfaceListener;
 import org.yakindu.scr.vendingmachine.IVendingMachineStatemachine.SCInterfaceOperationCallback;
@@ -9,6 +10,7 @@ import org.yakindu.scr.vendingmachine.IVendingMachineStatemachine.SCInterfaceOpe
 import framework.Article;
 import framework.Category;
 import framework.Machine;
+import framework.RawMaterial;
 import framework.modules.Module;
 import framework.payement.Carte;
 import framework.payement.Coin;
@@ -24,6 +26,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.Alert.AlertType;
@@ -170,12 +174,31 @@ public class VueUtilisateur extends Pane  {
     		
     		((ImageView)scene.lookup("#image")).setImage(new Image(focusArticle.getImage().toURI().toString()));
     		((Label)scene.lookup("#name")).setText(focusArticle.getName());
-    		((Label)scene.lookup("#price")).setText(focusArticle.getPrice()+" €");
+    		((Label)scene.lookup("#price")).setText(focusArticle.getPrice()/100+" €");
+    		((Pane)scene.lookup("#idPane")).getChildren().clear();
+    		for(RawMaterial obj: focusArticle.getRecipe()) {
+    			if( obj.getMin() == obj.getMax() )
+    				continue;
+    			
+    			Slider slider = new Slider(obj.getMin(), obj.getMax(), obj.getAmount());
+    			slider.setShowTickLabels(true);
+    			slider.setShowTickMarks(true);
+    			slider.setSnapToTicks(true);
+    			slider.setMajorTickUnit(1);
+    			slider.setMinorTickCount(0);
+    			slider.setBlockIncrement(1.0);
+    			slider.valueProperty().addListener((observable, oldValue, newValue) -> {
+    			    obj.setAmount(newValue.intValue());
+    			});
+    			
+    			((Pane)scene.lookup("#idPane")).getChildren().add(slider);
+    		}
     	}
     	else {
     		((ImageView)scene.lookup("#image")).setVisible(false);
     		((Label)scene.lookup("#name")).setVisible(false);
     		((Label)scene.lookup("#price")).setVisible(false);
+    		
     	}
     	
     	((Label)scene.lookup("#solde")).setText("Solde: "+MainApp.getState().getSCInterface().getTotalPaid()+" €");

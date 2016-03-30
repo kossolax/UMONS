@@ -89,11 +89,19 @@ public class CreateNewMachine  {
     @FXML
     private void OnClick_Validate(ActionEvent event) {
     	String name = ((TextField)scene.lookup("#txtNomMachine")).getText().trim();
-    	
     	if( name.length() <= 3 ) {
     		Alert alert = new Alert(AlertType.ERROR);
     		alert.setTitle("Erreur");
     		alert.setHeaderText("Le nom de la machine doit faire plus de 3 caractères");
+    		alert.show();
+    		return;
+    	}
+    	if( !(((CheckBox)scene.lookup("#btnCarte")).isSelected()) && 
+    			!(((CheckBox)scene.lookup("#btnToken")).isSelected()) &&
+    			!(((CheckBox)scene.lookup("#btnPiece")).isSelected())) {
+    		Alert alert = new Alert(AlertType.ERROR);
+    		alert.setTitle("Erreur");
+    		alert.setHeaderText("La machine doit au moins avoir un systeme de payement");
     		alert.show();
     		return;
     	}
