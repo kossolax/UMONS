@@ -1,19 +1,8 @@
 package gui.ctrl;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-
-import framework.Category;
 import framework.Machine;
-import framework.RawMaterial;
-import framework.modules.Boiler;
 import framework.modules.Module;
-import framework.modules.Water;
-import framework.payement.Carte;
-import framework.payement.Token;
-import framework.stockage.Classic;
-import framework.stockage.Cooling;
-import framework.stockage.Freeze;
 import framework.stockage.Stockage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -21,13 +10,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Control;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+@SuppressWarnings({"unused", "unchecked"})
 public class GestionStock  {    
     
 	private Stage mainApp, stage;
@@ -54,7 +42,6 @@ public class GestionStock  {
         	stage.show();
         	
         } catch (IOException e) {
-			e.printStackTrace();
 		}
     }
 	

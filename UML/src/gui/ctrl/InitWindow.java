@@ -2,20 +2,16 @@ package gui.ctrl;
 
 import java.io.IOException;
 
-import org.yakindu.scr.RuntimeService;
-
 import framework.Machine;
 import gui.MainApp;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Pane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
+@SuppressWarnings({"unused", "unchecked"})
 public class InitWindow extends Pane {    
     
 	private Stage mainApp;
@@ -36,11 +32,10 @@ public class InitWindow extends Pane {
         	
         	stage.show();
         } catch (IOException e) {
-			e.printStackTrace();
-		}
+
+        }
     }
 
-	@SuppressWarnings("unchecked")
 	@FXML
     private void OnClick_Create() {
 		
@@ -53,7 +48,6 @@ public class InitWindow extends Pane {
     		((ComboBox<Machine>)scene.lookup("#CBMachineList")).getItems().add(machine);
     	}
     }
-	@SuppressWarnings("unchecked")
 	@FXML
     private void OnClick_Load() {
 		

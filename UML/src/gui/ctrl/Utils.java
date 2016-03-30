@@ -3,7 +3,6 @@ package gui.ctrl;
 import java.io.IOException;
 import framework.Article;
 import framework.Category;
-import framework.modules.Module;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -34,7 +33,7 @@ public class Utils {
 			p.getChildren().add(n);
 			
 		} catch (IOException e) {
-			e.printStackTrace();
+			
 		}
 		
 		return n;

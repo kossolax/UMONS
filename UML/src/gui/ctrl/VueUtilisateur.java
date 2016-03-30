@@ -35,7 +35,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-
+@SuppressWarnings({"unused"})
 public class VueUtilisateur extends Pane  {    
     
 	private Stage mainApp, stage;
@@ -70,8 +70,8 @@ public class VueUtilisateur extends Pane  {
         	stage.show();
         	
         } catch (IOException e) {
-			e.printStackTrace();
-		}
+        	
+        }
     }
     private void bindYakindo() {
     	MainApp.getState().getSCInterface().getListeners().clear();

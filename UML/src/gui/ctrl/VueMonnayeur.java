@@ -1,40 +1,19 @@
 package gui.ctrl;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.util.Optional;
-
-import framework.Category;
 import framework.Machine;
-import framework.RawMaterial;
-import framework.modules.Boiler;
-import framework.modules.Module;
-import framework.modules.Water;
-import framework.payement.Carte;
 import framework.payement.Coin;
 import framework.payement.Payment;
-import framework.payement.Token;
-import framework.stockage.Classic;
-import framework.stockage.Cooling;
-import framework.stockage.Freeze;
-import framework.stockage.Stockage;
 import gui.MainApp;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Control;
-import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+@SuppressWarnings({"unused"})
 public class VueMonnayeur  {    
     
 	private Stage mainApp, stage;
@@ -61,7 +40,6 @@ public class VueMonnayeur  {
         	stage.show();
         	
         } catch (IOException e) {
-			e.printStackTrace();
 		}
     }
 	

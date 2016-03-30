@@ -4,28 +4,16 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
-import javax.security.auth.callback.Callback;
-
 import framework.Article;
-import framework.Category;
 import framework.Machine;
 import framework.RawMaterial;
 import framework.Recipe;
-import framework.modules.Boiler;
 import framework.modules.Module;
-import framework.modules.Water;
-import framework.payement.Carte;
-import framework.payement.Token;
-import framework.stockage.Classic;
-import framework.stockage.Cooling;
-import framework.stockage.Freeze;
 import framework.stockage.Stockage;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -33,10 +21,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
@@ -54,6 +39,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
+@SuppressWarnings({"unused", "unchecked"})
 public class CreateNewArticle  {    
     
 	private Stage mainApp, stage;
@@ -61,6 +47,7 @@ public class CreateNewArticle  {
 	private Machine machine;
 	private Article article;
 	private static Article returnValue;
+	
 	
 	public static Article getNewArticle(Stage mainApp, Machine machine) {
 		returnValue = null;
@@ -88,9 +75,9 @@ public class CreateNewArticle  {
         	stage.showAndWait();
         	
         } catch (IOException e) {
-			e.printStackTrace();
 		}
     }
+	
 	
 	private void initialize(Stage stage) {
 		TableView<RawMaterial> table = ((TableView)scene.lookup("#table"));

@@ -9,7 +9,7 @@ import gui.ctrl.InitWindow;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
-
+@SuppressWarnings({"unused"})
 public class MainApp extends Application {
 	
 	private static VendingMachineStatemachine state;

@@ -1,14 +1,8 @@
 package framework.payement;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.Hashtable;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -16,6 +10,7 @@ import framework.Machine;
 import framework.RawMaterial;
 import framework.stockage.Stockage;
 
+@SuppressWarnings({"unused"})
 public class Coin extends Payment {
 	private TreeMap<Integer, Stockage> piece;
 	private Machine machine;

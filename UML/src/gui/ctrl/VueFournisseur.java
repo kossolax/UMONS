@@ -1,17 +1,11 @@
 package gui.ctrl;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Optional;
-import java.util.Stack;
-
 import framework.Article;
 import framework.Category;
 import framework.Machine;
-import framework.RawMaterial;
 import framework.modules.Module;
-import framework.payement.Payment;
-import framework.stockage.Classic;
 import framework.stockage.Stockage;
 import gui.MainApp;
 import javafx.event.Event;
@@ -21,19 +15,15 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-
+@SuppressWarnings({"unused"})
 public class VueFournisseur extends Pane {    
     
 	private Stage mainApp, stage;
@@ -62,7 +52,6 @@ public class VueFournisseur extends Pane {
         	stage.show();
         	
         } catch (IOException e) {
-			e.printStackTrace();
 		}
     }
     

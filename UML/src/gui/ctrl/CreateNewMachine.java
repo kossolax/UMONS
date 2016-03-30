@@ -25,6 +25,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+@SuppressWarnings({"unused"})
 public class CreateNewMachine  {    
     
 	private Stage mainApp, stage;
@@ -57,7 +58,6 @@ public class CreateNewMachine  {
         	stage.showAndWait();
         	
         } catch (IOException e) {
-			e.printStackTrace();
 		}
     }
     @FXML
