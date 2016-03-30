@@ -24,6 +24,7 @@ import javafx.scene.control.Control;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 @SuppressWarnings({"unused"})
 public class CreateNewMachine  {    
@@ -54,7 +55,7 @@ public class CreateNewMachine  {
         	stage.setScene(scene);
         	stage.setTitle("Création d'une nouvelle machine");
         	stage.initModality(Modality.APPLICATION_MODAL);
-        	stage.setResizable(false);
+        	stage.setResizable(false);        	
         	stage.showAndWait();
         	
         } catch (IOException e) {

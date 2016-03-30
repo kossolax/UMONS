@@ -22,6 +22,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 @SuppressWarnings({"unused"})
 public class VueFournisseur extends Pane {    
@@ -51,6 +52,12 @@ public class VueFournisseur extends Pane {
         	parent.toBack();
         	stage.show();
         	
+        	stage.setOnCloseRequest((WindowEvent event) -> {
+        		MainApp.getState().getSCInterface().raiseLogout();
+        		MainApp.getState().runCycle();
+        		stage.close();
+        	});
+        	
         } catch (IOException e) {
 		}
     }
@@ -69,26 +76,18 @@ public class VueFournisseur extends Pane {
         	if( c.getCategories() != null ) {
         		for( Category c2 : c.getCategories() ) {
         			Pane n = Utils.addNewArticle(p, c2);
-        			n.setOnMousePressed(new EventHandler<MouseEvent>() {
-                	    public void handle(MouseEvent e) {
-                	    	focusCategory = c2;
-                	    	initialize(stage);
-                	    }
-        			});
+        			n.setOnMousePressed((MouseEvent e) -> { focusCategory = c2; initialize(stage); });
         		}
         	}
         	
         	Pane n = Utils.addNewArticle(p, "Catégorie");
-    		n.setOnMousePressed(new EventHandler<MouseEvent>() {
-        	    public void handle(MouseEvent e) {
-        	    	
-        	    	Category c = CreateNewCategory.getNewArticle(stage, machine);
-        	    	if( c != null ) {      	    		
-        	    		focusCategory = tmpC.addCategory(c);
-        	    		initialize(stage);
-        	    	}
-        	    }
-        	});
+    		n.setOnMousePressed((MouseEvent e) -> {
+    			Category cc = CreateNewCategory.getNewArticle(stage, machine);
+    			if( cc != null ) {      	    		
+    				focusCategory = tmpC.addCategory(cc);
+    				initialize(stage);
+    			}
+    		});
     		
         	if( c.getArticles() != null ) {
         		for( Article a : c.getArticles() ) {
@@ -96,14 +95,12 @@ public class VueFournisseur extends Pane {
         		}
     		}
         	n = Utils.addNewArticle(p, "Article");
-        	n.setOnMousePressed(new EventHandler<MouseEvent>() {
-        	    public void handle(MouseEvent e) {
-        	    	Article a = CreateNewArticle.getNewArticle(stage, machine);
-        	    	if( a != null ) {
-        	    		focusCategory =  tmpC.addArticle(a);
-        	    		initialize(stage);
-        	    	}
-        	    }
+        	n.setOnMousePressed((MouseEvent e) -> {
+        		Article a = CreateNewArticle.getNewArticle(stage, machine);
+        		if( a != null ) {
+        			focusCategory =  tmpC.addArticle(a);
+        			initialize(stage);
+        		}
         	});
         	tab.setContent(p);
         	tp.getTabs().add( tab );
@@ -118,6 +115,7 @@ public class VueFournisseur extends Pane {
 		stage.close();
     }
     
+
     @FXML
     private void OnClick_NewMP() {
     	CreateNewMP mp = new CreateNewMP(stage, machine);

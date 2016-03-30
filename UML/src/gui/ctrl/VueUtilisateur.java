@@ -34,6 +34,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 @SuppressWarnings({"unused"})
 public class VueUtilisateur extends Pane  {    
@@ -58,7 +59,7 @@ public class VueUtilisateur extends Pane  {
         try {
         	stage = new Stage();
             scene = new Scene(fxmlLoader.load()); 
-            stage.setTitle("Crï¿½ation d'une nouvelle machine");
+            stage.setTitle("Création d'une nouvelle machine");
             stage.setScene(scene);
             stage.setResizable(false);
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -66,6 +67,11 @@ public class VueUtilisateur extends Pane  {
         	initialize(stage);
         	bindYakindo();
         	
+        	stage.setOnCloseRequest((WindowEvent event) -> {
+	        	MainApp.getState().getSCInterface().raiseMaintenance();
+	    		MainApp.getState().runCycle();
+	        	stage.close();
+        	});
         	parent.toBack();
         	stage.show();
         	
@@ -78,7 +84,7 @@ public class VueUtilisateur extends Pane  {
     	MainApp.getState().getSCInterface().getListeners().add(new SCInterfaceListener() {
 			@Override
 			public void onRefoundRaised() {
-				System.out.println("hello");
+				System.out.println("refound raised event");
 				if( coin != null ) {
 					ArrayList<Integer> c = coin.refund((int)MainApp.getState().getSCInterface().getTotalPaid());
 					System.out.println(c);
@@ -164,7 +170,7 @@ public class VueUtilisateur extends Pane  {
     		
     		((ImageView)scene.lookup("#image")).setImage(new Image(focusArticle.getImage().toURI().toString()));
     		((Label)scene.lookup("#name")).setText(focusArticle.getName());
-    		((Label)scene.lookup("#price")).setText(focusArticle.getPrice()+"ï¿½");
+    		((Label)scene.lookup("#price")).setText(focusArticle.getPrice()+" €");
     	}
     	else {
     		((ImageView)scene.lookup("#image")).setVisible(false);
@@ -172,14 +178,7 @@ public class VueUtilisateur extends Pane  {
     		((Label)scene.lookup("#price")).setVisible(false);
     	}
     	
-    	((Label)scene.lookup("#solde")).setText("Solde: "+MainApp.getState().getSCInterface().getTotalPaid()+" ï¿½");
-    }
-    @FXML
-    private void handleExit() {
-    	System.out.println("hello");
-    	MainApp.getState().getSCInterface().raiseMaintenance();
-		MainApp.getState().runCycle();
-    	stage.close();
+    	((Label)scene.lookup("#solde")).setText("Solde: "+MainApp.getState().getSCInterface().getTotalPaid()+" €");
     }
     @FXML
     private void OnClick_Buy(Event e) {
@@ -190,8 +189,8 @@ public class VueUtilisateur extends Pane  {
     		
     		ChoiceDialog<Integer> dialog = new ChoiceDialog<Integer>();
 	    	dialog.getItems().setAll(c.getModules());
-	    	dialog.setTitle("Choisissez une piï¿½ce");
-	    	dialog.setHeaderText("Choisissez une piï¿½ce");
+	    	dialog.setTitle("Choisissez une pièce");
+	    	dialog.setHeaderText("Choisissez une pièce");
 	    	Optional<Integer> result = dialog.showAndWait();
 	    	if (result.isPresent()){
 	    		if( c.insertPiece(result.get()) ) {
@@ -213,16 +212,16 @@ public class VueUtilisateur extends Pane  {
     			pass = true;
     			Alert alert = new Alert(AlertType.CONFIRMATION);
     	    	alert.setTitle("Achat");
-    	    	alert.setHeaderText("Votre achat s'est dï¿½roulï¿½ avec succï¿½s.");
+    	    	alert.setHeaderText("Votre achat s'est déroulé avec succés.");
     	    	if( d.getOther() != null && d.getOther() instanceof ArrayList ) {
-    	    		alert.setContentText("La machine a aussi distribuï¿½: " + d.getOther());
+    	    		alert.setContentText("La machine a aussi distribué: " + d.getOther());
     	    	}
     	    	alert.show();
     	    }
     		else {
     			Alert alert = new Alert(AlertType.ERROR);
     	    	alert.setTitle("Erreur");
-    	    	alert.setHeaderText("Le paiement a ï¿½chouï¿½.");
+    	    	alert.setHeaderText("Le paiement a échoué.");
     	    	alert.show();
     		}
     	}
