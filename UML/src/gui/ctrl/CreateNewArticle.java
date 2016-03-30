@@ -81,67 +81,33 @@ public class CreateNewArticle  {
 	
 	private void initialize(Stage stage) {
 		TableView<RawMaterial> table = ((TableView<RawMaterial>)scene.lookup("#table"));
-	
 		table.setEditable(true);
-
         
 		if( table.getColumns().isEmpty() ) {
 			table.setPlaceholder(new Label("Double clique pour ajouter une matière première"));
+			
 			TableColumn<RawMaterial, String> mp = new TableColumn<RawMaterial, String>("Name");
-			TableColumn<RawMaterial, Integer> max = new TableColumn<RawMaterial, Integer>("max");
-			max.setCellValueFactory(
-		            new PropertyValueFactory<RawMaterial, Integer>("max"));
-			max.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<Integer>(){
-
-			        @Override
-			        public String toString(Integer object) {
-			            return object.toString();
-			        }
-
-			        @Override
-			        public Integer fromString(String string) {
-			            return Integer.parseInt(string);
-			        }
-
-			    }));
-				max.setOnEditCommit(
-	                     new EventHandler<CellEditEvent<RawMaterial, Integer>>() {
-	                         public void handle(CellEditEvent<RawMaterial, Integer> t) {
-	                             ((RawMaterial) t.getTableView().getItems().get(
-	                                     t.getTablePosition().getRow())
-	                                     ).setMax((int)t.getNewValue());
-	                         }
-	                     });
-			
 			TableColumn<RawMaterial, Integer> min = new TableColumn<RawMaterial, Integer>("min");
-			min.setCellValueFactory(
-	            new PropertyValueFactory<RawMaterial, Integer>("min"));
-			min.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<Integer>(){
-
-		        @Override
-		        public String toString(Integer object) {
-		            return object.toString();
-		        }
-
-		        @Override
-		        public Integer fromString(String string) {
-		            return Integer.parseInt(string);
-		        }
-
-		    }));
-			 min.setOnEditCommit(
-                     new EventHandler<CellEditEvent<RawMaterial, Integer>>() {
-                         public void handle(CellEditEvent<RawMaterial, Integer> t) {
-                             ((RawMaterial) t.getTableView().getItems().get(
-                                     t.getTablePosition().getRow())
-                                     ).setMin((int)t.getNewValue());
-                         }
-                     });
-                     
-			mp.setCellValueFactory(new PropertyValueFactory<>("name"));
-			//min.setCellValueFactory(new PropertyValueFactory<>("min"));	
-			//max.setCellValueFactory(new PropertyValueFactory<>("max"));
+			TableColumn<RawMaterial, Integer> max = new TableColumn<RawMaterial, Integer>("max");
 			
+			mp.setCellValueFactory(new PropertyValueFactory<>("name"));
+			
+			max.setCellValueFactory(new PropertyValueFactory<RawMaterial, Integer>("max"));
+			max.setCellFactory(TextFieldTableCell.forTableColumn(Utils.IntToString()));
+			max.setOnEditCommit(new EventHandler<CellEditEvent<RawMaterial, Integer>>() {
+				public void handle(CellEditEvent<RawMaterial, Integer> t) {
+					((RawMaterial) t.getTableView().getItems().get(t.getTablePosition().getRow())).setMax((int)t.getNewValue());
+				}
+			});
+			
+			min.setCellValueFactory(new PropertyValueFactory<RawMaterial, Integer>("min"));
+			min.setCellFactory(TextFieldTableCell.forTableColumn(Utils.IntToString()));
+			min.setOnEditCommit(new EventHandler<CellEditEvent<RawMaterial, Integer>>() {
+				public void handle(CellEditEvent<RawMaterial, Integer> t) {
+					((RawMaterial) t.getTableView().getItems().get(t.getTablePosition().getRow())).setMin((int)t.getNewValue());
+				}
+			});
+				
 			table.getColumns().addAll(mp, min, max);
 		}
 		
@@ -224,14 +190,12 @@ public class CreateNewArticle  {
 			stage.close();
 			
     	} catch ( NumberFormatException e ) {
-    		
     		Alert alert = new Alert(AlertType.ERROR);
     		alert.setTitle("Erreur");
     		alert.setHeaderText("Veuillez corriger le champs prix de l'article");
     		alert.show();
     		return;
     	} catch ( Exception e ) {
-    		
     		Alert alert = new Alert(AlertType.ERROR);
     		alert.setTitle("Erreur");
     		alert.setHeaderText("Veuillez compléter le champs "+e.getMessage());

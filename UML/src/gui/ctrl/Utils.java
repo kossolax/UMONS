@@ -9,12 +9,12 @@ import framework.Category;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
+import javafx.util.StringConverter;
 
 public class Utils {
 	
@@ -87,5 +87,17 @@ public class Utils {
 		
 		dialog.getDialogPane().setContent(p);
 		dialog.showAndWait();
+	}
+	public static StringConverter<Integer> IntToString() {
+		return new StringConverter<Integer>(){
+	        @Override
+	        public String toString(Integer object) {
+	            return object.toString();
+	        }
+	        @Override
+	        public Integer fromString(String string) {
+	        	try { return Integer.parseInt(string); } catch ( Exception e ) { return 0; }
+	        }
+	    };
 	}
 }
