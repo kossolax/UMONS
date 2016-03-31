@@ -3,16 +3,18 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 
-
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="200.0" styleClass="background" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="224.0" prefWidth="292.0" styleClass="background" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <ComboBox fx:id="stockage" layoutX="15.0" layoutY="31.0" prefHeight="25.0" prefWidth="175.0" />
-      <TextField fx:id="amount" layoutX="15.0" layoutY="63.0" prefHeight="25.0" prefWidth="175.0" />
-      <Label layoutX="15.0" layoutY="14.0" text="Gestion du stock" />
-      <Button layoutX="104.0" layoutY="111.0" mnemonicParsing="false" onAction="#OnClick_Save" text="Sauvegarder" />
-      <Button layoutX="15.0" layoutY="111.0" mnemonicParsing="false" onAction="#handleExit" text="Fermer" />
+      <ComboBox fx:id="stockage" layoutX="15.0" layoutY="81.0" prefHeight="25.0" prefWidth="262.0" />
+      <TextField fx:id="amount" layoutX="15.0" layoutY="117.0" prefHeight="37.0" prefWidth="262.0" />
+      <Label layoutX="15.0" layoutY="50.0" text="Gestion du stock" />
+      <Button layoutX="148.0" layoutY="173.0" mnemonicParsing="false" onAction="#OnClick_Save" text="Sauvegarder" />
+      <Button layoutX="15.0" layoutY="173.0" mnemonicParsing="false" onAction="#handleExit" prefHeight="33.0" prefWidth="129.0" text="Fermer" />
+      <Separator layoutX="17.0" layoutY="35.0" prefHeight="6.0" prefWidth="262.0" />
+      <Label layoutX="35.0" layoutY="14.0" prefHeight="21.0" prefWidth="222.0" text="UMons - Framework distributeur" textAlignment="CENTER" />
    </children>
 </Pane>
