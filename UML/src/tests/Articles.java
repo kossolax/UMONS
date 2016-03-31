@@ -25,7 +25,7 @@ public class Articles {
 			
 			Collection<RawMaterial> recette = new ArrayList<RawMaterial>();
 			Recipe recipe = new Recipe(recette);
-			Boiler boil = new Boiler(true);
+			Boiler boil = new Boiler();
 			Article cafe = new Article("Café", 100, recipe);
 			recipe.addRequiredModule(boil);
 			recette.add(cafeine);
