@@ -46,6 +46,7 @@ public class InitWindow extends Pane {
     	Machine machine = CreateNewMachine.getNewMachine(mainApp);
     	if( machine != null ) {
     		((ComboBox<Machine>)scene.lookup("#CBMachineList")).getItems().add(machine);
+    		((ComboBox<Machine>)scene.lookup("#CBMachineList")).setValue(machine);
     	}
     }
 	@FXML
