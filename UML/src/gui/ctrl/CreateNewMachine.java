@@ -5,13 +5,16 @@ import java.io.IOException;
 import framework.Category;
 import framework.Machine;
 import framework.modules.Boiler;
+import framework.modules.Module;
 import framework.modules.Water;
 import framework.payement.Carte;
 import framework.payement.Coin;
+import framework.payement.Payment;
 import framework.payement.Token;
 import framework.stockage.Classic;
 import framework.stockage.Cooling;
 import framework.stockage.Freeze;
+import framework.stockage.Stockage;
 import gui.MainApp;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -96,22 +99,13 @@ public class CreateNewMachine  {
     		alert.show();
     		return;
     	}
-    	if( !(((CheckBox)scene.lookup("#btnCarte")).isSelected()) && 
-    			!(((CheckBox)scene.lookup("#btnToken")).isSelected()) &&
-    			!(((CheckBox)scene.lookup("#btnPiece")).isSelected())) {
-    		Alert alert = new Alert(AlertType.ERROR);
-    		alert.setTitle("Erreur");
-    		alert.setHeaderText("La machine doit au moins avoir un systeme de payement");
-    		alert.show();
-    		return;
-    	}
     	
     	Machine machine = new Machine(name);
     	
     	if( ((CheckBox)scene.lookup("#btnEau")).isSelected() )
-    		machine.addModule( new Water(true) );
+    		machine.addModule( new Water() );
     	if( ((CheckBox)scene.lookup("#btnChauffeEau")).isSelected() )
-    		machine.addModule( new Boiler(true) );
+    		machine.addModule( new Boiler() );
     	
     	if( ((CheckBox)scene.lookup("#btnCongelateur")).isSelected() )
 			machine.addModule( new Freeze(Integer.MAX_VALUE) );
@@ -122,6 +116,8 @@ public class CreateNewMachine  {
 		
 		if( ((CheckBox)scene.lookup("#btnPiece")).isSelected() ) {
 			Coin c = new Coin(machine);
+			c.addModule(1);
+			c.addModule(2);
 			c.addModule(5);
 			c.addModule(10);
 			c.addModule(20);
@@ -133,12 +129,26 @@ public class CreateNewMachine  {
 		if( ((CheckBox)scene.lookup("#btnCarte")).isSelected() )
 			machine.addModule( new Token() );
 		if( ((CheckBox)scene.lookup("#btnToken")).isSelected() )
-			machine.addModule( new Carte() );
+			machine.addModule( new Carte(1000) );
     	
-		if( machine.countModule() == 0 ) {
+		int stock = 0, pay = 0;
+		for( Module m : machine.getModules() ) {
+			if( m instanceof Stockage )
+				stock++;
+			if( m instanceof Payment )
+				pay++;
+		}
+		if( stock == 0 ) {
 			Alert alert = new Alert(AlertType.ERROR);
     		alert.setTitle("Erreur");
-    		alert.setHeaderText("Aucun module n'a été sélectionné");
+    		alert.setHeaderText("Aucun module de stockage n'a été sélectionné");
+    		alert.show();
+    		return;
+		}
+		if( pay == 0 ) {
+			Alert alert = new Alert(AlertType.ERROR);
+    		alert.setTitle("Erreur");
+    		alert.setHeaderText("Aucun module de paiement n'a été sélectionné");
     		alert.show();
     		return;
 		}
