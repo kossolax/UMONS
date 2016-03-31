@@ -185,13 +185,13 @@ public class CreateNewArticle  {
 	@FXML
     private void OnClick_Save() {
 		String name;
-		int price;
+		double price;
 		
 		try {
 	    	name = ((TextField)scene.lookup("#name")).getText().trim();
 	    	if( name.length() == 0 )
 	    		throw new Exception("nom de l'article");    	
-	    	price = Integer.parseInt(((TextField)scene.lookup("#price")).getText());
+	    	price = Double.parseDouble(((TextField)scene.lookup("#price")).getText());
     		if( price <= 0.0 )
     			throw new Exception("prix de l'article"); 
     		if( article.getImage() == null )
@@ -206,7 +206,8 @@ public class CreateNewArticle  {
 				
     		
 	    	article.setName(name);
-			article.setPrice(price);
+			article.setPrice((int)(price*100));
+			System.out.println(article.getPrice());
 			returnValue = article;
 			stage.close();
 			
