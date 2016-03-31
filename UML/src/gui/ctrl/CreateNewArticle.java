@@ -123,7 +123,7 @@ public class CreateNewArticle  {
 	}
 	
 	@FXML
-    private void OnClick_Table(MouseEvent e) {
+    private void OnClick_AddMaterial(MouseEvent e) {
 		Node node = ((Node) e.getTarget()).getParent();
 		if(e.getButton().equals(MouseButton.PRIMARY) && !(node instanceof TableRow) ) {
 			
@@ -148,7 +148,7 @@ public class CreateNewArticle  {
 				Optional<RawMaterial> result = dialog.showAndWait();
 				if (result.isPresent()){
 					article.getRecipe().add(new RawMaterial(result.get()));
-					initialize(stage);
+					((TableView<RawMaterial>)scene.lookup("#table")).refresh();
 				}
 			}
 		}
