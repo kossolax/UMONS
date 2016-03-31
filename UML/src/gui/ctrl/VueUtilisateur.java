@@ -88,7 +88,6 @@ public class VueUtilisateur extends Pane  {
     	MainApp.getState().getSCInterface().getListeners().add(new SCInterfaceListener() {
 			@Override
 			public void onRefoundRaised() {
-				System.out.println("refound raised event");
 				if( coin != null ) {
 					ArrayList<Integer> c = coin.refund((int)MainApp.getState().getSCInterface().getTotalPaid());
 					focusArticle = null;
@@ -187,9 +186,7 @@ public class VueUtilisateur extends Pane  {
     			slider.setMajorTickUnit(1);
     			slider.setMinorTickCount(0);
     			slider.setBlockIncrement(1.0);
-    			slider.valueProperty().addListener((observable, oldValue, newValue) -> {
-    			    obj.setAmount(newValue.intValue());
-    			});
+    			slider.valueProperty().addListener((observable, oldValue, newValue) -> {obj.setAmount(newValue.intValue());});
     			
     			((Pane)scene.lookup("#idPane")).getChildren().add(slider);
     		}

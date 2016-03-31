@@ -732,7 +732,7 @@ public class VendingMachineStatemachine implements IVendingMachineStatemachine {
 	/* Entry action for state 'Distribute'. */
 	private void entryAction_Machine_Machine_r1_Distribute() {
 
-		timer.setTimer(this, 0, 1 * 1000, false);
+		timer.setTimer(this, 0, 10, false);
 
 		sCInterface.setTotalPaid(sCInterface.getTotalPaid() - needMoney);
 	}

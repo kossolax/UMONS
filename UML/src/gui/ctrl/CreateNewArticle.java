@@ -78,7 +78,6 @@ public class CreateNewArticle  {
         	stage.showAndWait();
         	
         } catch (IOException e) {
-        	e.printStackTrace();
 		}
     }
 	
@@ -207,7 +206,6 @@ public class CreateNewArticle  {
     		
 	    	article.setName(name);
 			article.setPrice((int)(price*100));
-			System.out.println(article.getPrice());
 			returnValue = article;
 			stage.close();
 			

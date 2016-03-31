@@ -127,9 +127,9 @@ public class CreateNewMachine  {
 			machine.addModule( c );
 		}
 		if( ((CheckBox)scene.lookup("#btnCarte")).isSelected() )
-			machine.addModule( new Token() );
-		if( ((CheckBox)scene.lookup("#btnToken")).isSelected() )
 			machine.addModule( new Carte(1000) );
+		if( ((CheckBox)scene.lookup("#btnToken")).isSelected() )
+			machine.addModule( new Token() );
     	
 		int stock = 0, pay = 0;
 		for( Module m : machine.getModules() ) {
