@@ -10,7 +10,9 @@ import framework.Article;
 import framework.Machine;
 import framework.RawMaterial;
 import framework.Recipe;
+import framework.modules.Boiler;
 import framework.modules.Module;
+import framework.modules.Water;
 import framework.stockage.Stockage;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,6 +22,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
@@ -75,6 +78,7 @@ public class CreateNewArticle  {
         	stage.showAndWait();
         	
         } catch (IOException e) {
+        	e.printStackTrace();
 		}
     }
 	
@@ -84,13 +88,14 @@ public class CreateNewArticle  {
 		table.setEditable(true);
         
 		if( table.getColumns().isEmpty() ) {
-			table.setPlaceholder(new Label("Double clique pour ajouter une matière première"));
+			table.setPlaceholder(new Label("Aucune matière première."));
 			
 			TableColumn<RawMaterial, String> mp = new TableColumn<RawMaterial, String>("Name");
 			TableColumn<RawMaterial, Integer> min = new TableColumn<RawMaterial, Integer>("min");
 			TableColumn<RawMaterial, Integer> max = new TableColumn<RawMaterial, Integer>("max");
 			
 			mp.setCellValueFactory(new PropertyValueFactory<>("name"));
+			mp.setMinWidth(150.0);
 			
 			max.setCellValueFactory(new PropertyValueFactory<RawMaterial, Integer>("max"));
 			max.setCellFactory(TextFieldTableCell.forTableColumn(Utils.IntToString()));
@@ -120,36 +125,42 @@ public class CreateNewArticle  {
         if( article.getImage() != null ) {
         	((ImageView)scene.lookup("#image")).setImage(new Image(article.getImage().toURI().toString()));
         }
+        
+        ((CheckBox)scene.lookup("#btnEau")).getParent().setVisible(false);
+        ((CheckBox)scene.lookup("#btnChauffeEau")).getParent().setVisible(false);
+        
+        for( Module m : machine.getModules() ) {
+        	if( m instanceof Water )
+        		((CheckBox)scene.lookup("#btnEau")).getParent().setVisible(true);
+        	else if( m instanceof Boiler )
+        		((CheckBox)scene.lookup("#btnChauffeEau")).getParent().setVisible(true);
+        }
 	}
 	
 	@FXML
-    private void OnClick_AddMaterial(MouseEvent e) {
-		Node node = ((Node) e.getTarget()).getParent();
-		if(e.getButton().equals(MouseButton.PRIMARY) && !(node instanceof TableRow) ) {
-			
-			Collection<RawMaterial> lst = new ArrayList<RawMaterial>();
-			for( Module m : machine.getModules() ) {
-				if( m instanceof Stockage ) {
-					if( ((Stockage) m).getContains() != null )
-						lst.add(((Stockage)m).getContains());
-				}
+    private void OnClick_AddMaterial() {
+		Collection<RawMaterial> lst = new ArrayList<RawMaterial>();
+		for( Module m : machine.getModules() ) {
+			if( m instanceof Stockage ) {
+				if( ((Stockage) m).getContains() != null )
+					lst.add(((Stockage)m).getContains());
 			}
-			
-			if( lst.size() == 0 ) {
-				Alert alert = new Alert(AlertType.ERROR);
-	    		alert.setTitle("Erreur");
-	    		alert.setHeaderText("Vous n'avez ajouté aucune matière première dans cette machine.");
-	    		alert.show();
-			}
-			else {
-				ChoiceDialog<RawMaterial> dialog = new ChoiceDialog<RawMaterial>(lst.iterator().next(), lst);
-				dialog.setTitle("Choisissez une matière première");
-				dialog.setHeaderText("Choisissez une matière première");
-				Optional<RawMaterial> result = dialog.showAndWait();
-				if (result.isPresent()){
-					article.getRecipe().add(new RawMaterial(result.get()));
-					((TableView<RawMaterial>)scene.lookup("#table")).refresh();
-				}
+		}
+		
+		if( lst.size() == 0 ) {
+			Alert alert = new Alert(AlertType.ERROR);
+	    	alert.setTitle("Erreur");
+	    	alert.setHeaderText("Vous n'avez ajouté aucune matière première dans cette machine.");
+	    	alert.show();
+		}
+		else {
+			ChoiceDialog<RawMaterial> dialog = new ChoiceDialog<RawMaterial>(lst.iterator().next(), lst);
+			dialog.setTitle("Choisissez une matière première");
+			dialog.setHeaderText("Choisissez une matière première");
+			Optional<RawMaterial> result = dialog.showAndWait();
+			if (result.isPresent()){
+				article.getRecipe().add(new RawMaterial(result.get()));
+				initialize(stage);
 			}
 		}
 	}
@@ -185,6 +196,14 @@ public class CreateNewArticle  {
     			throw new Exception("prix de l'article"); 
     		if( article.getImage() == null )
     			throw new Exception("Image");
+    		
+    		for( Module m : machine.getModules() ) {
+            	if( m instanceof Water && ((CheckBox) scene.lookup("#btnEau")).isSelected() )
+            		article.addRequireModule(m);
+            	else if( m instanceof Boiler && ((CheckBox) scene.lookup("#btnChauffeEau")).isSelected() )
+            		article.addRequireModule(m);
+    		}
+				
     		
 	    	article.setName(name);
 			article.setPrice(price);

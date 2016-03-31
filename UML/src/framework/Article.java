@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
 
+import framework.modules.Module;
+
 public class Article {
 	private String name;
 	private int price;
@@ -52,6 +54,9 @@ public class Article {
 	}
 	public Collection<RawMaterial> getRecipe() {
 		return recipe.getRecipe();
+	}
+	public void addRequireModule(Module m) {
+		recipe.addRequiredModule(m);
 	}
 	public void setRecipe(Recipe r) {
 		recipe = r;

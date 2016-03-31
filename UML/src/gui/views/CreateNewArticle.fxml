@@ -16,7 +16,7 @@
       <TextField fx:id="name" layoutX="14.0" layoutY="35.0" prefHeight="25.0" prefWidth="200.0" />
       <Label layoutX="235.0" layoutY="14.0" text="Prix" />
       <TextField fx:id="price" layoutX="235.0" layoutY="35.0" prefHeight="25.0" prefWidth="150.0" />
-      <TableView fx:id="table" layoutX="14.0" layoutY="111.0" onMouseClicked="#OnClick_Table" prefHeight="170.0" prefWidth="370.0">
+      <TableView fx:id="table" layoutX="14.0" layoutY="111.0" prefHeight="170.0" prefWidth="370.0">
       </TableView>
       <Label layoutX="17.0" layoutY="293.0" text="Image" />
       <Button fx:id="files" layoutX="18.0" layoutY="320.0" mnemonicParsing="false" onAction="#OnClick_Image" prefHeight="25.0" prefWidth="150.0" text="Choisissez un fichier" />
