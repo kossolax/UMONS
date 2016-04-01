@@ -2,7 +2,12 @@ package framework;
 
 import java.io.File;
 import java.util.*;
-
+/**
+ * 
+ * @author Copois Pierre
+ * @author Zaretti Steve
+ * 
+ */
 public class Category {
 	private Collection<Article> belong;
 	private Collection<Category> subCategories;

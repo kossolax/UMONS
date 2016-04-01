@@ -28,7 +28,12 @@ import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-
+/**
+ * 
+ * @author Copois Pierre
+ * @author Zaretti Steve
+ * 
+ */
 @SuppressWarnings({"unused"})
 public class CreateNewMachine  {    
     

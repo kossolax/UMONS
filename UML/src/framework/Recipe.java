@@ -8,6 +8,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import framework.modules.Module;
+/**
+ * 
+ * @author Copois Pierre
+ * @author Zaretti Steve
+ * 
+ */
 public class Recipe {
 	private Collection<RawMaterial> requireStock;
 	private Collection<Module> requireModule;

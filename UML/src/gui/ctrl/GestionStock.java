@@ -16,7 +16,12 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
+/**
+ * 
+ * @author Copois Pierre
+ * @author Zaretti Steve
+ * 
+ */
 @SuppressWarnings({"unused", "unchecked"})
 public class GestionStock  {    
     

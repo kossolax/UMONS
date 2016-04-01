@@ -1,5 +1,10 @@
 package gui.ctrl;
-
+/**
+ * 
+ * @author Copois Pierre
+ * @author Zaretti Steve
+ * 
+ */
 import java.io.IOException;
 import framework.Machine;
 import framework.RawMaterial;

@@ -5,7 +5,12 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import framework.modules.Module;
-
+/**
+ * 
+ * @author Copois Pierre
+ * @author Zaretti Steve
+ * 
+ */
 public class Article {
 	private String name;
 	private int price;

@@ -8,7 +8,12 @@ import org.yakindu.scr.vendingmachine.VendingMachineStatemachine;
 import gui.ctrl.InitWindow;
 import javafx.application.Application;
 import javafx.stage.Stage;
-
+/**
+ * 
+ * @author Copois Pierre
+ * @author Zaretti Steve
+ * 
+ */
 @SuppressWarnings({"unused"})
 public class MainApp extends Application {
 	

@@ -2,7 +2,12 @@ package framework.stockage;
 
 import framework.RawMaterial;
 import framework.modules.Module;
-
+/**
+ * 
+ * @author Copois Pierre
+ * @author Zaretti Steve
+ * 
+ */
 public class Stockage extends Module implements Cloneable {
 
 	private int amount;

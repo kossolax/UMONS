@@ -10,7 +10,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-
+/**
+ * 
+ * @author Copois Pierre
+ * @author Zaretti Steve
+ * 
+ */
 @SuppressWarnings({"unused", "unchecked"})
 public class InitWindow extends Pane {    
     

@@ -12,7 +12,12 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
+/**
+ * 
+ * @author Copois Pierre
+ * @author Zaretti Steve
+ * 
+ */
 @SuppressWarnings({"unused"})
 public class VueMonnayeur  {    
     

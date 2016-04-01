@@ -1,7 +1,12 @@
 package framework;
 
 import framework.stockage.Stockage;
-
+/**
+ * 
+ * @author Copois Pierre
+ * @author Zaretti Steve
+ * 
+ */
 public class RawMaterial {
 	
 	private String name;

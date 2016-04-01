@@ -2,7 +2,12 @@ package framework.payement;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
+/**
+ * 
+ * @author Copois Pierre
+ * @author Zaretti Steve
+ * 
+ */
 public class Token extends Payment {
 	
 	private static final Logger logger = LogManager.getLogger(Token.class);

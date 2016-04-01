@@ -36,10 +36,16 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-
+/**
+ * 
+ * @author Copois Pierre
+ * @author Zaretti Steve
+ * 
+ */
 @SuppressWarnings({"unused"})
 public class VueUtilisateur extends Pane  {    
     
@@ -173,12 +179,13 @@ public class VueUtilisateur extends Pane  {
     		
     		((ImageView)scene.lookup("#image")).setImage(new Image(focusArticle.getImage().toURI().toString()));
     		((Label)scene.lookup("#name")).setText(focusArticle.getName());
-    		((Label)scene.lookup("#price")).setText(focusArticle.getPrice()/100+" €");
+    		((Label)scene.lookup("#price")).setText(((float)(focusArticle.getPrice())/100)+" €");
     		((Pane)scene.lookup("#idPane")).getChildren().clear();
     		for(RawMaterial obj: focusArticle.getRecipe()) {
     			if( obj.getMin() == obj.getMax() )
     				continue;
-    			
+    			Label label = new Label(obj.getName());
+    			label.setTextFill(Color.web("#0076a3"));
     			Slider slider = new Slider(obj.getMin(), obj.getMax(), obj.getAmount());
     			slider.setShowTickLabels(true);
     			slider.setShowTickMarks(true);
@@ -187,7 +194,7 @@ public class VueUtilisateur extends Pane  {
     			slider.setMinorTickCount(0);
     			slider.setBlockIncrement(1.0);
     			slider.valueProperty().addListener((observable, oldValue, newValue) -> {obj.setAmount(newValue.intValue());});
-    			
+    			((Pane)scene.lookup("#idPane")).getChildren().add(label);
     			((Pane)scene.lookup("#idPane")).getChildren().add(slider);
     		}
     	}
@@ -195,10 +202,11 @@ public class VueUtilisateur extends Pane  {
     		((ImageView)scene.lookup("#image")).setVisible(false);
     		((Label)scene.lookup("#name")).setVisible(false);
     		((Label)scene.lookup("#price")).setVisible(false);
+    		((Pane)scene.lookup("#idPane")).getChildren().clear();
     		
     	}
     	
-    	((Label)scene.lookup("#solde")).setText("Solde: "+MainApp.getState().getSCInterface().getTotalPaid()+" €");
+    	((Label)scene.lookup("#solde")).setText("Solde: "+(float)(MainApp.getState().getSCInterface().getTotalPaid())/100+" €");
     }
     @FXML
     private void OnClick_Buy(Event e) {
@@ -214,14 +222,13 @@ public class VueUtilisateur extends Pane  {
 	    	Optional<Integer> result = dialog.showAndWait();
 	    	if (result.isPresent()){
 	    		if( c.insertPiece(result.get()) ) {
-	    			MainApp.getState().getSCInterface().setPiece( result.get() );
+	    			MainApp.getState().getSCInterface().setPiece( result.get());
 	    			MainApp.getState().getSCInterface().raiseInsertPiece();
 	    			MainApp.getState().runCycle();
 	    		}
 	    		updatePayement();
 	    	}
     	}
-       	
        	validatePay(p);
     }
     private void validatePay(Payment p) {
@@ -239,6 +246,9 @@ public class VueUtilisateur extends Pane  {
     	    	if( d.getOther() != null && d.getOther() instanceof ArrayList )
     	    		Utils.showPopUp(d.getOther());
     	    }
+    		else if(Math.toIntExact(MainApp.getState().getSCInterface().getTotalPaid()) < focusArticle.getPrice()){
+    			
+    		}
     		else {
     			Alert alert = new Alert(AlertType.ERROR);
     	    	alert.setTitle("Erreur");

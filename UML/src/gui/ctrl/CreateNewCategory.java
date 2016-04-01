@@ -15,7 +15,12 @@ import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
+/**
+ * 
+ * @author Copois Pierre
+ * @author Zaretti Steve
+ * 
+ */
 @SuppressWarnings({"unused"})
 public class CreateNewCategory  {    
     
@@ -42,7 +47,7 @@ public class CreateNewCategory  {
             scene = new Scene(fxmlLoader.load()); 
         	stage = new Stage();
         	stage.setScene(scene);
-        	stage.setTitle("Ajouter un article");
+        	stage.setTitle("Ajouter une catégorie");
         	stage.initModality(Modality.APPLICATION_MODAL);
         	stage.setResizable(false);
         	

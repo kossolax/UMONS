@@ -1,6 +1,10 @@
 package framework.payement;
-
-
+/**
+ * 
+ * @author Copois Pierre
+ * @author Zaretti Steve
+ * 
+ */
 public class Carte extends Payment {
 	int argent;
 	
