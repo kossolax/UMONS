@@ -38,7 +38,7 @@
 	
 	\newpage
 	\subsection{Skip-List}
-	Tout comme un dictionnaire, une skip-list permet de récupérer la définition d'un terme recherché \textit{(dit clé)}. Cette recherche est rapide, car les éléments présents dans un dictionnaire sont triés, et qu'il est possible de commencer une exploration plus approfondie à un endroit précis.
+	Tout comme un dictionnaire, une skip-list permet de récupérer la définition d'un terme recherché \textit{(dit clé)}. Cette recherche est rapide, car les éléments présents dans un dictionnaire sont triés et il est possible de commencer une exploration plus approfondie à un endroit précis.
 	 Une skip-list bénéficie des avantages de la liste chainée, en limitant fortement ses inconvénients. Cette structure de données utilise les chaines de façon parallèle. Une fonction basée sur des probabilités permet de déterminer si une nouvelle chaine doit figurer en parallèle ou non. Cette couche supérieure est un moyen plus rapide d'accéder à cet élément.
 	\subsubsection*{Définition}
 	
@@ -56,14 +56,14 @@
 	
 	\newpage
 	\section{Les algorithmes}
-	Une skip-list a besoin d'avoir un pointeur vers sa tête $(node* head)$. La liste doit connaitre le nombre de voies actuellement utilisé $(size)$. Selon les implémentations, il est possible de définir un nombre de voies maximal $(levelMAX)$. Il est aussi possible de changer le paramètre $(p)$ de probabilité de création d'une nouvelle voie. La variation de ses deux derniers paramètres est étudiée dans le chapitre \nameref{perf}.
+	Une skip-list a besoin d'avoir un pointeur vers sa tête $(node* head)$. La liste doit connaitre le nombre de voies actuellement utilisés $(size)$. Selon les implémentations, il est possible de définir un nombre de voies maximal $(levelMAX)$. Il est aussi possible de changer le paramètre $(p)$ de probabilité de création d'une nouvelle voie. La variation de ses deux derniers paramètres est étudiée dans le chapitre \nameref{perf}.
 	\lstinputlisting[linerange=BEGINSKStruct-ENDSKStruct]{SkipList/SkipList.h}
 	
 	L'initiation se fait de la manière suivante:
 	\begin{itemize}
-		\item La hauteur maximale est déterminée par le nombre d'éléments totaux $(n)$ présent dans la liste. Pour des questions de rapidité, la valeur $log_2(n)$ est recommandée.
+		\item La hauteur maximale est déterminée par le nombre d'éléments totaux $(n)$ présents dans la liste. Pour des questions de rapidité, la valeur $log_2(n)$ est recommandée.
 		\item Création d'un élément $NIL$ possédant une clé plus grande que le maximum autorisé.
-		\item Définitions dès ses pointeurs $forward$ vers lui-même.
+		\item Définitions de ses pointeurs $forward$ vers lui-même.
 		\item Le nombre de voies actuelles est fixé à 1.
 		\item Le pointeur de tête est défini par cet élément $NIL$.
 	\end{itemize}
@@ -76,7 +76,7 @@
 	\begin{enumerate}
 		\item Commencer l'exploration de la liste par l'élément en tête, et se positionner sur la plus haute voie.
 		\item Sur la voie actuelle, regarder la clé de l'élément suivant.
-		\item S'elle est plus grande et qu'il existe une voie inférieure, descendre d'une voie.
+		\item Si elle est plus grande et qu'il existe une voie inférieure, descendre d'une voie.
 		\item Sinon aller en 2.
 		\item Si la clé de l'élément suivant correspond à celle qui est recherchée: l'élément a été trouvé.
 		\item Sinon, l'élément n'a pas été trouvé.
@@ -87,7 +87,7 @@
 	\end{center}
 	
 	\subsection{La hauteur}
-	La notion de hauteur est très importante dans une skip-liste. En effet, celle-ci permet de définir à combien de nœuds un élément est attaché. Si trop d'éléments possèdent la même hauteur, la recherche devient trop lente.	Cette méthode est définie à l'aide d'une fonction aléatoire. La hauteur ne dépend ni de la clé de l'élément ni de sa valeur. La fonction aléatoire doit être définie pour qu'un élément de hauteur $h$ possède le double de probabilité qu'un élément de hauteur $h+1$. Ainsi, si un nœud de hauteur 1 a une probabilité $p$ de $0.5$ alors le niveau 2 a une probabilité de $0.25$.
+	La notion de hauteur est très importante dans une skip-liste. En effet, celle-ci permet de définir à combien de nœuds un élément est attaché. Si trop d'éléments possèdent la même hauteur, la recherche devient trop lente.	Cette méthode est définie à l'aide d'une fonction aléatoire. La hauteur ne dépend ni de la clé de l'élément ni de sa valeur. La fonction aléatoire doit être définie pour qu'un élément de hauteur $h$ possède le double de probabilités qu'un élément de hauteur $h+1$. Ainsi, si un nœud de hauteur 1 a une probabilité $p$ de $0.5$ alors le niveau 2 a une probabilité de $0.25$.
 	
 	\subsection{L'insertion}
 	L'insertion d'un élément dans une skip-liste s'effectue de la façon suivante:
