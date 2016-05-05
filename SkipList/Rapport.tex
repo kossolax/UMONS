@@ -8,7 +8,7 @@
 \usepackage{listings}
 \usepackage{color}
 \usepackage{svg}
-
+\usepackage{subfig}
 \usepackage[titletoc,title]{appendix}
 \lstset{language=C,rangeprefix=//---------------,rangesuffix=----------------,includerangemarker=false,columns=spaceflexible,extendedchars=true,showspaces=false,showstringspaces=false,inputencoding=ansinew,tabsize=4,frame=shadowbox,morecomment=[is]{\#ifdef}{\#endif},morecomment=[is]{/*}{*/}}
 \title{Lecture et rédaction scientifiques: \\Skip-lists }
@@ -22,18 +22,46 @@
 	\newpage
 	
 	\section{Introduction}
+	En informatique, il est courant de vouloir enregistrer des données quelconques. Une structure de données est une représentation logique de ces données. La manière de représenter les données permet de résoudre  différents problèmes. Une structure précise peut être plus performante pour un cas précis ou, au contraire, être une très peu performante. D'autre part, une bonne structure de données peut aussi réduire de façon significative la complexité d'un algorithme.
+	
+	Il existe un grand nombre de structures de données, mais toutes proposent aux concepteurs de logiciel deux fonctionnalités standards: enregistrer et récupérer une donnée. Selon l'approche employée pour la représentation logique, les performances seront différentes. Certaines structures de données offrent la possibilité de récupérer le premier élément en temps constant, au détriment du temps d'accès aux autres éléments. Alors que d'autres permettent un accès en temps constant à chacun des éléments en dépit d'une durée plus longue pour l'insertion d'un élément.
+	
 	\subsection{Liste chainée}
-	%% TODO: Clarifier. Un lecteur lambda ne comprends pas que ça sert à stocker des données.
-	Une liste chainée \textit{(figure a)} est une structure de données de taille arbitraire. Le principe est que chacun des éléments de cette liste contient une référence vers l'élément suivant. Cette pratique facilite l'insertion et la suppression des éléments, au détriment de la rapidité de la recherche.
+	Une liste chainée \ref{fig:LinkedList} est une structure de données de taille variable. Le principe est que chacun des éléments de cette liste contient une référence vers l'élément suivant. Cette pratique facilite l'insertion et la suppression des éléments, au détriment de la rapidité de la recherche.
+	
+	Une liste chainée peut aussi être triée, ce qui inverse les conséquences sur ces performances. Une insertion devient plus compliquée, car il faut rechercher, avant tout, ou placer l'élément dans la liste afin de garder la structure cohérente.
+	
+	La recherche dans une liste chainée s'effectue élément par élément: si ce n'est pas le premier élément de la liste, il faut regarder le second. Si ce n'est pas celui-ci, il faut alors regarder celui d'après jusqu'à ce que l'élément recherché soit trouvé ou qu'il n'y ait pas d'élément suivant. Dans le cas d'une liste chainée croissante, la recherche peut s'arrêter plus tôt: si l'élément que l'on regarde est plus grand que celui qui est recherché.
+	
 	
 	\subsubsection*{Les alternatives}
-	Il existe de nombreuses alternatives aux listes chainées pour trouver un élément plus rapidement: les tables de hashages \textit{(figure b)}, les arbres binaires \textit{(figure c)}, etc. Mais certaines séquences d'insertions peuvent être catastrophiques. Par exemple, insérer des éléments croissants dans un arbre binaire provoque un rééquilibrage de l'arbre. En revanche, si les éléments sont insérés de façon aléatoire, l'équilibrage devient plus rare.
+	Il existe de nombreuses alternatives aux listes chainées pour trouver un élément plus rapidement: les tables de hashage \ref{fig:hashing}, les arbres binaires \ref{fig:tree}, etc. Mais certaines séquences d'insertions peuvent être catastrophiques. Par exemple, insérer des éléments croissants dans un arbre binaire provoque un rééquilibrage de l'arbre. En revanche, si les éléments sont insérés de façon aléatoire, l'équilibrage devient plus rare.
 
-	Grâce aux probabilités, les \og skip-list \fg{} \textit{(figure d)} bénéficient d'un atout majeur: aucune séquence ne peut provoquer systématiquement le pire scénario. Mieux encore, les skip-lists utilisent des algorithmes plus simples et rapides que ses concurrents. Les skip-lists sont aussi très légères et peuvent être configurées pour n'utiliser que $1\frac{1}{3}$ pointeur par élément.
+	Grâce aux probabilités, les \og skip-list \fg{} \ref{fig:skip} bénéficient d'un atout majeur: aucune séquence ne peut provoquer systématiquement le pire scénario. Mieux encore, les skip-lists utilisent des algorithmes plus simples que ses concurrents. Les skip-lists sont aussi très légères et peuvent être configurées pour n'utiliser que $1\frac{1}{3}$ pointeur par élément.
 	
-	\begin{center}
-		\includegraphics[width=\textwidth]{img/datastructure}
-	\end{center}
+	\begin{figure}
+		\centering
+		\subfloat[Liste chainée ordonnée] {
+			\label{fig:LinkedList}
+			\includegraphics[scale=0.75]{img/linkedList}
+		}
+		\hspace{5pt}
+		\subfloat[Table de hashage] {
+			\label{fig:hashing}
+			\includegraphics[scale=0.75]{img/hashing}
+		}
+		\subfloat[Arbre binaire] {
+			\label{fig:tree}
+			\includegraphics[scale=0.75]{img/tree}
+		}
+		\hspace{5pt}
+		\subfloat[Skip-List] {
+			\label{fig:skip}
+			\includegraphics{img/skip}
+		}
+		\caption{Différente structures de données}
+	\end{figure}
+
 	
 	
 	\newpage
