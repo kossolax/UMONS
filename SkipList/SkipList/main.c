@@ -1,67 +1,46 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include "SkipList.h"
+#include "LinkList.h"
 
 int main(int argc, char** argv) {
 	srand((int)time(NULL));
-	
-	SkipList* list = SK_init(128, 0.25);
-	for (int i = 1; i <= 16; i++)
-		SK_Insert(list, rand() % i, i);
-	SK_Print(list);
-	SK_free(list);
-#ifdef WIN32
-	system("pause");
-#else
-	for (int j = 0; j <= 1000; j++) {
-		if (j % 100 == 0)
-			printf(".");
+	clock_t begin, end;
+	const int maxTest = 1;
+	const int MaxSize = int_pow(2, 16);
 
-		SkipList* list = SK_init(128, 0.25);
-
-		int z = rand() % 64 + 1;
-		int test1 = rand() % 128;
-		int test2 = rand() % 128;
-		if (test2 == test1)
-			test2++;
-
-
-		for (int i = 1; i <= 64; i++) {
-			SK_Insert(list, rand() % i, i);
-
-			if (i == z) {
-				SK_Insert(list, test1, -99999);
-				SK_Insert(list, test2, -99999);
-			}
-		}
-		for (int i = 50; i <= 80; i++)
-			SK_Insert(list, rand()%i, i);
-
-		for (int i = 0; i <= 128; i++)
-			if (i != test1 && (i == test2 || rand()%4 == 0) )
-				SK_Delete(list, i);
-		SK_Print(list);
-		
-		node* found = SK_Search(list, test1);
-		node* notfound = SK_Search(list, test2);
-
-		if (!found) {
-			SK_Print(list);
-			SK_free(list);
-			printf("ERR: %d was not found but exist\n", test1);
-			return 1;
-		}
-		if (notfound) {
-			SK_Print(list);
-			SK_free(list);
-			printf("ERR: %d was found but doesn't exist\n", test2);
-			return 1;
-		}
-
+	begin = clock();
+	for (int i = 1; i <= maxTest; i++) {
+		SkipList* list = SK_init(MaxSize, 0.5f);
+		for (int j = 1; j <= MaxSize; j++)
+			SK_Insert(list, j, j);
 		SK_free(list);
 	}
+	end = clock();
+	printf("%lf\n", (double)(end - begin) / CLOCKS_PER_SEC);
+	
+	begin = clock();
+	for (int i = 1; i <= maxTest; i++) {
+		LinkList* list = LL_init();
+		for (int j = 1; j <= MaxSize; j++)
+			list = LL_Insert(list, j, j);
+		//LL_Print(list);
+		list = LL_free(list);
+	}
+	end = clock();
+	printf("%lf\n", (double)(end - begin) / CLOCKS_PER_SEC);
 
-	printf("OK\n");
-#endif
+	system("pause");
 	return 0;
+}
+int int_pow(int base, int exp) {
+	int result = 1;
+	while (exp) {
+		if (exp & 1)
+			result *= base;
+		exp /= 2;
+		base *= base;
+	}
+	return result;
 }

@@ -7,7 +7,7 @@ SkipList* SK_init(int maxElem, float p) {
 	printf("Creating Skip-List\n");
 #endif
 	list->levelMAX = (int)round(log2(maxElem));
-	list->size = 1;
+	list->level = 1;
 	list->head = createNode(list, INT_MAX, INT_MAX);
 	for (int i = 0; i < list->levelMAX; i++)
 		list->head->forward[i] = list->head;
@@ -40,7 +40,7 @@ node* SK_Search(SkipList* list, int key) {
 	node* x = list->head;
 	/* On recherche du plus haut, vers le plus bas
 	 * Puis, on essaye d'aller le plus à droite possible. */
-	for (int i = list->size - 1; i >= 0; i--) {
+	for (int i = list->level - 1; i >= 0; i--) {
 #ifdef DEBUG
 		step++;
 #endif
@@ -74,7 +74,7 @@ int SK_Insert(SkipList* list, int key, int value) {
 	node** update = (node**)malloc(sizeof(node*)*list->levelMAX);
 	node* x = list->head;
 	/* On marque les noeuds pour la mise à jour */
-	for (int i = list->size - 1; i >= 0; i--) {
+	for (int i = list->level - 1; i >= 0; i--) {
 #ifdef DEBUG
 		step++;
 #endif
@@ -96,17 +96,17 @@ int SK_Insert(SkipList* list, int key, int value) {
 	}
 	else {
 		int level = getRandomLevel(list);
-		if (level > list->size) {
+		if (level > list->level) {
 #ifdef DEBUG
 			printf("New size: %d\n", level);
 #endif
-			for (int i = list->size; i < level; i++) {
+			for (int i = list->level; i < level; i++) {
 				update[i] = list->head;
 #ifdef DEBUG
 				step++;
 #endif
 			}
-			list->size = level;
+			list->level = level;
 		}
 		
 		x = createNode(list, key, value);
@@ -132,10 +132,10 @@ int SK_Delete(SkipList* list, int key) {
 	printf("Removing %d in SkipList[%p]\n", key, &list);
 	int step = 0;
 #endif
-	node** update = (node**)malloc(sizeof(node*)*list->size);
+	node** update = (node**)malloc(sizeof(node*)*list->level);
 	node* x = list->head;
 	/* On marque les noeuds pour la mise à jour */
-	for (int i = list->size - 1; i >= 0; i--) {
+	for (int i = list->level - 1; i >= 0; i--) {
 #ifdef DEBUG
 		step++;
 #endif
@@ -151,7 +151,7 @@ int SK_Delete(SkipList* list, int key) {
 	/* La clé t'elle été trouvée ? */
 	x = x->forward[0];
 	if (x->key == key) {
-		for (int i = 0; i < list->size; i++) {
+		for (int i = 0; i < list->level; i++) {
 			if( update[i]->forward[i] != x)
 				break;
 			update[i]->forward[i] = x->forward[i];
@@ -161,9 +161,9 @@ int SK_Delete(SkipList* list, int key) {
 		}
 		free(x->forward);
 		free(x);
-		while(list->size > 1 &&
-			list->head->forward[list->size-1] == list->head ) {
-			list->size--;
+		while(list->level > 1 &&
+			list->head->forward[list->level-1] == list->head ) {
+			list->level--;
 		}
 	}
 #ifdef DEBUG
@@ -178,8 +178,8 @@ void SK_Print(SkipList* list) {
 	node* x;
 	node* y;
 	
-	printf("--------- List of %d levels ---------------\n", list->size);
-	for (int i = list->size - 1; i >= 0; i--) {
+	printf("--------- List of %d levels ---------------\n", list->level);
+	for (int i = list->level - 1; i >= 0; i--) {
 
 		x = list->head;
 		printf("[]-->");

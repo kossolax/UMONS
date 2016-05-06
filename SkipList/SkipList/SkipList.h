@@ -13,7 +13,7 @@
 typedef struct SkipList {
 	int levelMAX;
 	float p;
-	int size;
+	int level;
 	struct node* head;
 } SkipList;
 typedef struct node {
