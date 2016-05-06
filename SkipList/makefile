@@ -1,5 +1,5 @@
 CFLAGS=-Wall -std=c99
-LDFLAGS=-O1 -lm
+LDFLAGS=-O2 -lm
 EXEC=./list
 OBJ=SkipList/SkipList.o SkipList/LinkList.o SkipList/main.o
 

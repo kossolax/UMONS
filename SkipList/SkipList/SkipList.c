@@ -39,7 +39,7 @@ node* SK_Search(SkipList* list, int key) {
 #endif
 	node* x = list->head;
 	/* On recherche du plus haut, vers le plus bas
-	 * Puis, on essaye d'aller le plus à droite possible. */
+	 * Puis, on essaye d'aller le plus ï¿½ droite possible. */
 	for (int i = list->level - 1; i >= 0; i--) {
 #ifdef DEBUG
 		step++;
@@ -51,7 +51,7 @@ node* SK_Search(SkipList* list, int key) {
 #endif
 		}
 	}
-	/* Si l'élement suivant est celui-qu'on cherche, on l'a trouvé. */
+	/* Si l'ï¿½lement suivant est celui-qu'on cherche, on l'a trouvï¿½. */
 	x = x->forward[0];
 	if (x->key == key) {
 #ifdef DEBUG
@@ -73,7 +73,7 @@ int SK_Insert(SkipList* list, int key, int value) {
 #endif
 	node** update = (node**)malloc(sizeof(node*)*list->levelMAX);
 	node* x = list->head;
-	/* On marque les noeuds pour la mise à jour */
+	/* On marque les noeuds pour la mise ï¿½ jour */
 	for (int i = list->level - 1; i >= 0; i--) {
 #ifdef DEBUG
 		step++;
@@ -86,7 +86,7 @@ int SK_Insert(SkipList* list, int key, int value) {
 		}
 		update[i] = x;
 	}
-	/* Vérification qu'on ajoute pas un doublon */
+	/* Vï¿½rification qu'on ajoute pas un doublon */
 	x = x->forward[0];
 	if (x->key == key) {
 #ifdef DEBUG
@@ -108,7 +108,7 @@ int SK_Insert(SkipList* list, int key, int value) {
 			}
 			list->level = level;
 		}
-		
+
 		x = createNode(list, key, value);
 		for (int i = 0; i < level; i++) {
 			// ???
@@ -134,7 +134,7 @@ int SK_Delete(SkipList* list, int key) {
 #endif
 	node** update = (node**)malloc(sizeof(node*)*list->level);
 	node* x = list->head;
-	/* On marque les noeuds pour la mise à jour */
+	/* On marque les noeuds pour la mise ï¿½ jour */
 	for (int i = list->level - 1; i >= 0; i--) {
 #ifdef DEBUG
 		step++;
@@ -148,7 +148,7 @@ int SK_Delete(SkipList* list, int key) {
 		update[i] = x;
 	}
 
-	/* La clé t'elle été trouvée ? */
+	/* La clï¿½ t'elle ï¿½tï¿½ trouvï¿½e ? */
 	x = x->forward[0];
 	if (x->key == key) {
 		for (int i = 0; i < list->level; i++) {
@@ -177,13 +177,13 @@ void SK_Print(SkipList* list) {
 
 	node* x;
 	node* y;
-	
+
 	printf("--------- List of %d levels ---------------\n", list->level);
 	for (int i = list->level - 1; i >= 0; i--) {
 
 		x = list->head;
 		printf("[]-->");
-		
+
 
 		while (x->forward[i] != list->head) {
 			if (i != 0) {
