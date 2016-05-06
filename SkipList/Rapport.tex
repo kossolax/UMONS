@@ -69,11 +69,11 @@
 	 \end{figure}
 	 
 	\subsubsection*{Définition}
-	La hauteur maximale d'une skip-list est définie lors de sa création. Bien qu'il n'y ait pas de taille maximale d'une skip-list, il est conseillé d'utiliser $log_2(n)$ où $n$ est le nombre d'éléments théoriques présents dans la liste. 
+	La hauteur maximale d'une skip-list est définie lors de sa création. Bien qu'il n'y ait pas de taille maximale d'une skip-list, il est conseillé d'utiliser $log_2(n)$ où $n$ est le nombre d'éléments théoriques présents dans la liste.
 	
 	L'insertion dans la liste utilise une fonction basée sur la probabilité $p$ afin de définir sa hauteur maximale. Si $p$ vaut $\frac{1}{2}$, ça signifie que le nœud une probabilité de $\frac{1}{2}$ d'être de hauteur 2, et une probabilité $\frac{1}{4}$ d'être de hauteur 3. Un nœuds de hauteur $h$ possède $h$ pointeur. Un nœuds de hauteur 3 à donc un accès au nœuds suivant de hauteur 3, ainsi que celui de hauteur 2 et 1.
 	
-	En raison des probabilités, les nœuds supérieurs pointent vers un nœud plus avancé dans la liste. Une couche supérieure est une voie rapide vers la couche inférieure. Ainsi, la couche la plus haute contient les plus grands sauts, et la couche la plus basse permet d'accéder à chacun des éléments.
+	En raison des probabilités, les nœuds supérieurs possèdent un pointeur vers un nœud plus avancé dans la liste. Une couche supérieure est donc une voie plus rapide. Ainsi, la couche la plus haute contient les plus grands sauts, et la couche la plus basse permet d'accéder à chacun des éléments.
 		
 	Le parcours d'une skip-list se fait de haut en bas, et de gauche à droite. Si la clé de l'élément suivant sur une couche est plus grande que celle qu'on recherche, celle-ci continue sur une voie inférieure.	
 	
@@ -84,18 +84,19 @@
 	
 	\newpage
 	\section{Les algorithmes}
-	Une skip-list a besoin d'avoir un pointeur vers sa tête $(node* head)$. La liste doit connaitre le nombre de voies actuellement utilisés $(size)$. Selon les implémentations, il est possible de définir un nombre de voies maximal $(levelMAX)$. Il est aussi possible de changer le paramètre $(p)$ de probabilité de création d'une nouvelle voie. La variation de ses deux derniers paramètres est étudiée dans le chapitre \nameref{perf}.
+	Une skip-list a besoin d'avoir un pointeur vers sa tête $(node* head)$. La liste doit connaitre le nombre de niveau actuellement utilisés $(level)$. Selon les implémentations, il est possible de définir un nombre de couche maximal $(levelMAX)$. Il est aussi possible de changer le paramètre $(p)$ de probabilité de création d'une nouvelle couche. La variation de ses deux derniers paramètres est étudiée dans le chapitre \nameref{perf}.
+	Un nœud contient une clé $key$ , une valeur $value$ ainsi qu'un tableau de pointeur vers les nœuds suivants $forward$. Il n'est pas nécessaire d'enregistrer la hauteur d'un nœud dans celui-ci.
 	\lstinputlisting[linerange=BEGINSKStruct-ENDSKStruct]{SkipList/SkipList.h}
 	
 	L'initiation se fait de la manière suivante:
 	\begin{itemize}
 		\item La hauteur maximale est déterminée par le nombre d'éléments totaux $(n)$ présents dans la liste. Pour des questions de rapidité, la valeur $log_2(n)$ est recommandée.
-		\item Création d'un élément $NIL$ possédant une clé plus grande que le maximum autorisé.
+		\item Création d'un élément $NIL$ possédant une clé plus grande que le maximum autorisé. Cette élément est aussi appelé \textit{élément bidon}.
 		\item Définitions de ses pointeurs $forward$ vers lui-même.
 		\item Le nombre de voies actuelles est fixé à 1.
 		\item Le pointeur de tête est défini par cet élément $NIL$.
 	\end{itemize}
-	\emph{L'algorithme écrit en langage C figure en annexe \ref{SKInit}.}
+	\emph{La création d'une skip-liste en langage C figure en annexe \ref{SKInit}.}
 	
 	\includegraphics{img/init}
 	
