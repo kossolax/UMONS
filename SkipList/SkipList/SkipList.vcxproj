@@ -148,11 +148,17 @@
     <ClCompile Include="LinkList.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="SkipList.c" />
+    <ClCompile Include="Tree.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HashTable.h" />
     <ClInclude Include="LinkList.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="SkipList.h" />
+    <ClInclude Include="Tree.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SkipList.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
