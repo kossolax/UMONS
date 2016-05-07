@@ -144,11 +144,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="HashTable.c" />
     <ClCompile Include="LinkList.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="SkipList.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="HashTable.h" />
     <ClInclude Include="LinkList.h" />
     <ClInclude Include="SkipList.h" />
   </ItemGroup>

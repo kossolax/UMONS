@@ -3,6 +3,7 @@
 #include <time.h>
 #include "SkipList.h"
 #include "LinkList.h"
+#include "HashTable.h"
 
 int main(int argc, char** argv) {
 	srand((int)time(NULL));
@@ -10,8 +11,8 @@ int main(int argc, char** argv) {
 	int maxTest, maxSize, i, j;
 	float p;
 
-	maxTest = ( argc >= 2 ? atoi(argv[1]) : 10 );
-	maxSize = ( argc >= 3 ? atoi(argv[2]) : 1024 );
+	maxTest = ( argc >= 2 ? atoi(argv[1]) : 1 );
+	maxSize = ( argc >= 3 ? atoi(argv[2]) : 8192);
 	p = 			( argc >= 4 ? atof(argv[3]) : 0.5f );
 	printf("%d\t%d\t", maxTest, maxSize);
 
@@ -20,12 +21,23 @@ int main(int argc, char** argv) {
 		SkipList* list = SK_init(maxSize, p);
 		for ( j = 1; j <= maxSize; j++)
 			SK_Insert(list, rand() % j, j);
-		SK_free(list);
+		SK_free(&list);
 	}
 	end = clock();
 	printf("%lf\t", (double)(end - begin) / CLOCKS_PER_SEC);
 
 	if( argc < 4 ) {
+		begin = clock();
+		for (i = 1; i <= maxTest; i++) {
+			HashTable* list = HT_init(maxSize, 0.8);
+			for (j = 1; j <= maxSize; j++)
+				HT_Insert(list, rand() % j, j);
+			HT_free(&list);
+		}
+		end = clock();
+		printf("%lf\t", (double)(end - begin) / CLOCKS_PER_SEC);
+
+
 		begin = clock();
 		for ( i = 1; i <= maxTest; i++) {
 			LinkList* list = LL_init();
@@ -34,8 +46,10 @@ int main(int argc, char** argv) {
 			LL_free(&list);
 		}
 		end = clock();
-		printf("%lf\n", (double)(end - begin) / CLOCKS_PER_SEC);
+		printf("%lf\t", (double)(end - begin) / CLOCKS_PER_SEC);
 	}
+
+	printf("\n");
 
 #if _WIN32
 	system("pause");

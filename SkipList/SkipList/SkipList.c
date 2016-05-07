@@ -18,18 +18,19 @@ SkipList* SK_init(int maxElem, float p) {
 	return list;
 }
 //---------------ENDSKInit----------------
-void SK_free(SkipList* list) {
-	node* p = list->head->forward[0];
+void SK_free(SkipList** list) {
+	node* p = (*list)->head->forward[0];
 	node* q;
-	while (p != list->head) {
+	while (p != (*list)->head) {
 		q = p->forward[0];
 		free(p->forward);
 		free(p);
 		p = q;
 	}
-	free(list->head->forward);
-	free(list->head);
-	free(list);
+	free((*list)->head->forward);
+	free((*list)->head);
+	free((*list));
+	list = NULL;
 }
 //---------------BEGINSKSearch----------------
 node* SK_Search(SkipList* list, int key) {
