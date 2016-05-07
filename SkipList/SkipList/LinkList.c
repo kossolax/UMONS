@@ -4,7 +4,7 @@ LinkList* LL_init() {
 	return NULL;
 }
 void LL_free(LinkList** list) {
-	if (list != NULL) {
+	if (*list != NULL) {
 		LinkList* p = *list;
 		LinkList* q;
 
@@ -14,8 +14,8 @@ void LL_free(LinkList** list) {
 			free(q);
 		}
 		free(p);
+		p=NULL;
 	}
-	return NULL;
 }
 LinkList* LL_Search(LinkList* list, int key) {
 	LinkList* p = list;

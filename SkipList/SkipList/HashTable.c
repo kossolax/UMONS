@@ -13,6 +13,7 @@ HashTable* HT_init(int size, float ratio) {
 void HT_free(HashTable** list) {
 	for (int i = 0; i < (*list)->size; i++)
 		LL_free(&((*list)->table[i]));
+	free((*list)->table);
 	free(*list);
 	list = NULL;
 }
