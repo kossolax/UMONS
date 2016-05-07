@@ -9,14 +9,13 @@
 int main(int argc, char** argv) {
 	srand((int)time(NULL));
 	clock_t begin, end;
-	int maxTest, maxSize, i, j;
-	float p;
-	maxSize = 2;
-	maxTest = ( argc >= 2 ? atoi(argv[1]) : 1 );
-	p = 	  ( argc >= 3 ? atof(argv[2]) : 0.5f );
+	int maxSize = 1, i, j;
+	int maxTest = ( argc >= 2 ? atoi(argv[1]) : 1 );
+	int maxIteration = ( argc >= 3 ? atoi(argv[2]) : 8 );
+	float p = ( argc >= 4 ? atof(argv[3]) : 0.5f );
 	printf("iter.\telems\tSkipList\tHashTable\tBinaryTree\tLinkList\n");
 
-	for (int a = 1; a <= 32; a++) {
+	for (int a = 1; a <= maxIteration; a++) {
 		maxSize *= 2;
 		printf("%d\t%d\t", maxTest, maxSize);
 

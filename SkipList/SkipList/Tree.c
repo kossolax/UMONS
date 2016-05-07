@@ -16,10 +16,10 @@ Tree* TR_Search(Tree* list, int key) {
 	Tree* p = (list);
 	while (p != NULL && p->key != key) {
 		if (p->key > key) {
-			p = &(p->left);
+			p = (p->left);
 		}
 		else if (p->key < key) {
-			p = &(p->right);
+			p = (p->right);
 		}
 	}
 	return p;
