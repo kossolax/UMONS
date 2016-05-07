@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
 	for ( i = 1; i <= maxTest; i++) {
 		SkipList* list = SK_init(maxSize, p);
 		for ( j = 1; j <= maxSize; j++)
-			SK_Insert(list, j, j);
+			SK_Insert(list, rand() % j, j);
 		SK_free(list);
 	}
 	end = clock();
@@ -30,12 +30,13 @@ int main(int argc, char** argv) {
 		for ( i = 1; i <= maxTest; i++) {
 			LinkList* list = LL_init();
 			for ( j = 1; j <= maxSize; j++)
-				list = LL_Insert(list, j, j);
-			list = LL_free(list);
+				LL_Insert(&list, rand()%j, j);
+			LL_free(&list);
 		}
 		end = clock();
 		printf("%lf\n", (double)(end - begin) / CLOCKS_PER_SEC);
 	}
+
 #if _WIN32
 	system("pause");
 #endif
