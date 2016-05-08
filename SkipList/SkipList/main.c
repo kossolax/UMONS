@@ -50,9 +50,9 @@ int main(int argc, char** argv) {
 		if (timeout[1] == 0) {
 			begin = clock();
 			for (i = 1; i <= maxTest; i++) {
-				HashTable* list = HT_init(maxSize, 0.25f);
+				HashTable* list = HT_init(128, 4);
 				for (j = 1; j <= maxSize; j++)
-					HT_Insert(list, rand() % j, j);
+					HT_Insert(&list, rand() % j, j);
 				memory = getCurrentRSS();
 				if (memory > maxMemoryUsage) maxMemoryUsage = memory;
 				HT_free(&list);

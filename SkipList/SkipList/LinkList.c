@@ -26,7 +26,8 @@ LinkList* LL_Search(LinkList* list, int key) {
 		return p;
 	return NULL;
 }
-void LL_Insert(LinkList** list, int key, int value) {
+int LL_Insert(LinkList** list, int key, int value) {
+	int i = 1;
 	if (*list == NULL) {
 		LinkList* n = (LinkList*)malloc(sizeof(LinkList));
 		n->key = key;
@@ -36,8 +37,10 @@ void LL_Insert(LinkList** list, int key, int value) {
 	}
 	else {
 		LinkList* p = *list;
-		while (p->forward != NULL && p->key < key)
+		while (p->forward != NULL && p->key < key) {
 			p = p->forward;
+			i++;
+		}
 		
 		if (p->value == key) {
 			p->value = value;
@@ -50,6 +53,7 @@ void LL_Insert(LinkList** list, int key, int value) {
 			p->forward = n;
 		}
 	}
+	return i;
 }
 void LL_Delete(LinkList** list, int key) {
 	LinkList* p = (*list)->forward;
@@ -62,6 +66,7 @@ void LL_Delete(LinkList** list, int key) {
 	if( p->key == key ) {
 		q->forward = p->forward;
 		free(p);
+		p = NULL;
 	}
 }
 int LL_GetValueFromNode(LinkList* noeud) {
