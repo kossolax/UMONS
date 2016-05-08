@@ -147,12 +147,14 @@
     <ClCompile Include="HashTable.c" />
     <ClCompile Include="LinkList.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="MemoryDump.c" />
     <ClCompile Include="SkipList.c" />
     <ClCompile Include="Tree.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HashTable.h" />
     <ClInclude Include="LinkList.h" />
+    <ClInclude Include="MemoryDump.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SkipList.h" />
     <ClInclude Include="Tree.h" />

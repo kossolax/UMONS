@@ -30,6 +30,9 @@
     <ClCompile Include="Tree.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MemoryDump.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SkipList.h">
@@ -46,6 +49,9 @@
     </ClInclude>
     <ClInclude Include="Tree.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryDump.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
