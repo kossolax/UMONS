@@ -7,6 +7,8 @@
 #include "HashTable.h"
 #include "Tree.h"
 
+#include "MemoryDump.h"
+
 int main(int argc, char** argv) {
 	srand((int)time(NULL));
 	clock_t begin;
@@ -38,7 +40,7 @@ int main(int argc, char** argv) {
 				SK_free(&list);
 			}
 			timer = (double)(clock() - begin) / CLOCKS_PER_SEC;
-			printf("%12.8f | %10u | ", timer, maxMemoryUsage);
+			printf("%12.8f | %10zd | ", timer, maxMemoryUsage);
 			if (timer > maxTime) timeout[0] = 1;
 		}
 		else {
@@ -58,7 +60,7 @@ int main(int argc, char** argv) {
 				HT_free(&list);
 			}
 			timer = (double)(clock() - begin) / CLOCKS_PER_SEC;
-			printf("%12.8f | %10u | ", timer, maxMemoryUsage);
+			printf("%12.8f | %10zd | ", timer, maxMemoryUsage);
 			if (timer > maxTime) timeout[1] = 1;
 		}
 		else {
@@ -79,7 +81,7 @@ int main(int argc, char** argv) {
 				TR_free(&list);
 			}
 			timer = (double)(clock() - begin) / CLOCKS_PER_SEC;
-			printf("%12.8f | %10u | ", timer, maxMemoryUsage);
+			printf("%12.8f | %10zd | ", timer, maxMemoryUsage);
 			if (timer > maxTime) timeout[2] = 1;
 		}
 		else {
@@ -98,7 +100,7 @@ int main(int argc, char** argv) {
 				LL_free(&list);
 			}
 			timer = (double)(clock() - begin) / CLOCKS_PER_SEC;
-			printf("%12.8f | %10u | ", timer, maxMemoryUsage);
+			printf("%12.8f | %10zd | ", timer, maxMemoryUsage);
 			if (timer > maxTime) timeout[3] = 1;
 		}
 		else {
