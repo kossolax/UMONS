@@ -11,14 +11,12 @@
 
 //---------------BEGINSKStruct----------------
 typedef struct SkipList {
-	int levelMAX;
+	int levelMAX, level;
 	float p;
-	int level;
 	struct node* head;
 } SkipList;
 typedef struct node {
-	int key;
-	int value;
+	int key, value;
 	struct node** forward;
 } node;
 //---------------ENDSKStruct----------------

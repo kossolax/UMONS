@@ -8,6 +8,7 @@
 \usepackage{listings}
 \usepackage{color}
 \usepackage{svg}
+\usepackage{cleveref}
 \usepackage{subfig}
 \usepackage[titletoc,title]{appendix}
 \lstset{language=C,rangeprefix=//---------------,rangesuffix=----------------,includerangemarker=false,columns=spaceflexible,extendedchars=true,showspaces=false,showstringspaces=false,inputencoding=ansinew,tabsize=4,frame=shadowbox,morecomment=[is]{\#ifdef}{\#endif},morecomment=[is]{/*}{*/}}
@@ -24,35 +25,35 @@
 	\section{Introduction}
 	En informatique, il est courant de vouloir enregistrer des données quelconques. Une structure de données est une représentation logique de ces données. La manière de représenter les données permet de résoudre  différents problèmes. Une structure précise peut être plus performante pour un cas précis ou, au contraire, être une très peu performante. D'autre part, une bonne structure de données peut aussi réduire de façon significative la complexité d'un algorithme.
 	
-	Il existe un grand nombre de structures de données, mais toutes proposent aux concepteurs de logiciel deux fonctionnalités standards: enregistrer et récupérer une donnée. Selon l'approche employée pour la représentation logique, les performances seront différentes. Certaines structures de données offrent la possibilité de récupérer le premier élément en temps constant, au détriment du temps d'accès aux autres éléments. Alors que d'autres permettent un accès en temps constant à chacun des éléments en dépit d'une durée plus longue pour l'insertion d'un élément.
+	Il existe un grand nombre de structures de données, toutes proposent aux concepteurs de logiciel deux fonctionnalités standards: enregistrer et récupérer une donnée. Selon l'approche employée pour la représentation logique, les performances seront différentes. Certaines structures de données offrent la possibilité de récupérer le premier élément en temps constant, au détriment du temps d'accès aux autres éléments. Alors que d'autres permettent un accès en temps constant à chacun des éléments en dépit d'une durée plus longue pour l'insertion d'un élément.
 	
 	\subsection{Liste chainée}
-	Une liste chainée \ref{LinkedList} est une structure de données de taille variable. Le principe est que chacun des éléments de cette liste contient une référence vers l'élément suivant. Cette pratique facilite l'insertion et la suppression des éléments, au détriment de la rapidité de la recherche.
+	Une liste chainée \cref{LinkedList} est une structure de données de taille variable. Le principe est que chacun des éléments de cette liste contient une référence vers l'élément suivant. Cette pratique facilite l'insertion et la suppression des éléments, au détriment de la rapidité de la recherche.
 	
 	Une liste chainée peut aussi être triée, ce qui inverse les conséquences sur ces performances. Une insertion devient plus compliquée, car il faut rechercher, avant tout, ou placer l'élément dans la liste afin de garder la structure cohérente.
 	
 	La recherche dans une liste chainée s'effectue élément par élément: si ce n'est pas le premier élément de la liste, il faut regarder le second. Si ce n'est pas celui-ci, il faut alors regarder celui d'après jusqu'à ce que l'élément recherché soit trouvé ou qu'il n'y ait pas d'élément suivant. Dans le cas d'une liste chainée croissante, la recherche peut s'arrêter plus tôt: si l'élément que l'on regarde est plus grand que celui qui est recherché.
 	
 	\begin{figure}[h]
-		\label{LinkedList}
 		\includegraphics[width=\textwidth]{img/linkedList}
 		\caption{Liste chainée ordonnées}
+		\label{LinkedList}
 	\end{figure}
 	
 	\subsubsection*{Les alternatives}
-	Il existe de nombreuses alternatives aux listes chainées pour trouver un élément plus rapidement: les tables de hashage \ref{fig:hashing}, les arbres binaires \ref{fig:tree}, etc. Mais certaines séquences d'insertions peuvent être catastrophiques. Par exemple, insérer des éléments croissants dans un arbre binaire provoque un rééquilibrage de l'arbre. En revanche, si les éléments sont insérés de façon aléatoire, l'équilibrage devient plus rare.
+	Il existe de nombreuses alternatives aux listes chainées pour trouver un élément plus rapidement: les tables de hashage \cref{hashing}, les arbres binaires \cref{tree}, etc. Mais certaines séquences d'insertions peuvent être catastrophiques. Par exemple, insérer des éléments croissants dans un arbre binaire provoque un rééquilibrage de l'arbre. En revanche, si les éléments sont insérés de façon aléatoire, l'équilibrage devient plus rare.
 
-	Grâce aux probabilités, les \og skip-list \fg{} \ref{fig:skip} bénéficient d'un atout majeur: aucune séquence ne peut provoquer systématiquement le pire scénario. Mieux encore, les skip-lists utilisent des algorithmes plus simples que ses concurrents.
+	Grâce aux probabilités, les \og skip-list \fg{} \cref{skip} bénéficient d'un atout majeur: aucune séquence ne peut provoquer systématiquement le pire scénario. Mieux encore, les skip-lists utilisent des algorithmes plus simples que ses concurrents.
 	
 	\begin{figure}[h]
 		\centering
 		\subfloat[Table de hashage] {
-			\label{fig:hashing}
 			\includegraphics[scale=0.75]{img/hashing}
+			\label{hashing}
 		}
 		\subfloat[Arbre binaire] {
-			\label{fig:tree}
 			\includegraphics[scale=0.75]{img/tree}
+			\label{tree}
 		}
 		\caption{Différente structures de données}
 	\end{figure}
@@ -63,9 +64,9 @@
 	 Une skip-list bénéficie des avantages de la liste chainée, en limitant fortement ses inconvénients. Cette structure de données utilise les chaines de façon parallèle. Une fonction basée sur des probabilités permet de déterminer la hauteur de la chaine. Plus cette hauteur est élevé, moins la liste contient d'éléments. Une couche haute est donc un accès plus rapide vers des éléments plus loin dans la liste.
 	 
 	 \begin{figure}[h]
-	 	\label{skip}
 	 	\includegraphics[width=\textwidth]{img/skip}
 	 	\caption{Skip-list}
+	 	\label{skip}
 	 \end{figure}
 	 
 	\subsubsection*{Définition}
@@ -77,11 +78,15 @@
 		
 	Le parcours d'une skip-list se fait de haut en bas, et de gauche à droite. Si la clé de l'élément suivant sur une couche est plus grande que celle qu'on recherche, celle-ci continue sur une voie inférieure.	
 	
-	
-	\begin{center}
+	\begin{figure}
 		\includegraphics[width=\textwidth]{img/struct}
-	\end{center}
+		\caption{Structure d'une skip-list}
+		\label{StructSkip}
+	\end{figure}
 	
+	\subsection{La hauteur}
+	La notion de hauteur est très importante dans une skip-liste. En effet, celle-ci permet de définir à combien de nœuds un élément est attaché. Si trop d'éléments possèdent la même hauteur, la recherche devient trop lente.	Cette méthode est définie à l'aide d'une fonction aléatoire. La hauteur ne dépend ni de la clé de l'élément ni de sa valeur. La fonction aléatoire doit être définie pour qu'un élément de hauteur $h$ possède le double de probabilités qu'un élément de hauteur $h+1$. Ainsi, si un nœud de hauteur 1 a une probabilité $p$ de $0.5$ alors le niveau 2 a une probabilité de $0.25$.
+		
 	\newpage
 	\section{Les algorithmes}
 	Une skip-list a besoin d'avoir un pointeur vers sa tête $(node* head)$. La liste doit connaitre le nombre de niveau actuellement utilisés $(level)$. Selon les implémentations, il est possible de définir un nombre de couche maximal $(levelMAX)$. Il est aussi possible de changer le paramètre $(p)$ de probabilité de création d'une nouvelle couche. La variation de ses deux derniers paramètres est étudiée dans le chapitre \nameref{perf}.
@@ -98,8 +103,13 @@
 	\end{itemize}
 	\emph{La création d'une skip-liste en langage C figure en annexe \ref{SKInit}.}
 	
-	\includegraphics{img/init}
+	\begin{figure}[h]
+		\includegraphics{img/init}
+		\caption{Initialisation d'une skip-liste}
+		\label{SkipInit}
+	\end{figure}
 	
+	\newpage
 	\subsection{La recherche}
 	La recherche d'un élément s'exécute de la façon suivante:
 	\begin{enumerate}
@@ -111,13 +121,28 @@
 		\item Sinon, l'élément n'a pas été trouvé.
 	\end{enumerate}
 	\emph{L'algorithme écrit en langage C figure en annexe \ref{SKSearch}.}
-	\begin{center}
+	
+	\subsubsection{Exemples}
+	Comment rechercher l'élément 8 dans la liste suivante?
+	\begin{figure}[h]
 		\includegraphics[width=\textwidth]{img/search}
-	\end{center}
+		\caption{Recherche dans une skip-liste}
+		\label{SkipSearch1}
+	\end{figure}
 	
-	\subsection{La hauteur}
-	La notion de hauteur est très importante dans une skip-liste. En effet, celle-ci permet de définir à combien de nœuds un élément est attaché. Si trop d'éléments possèdent la même hauteur, la recherche devient trop lente.	Cette méthode est définie à l'aide d'une fonction aléatoire. La hauteur ne dépend ni de la clé de l'élément ni de sa valeur. La fonction aléatoire doit être définie pour qu'un élément de hauteur $h$ possède le double de probabilités qu'un élément de hauteur $h+1$. Ainsi, si un nœud de hauteur 1 a une probabilité $p$ de $0.5$ alors le niveau 2 a une probabilité de $0.25$.
+	\begin{itemize}
+		\item Se positionner sur la couche la plus haute: La 4ème voie.
+		\item 8 est-il plus grand que 2 ? Oui, se positionner sur le nœud 2.
+		\item 8 est-il plus grand que $+\infty$ \textit{(NIL)}? Non, descendre sur la 3ème voie.
+		\item 8 est-il plus grand que 13  ? Non, descendre sur la 2ème voie.
+		\item 8 est-il plus grand que 5 ? Oui, se positionner sur le nœud 5.
+		\item 8 est-il plus grand que 13 ? Non, descendre sur la 1ère voie.
+		\item 8 est-il plus grand que 8 ? Non, Il n'existe a pas de voie plus basse.
+		\item 8 est-il l'élément recherché? Oui, la recherche est concluante.
+	\end{itemize}
 	
+	
+	\newpage
 	\subsection{L'insertion}
 	L'insertion d'un élément dans une skip-liste s'effectue de la façon suivante:
 	\begin{enumerate}
@@ -135,10 +160,13 @@
 		\item \textbf{FIN}.
 	\end{enumerate}
 	\emph{L'algorithme écrit en langage C est présenté en annexe \ref{SKInsert}.}
-	\begin{center}
+	\begin{figure}[h]
 		\includegraphics[width=\textwidth]{img/insert}
-	\end{center}
+		\caption{Insertion dans une skip-liste}
+		\label{SkipInsert}
+	\end{figure}
 	
+	\newpage
 	\subsection{La suppression}
 	La suppression d'un élément dans une skip-liste s'effectue de la façon suivante:
 	\begin{enumerate}
