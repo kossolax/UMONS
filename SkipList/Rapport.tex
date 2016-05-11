@@ -122,13 +122,26 @@
 	\end{enumerate}
 	\emph{L'algorithme écrit en langage C figure en annexe \ref{SKSearch}.}
 	
-	\subsubsection{Exemples}
-	Comment rechercher l'élément 8 dans la liste suivante?
+	\subsubsection{Exemples}	
+	\paragraph*{Comment rechercher l'élément 8 dans \cref{SkipSearch1}?}
+	\begin{itemize}
+		\item Se positionner sur la couche la plus haute: La 4ème voie.
+		\item 8 est-il plus grand que 2 ? Oui, se positionner sur le nœud 2.
+		\item 8 est-il plus grand que $+\infty$ \textit{(NIL)}? Non, descendre sur la 3ème voie.
+		\item 8 est-il plus grand que 13  ? Non, descendre sur la 2ème voie.
+		\item 8 est-il plus grand que 5 ? Oui, se positionner sur le nœud 5.
+		\item 8 est-il plus grand que 13 ? Non, descendre sur la 1ère voie.
+		\item 8 est-il plus grand que 8 ? Non, Il n'existe a pas de voie plus basse.
+		\item 5 est le dernier nœud parcouru. L'élément suivant sur la voie 1 est 8. 8 est-il l'élément recherché? Oui, la recherche est concluante.
+	\end{itemize}
 	\begin{figure}[h]
 		\includegraphics[width=\textwidth]{img/search}
-		\caption{Recherche dans une skip-liste}
+		\caption{Recherche de l'élément 8 dans une skip-liste}
 		\label{SkipSearch1}
 	\end{figure}
+	
+	\newpage
+	\paragraph*{Comment rechercher l'élément 9 dans \cref{SkipSearch2}?}
 	
 	\begin{itemize}
 		\item Se positionner sur la couche la plus haute: La 4ème voie.
@@ -138,8 +151,13 @@
 		\item 8 est-il plus grand que 5 ? Oui, se positionner sur le nœud 5.
 		\item 8 est-il plus grand que 13 ? Non, descendre sur la 1ère voie.
 		\item 8 est-il plus grand que 8 ? Non, Il n'existe a pas de voie plus basse.
-		\item 8 est-il l'élément recherché? Oui, la recherche est concluante.
+		\item 5 est le dernier nœud parcouru. L'élément suivant sur la voie 1 est 9. 9 est-il l'élément recherché? Non, la recherche est infructueuse.
 	\end{itemize}
+	\begin{figure}[h]
+		\includegraphics[width=\textwidth]{img/search2}
+		\caption{Recherche de l'élément 9 dans une skip-liste}
+		\label{SkipSearch2}
+	\end{figure}
 	
 	
 	\newpage
