@@ -6,9 +6,6 @@
 #include <limits.h>
 #include <time.h>
 
-#define MIN(a,b) (((a)<(b))?(a):(b))
-//#define DEBUG
-
 typedef struct LinkList {
 	int key;
 	int value;
