@@ -123,7 +123,9 @@
 	
 	\newpage
 	\subsection{La recherche}
-	La recherche d'un élément s'exécute de la façon suivante:
+	De manière générale, pour rechercher dans une skip-list il suffit de commencer par le niveau le plus haut et d'effectuer une recherche élément par élément. Si l'élément suivant devient plus grand que celui recherché, il suffit alors de descendre d'un niveau dans la liste.
+	
+	Algorithmiquement parlant, La recherche d'un élément s'exécute de la façon suivante:
 	\begin{enumerate}
 		\item Commencer l'exploration de la liste par l'élément en tête, et se positionner sur la plus haute voie.
 		\item Sur la voie actuelle, regarder la clé de l'élément suivant.
@@ -132,6 +134,7 @@
 		\item Si la clé de l'élément suivant correspond à celle qui est recherchée: l'élément a été trouvé.
 		\item Sinon, l'élément n'a pas été trouvé.
 	\end{enumerate}
+	
 	\emph{L'algorithme écrit en langage C figure en annexe \ref{SKSearch}.}
 	
 	\subsubsection{Exemples}	
@@ -174,7 +177,9 @@
 	
 	\newpage
 	\subsection{L'insertion}
-	L'insertion d'un élément dans une skip-liste s'effectue de la façon suivante:
+	L'insertion d'une entrée dans une skip-list est essentiellement la même chose que la recherche. A l'exception qu'un tableau $update$, de taille identique à la hauteur de la liste, est utilisé pour mémoriser les pointeurs chaque l'élément avant de descendre d'un niveau. Ce tableau est utilisé pour mettre à jour les liens nécessaires pour que la structure de donnée reste cohérente.
+	
+	Algorithmiquement parlant, l'insertion d'un élément dans une skip-liste s'effectue de la façon suivante:
 	\begin{enumerate}
 		\item Commencer l'exploration de la liste par l'élément en tête, et se positionner sur la plus haute voie.
 		\item Sur la voie actuelle, regarder la clé de l'élément suivant.
@@ -256,7 +261,17 @@
 		\includegraphics[width=\textwidth]{img/delete}
 	\end{center}
 	
+	\newpage
 	\section{Analyse des performances}\label{perf}
+	La caractéristique majeure de la skip-list est l'aléatoire. L'insertion d'un élément nouveau utilise une hauteur qui est déterminée par le hasard. De ce fait, une même séquence produira une liste différente. Cela a comme conséquence qu'aucune séquence prédéterminée de nombres ne peut produire une dégradation des performances, contrairement aux arbres binaires qui eux doivent être constamment rééquilibrés.
+	
+	
+	Pour une variable aléatoire $p=\frac{1}{2}$ et une skip-list de taille infinie, celle-ci tend à ce que chacun des niveaux possèdes $\frac{1}{2}$ moins d'élément. Ainsi, le niveau 1 contient $n$ élément, le niveau 2 $\frac{n}{2}$, le niveau 3 $\frac{n}{4}$, ..., un élément à hauteur $h$: $\frac{n}{{2}^{h-1}}$. Par conséquent, le nombre total de lien dans une skip-list équivaut à $n+\frac{n}{2}+\frac{n}{4}+\frac{n}{8}+\dots \iff \sum_{h=1}^{\infty}\frac{n}{{2}^{h-1}} = 2n$. Ce qui signifie qu'en moyenne un élément dans une skip-list possède 2 liens.
+	
+	Afin de déterminer la complexité de la recherche, il faut être capable d'estimer le nombre de fois que l'on doit avancer dans la liste. Vu que la recherche se fait de haut en bas et de gauche à droite, chaque clé examinée à un niveau $i$ ne peut pas appartenir à un niveau $i+1$. 
+	De ce fait, on peut déduire que le nombre de fois que l'on avance dans la liste équivaut au nombre de lien divisé par le nombre d'élément, soit $\frac{2n}{n}=2$.
+	
+	
 	\section{Comparaison avec d'autres structures de données}
 	
 	
