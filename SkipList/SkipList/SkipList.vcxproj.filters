@@ -33,6 +33,9 @@
     <ClCompile Include="MemoryDump.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\xoroshiro128plus.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SkipList.h">
@@ -49,6 +52,9 @@
     </ClInclude>
     <ClInclude Include="MemoryDump.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xoroshiro128plus.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

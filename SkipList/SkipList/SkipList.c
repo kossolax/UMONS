@@ -1,5 +1,8 @@
 #include "SkipList.h"
 
+//#define USE_CSTD
+
+
 //---------------BEGINSKInit----------------
 SkipList* SK_init(int maxElem, float p) {
 	SkipList* list = (SkipList*)malloc(sizeof(SkipList));
@@ -212,10 +215,20 @@ void SK_Print(SkipList* list) {
 	}
 	printf("\n\n");
 }
+
+static inline double to_double(uint64_t x) {
+	const union { uint64_t i; double d; } u = { .i = UINT64_C(0x3FF) << 52 | x >> 12 };
+	return u.d - 1.0;
+}
+
 //---------------BEGINSKRandom----------------
 int getRandomLevel(SkipList* list) {
 	int level = 1;
-	while ( (double)rand()/(double)RAND_MAX < (double)list->p) {
+#ifdef USE_CSTD
+	while ((double)rand() / (double)RAND_MAX < (double)list->p) {
+#else
+	while ( to_double(RD_next()) < (double)list->p) {
+#endif
 		level++;
 	}
 	return MIN(level, list->levelMAX);
@@ -249,6 +262,5 @@ void SK_countNode(SkipList* list, unsigned int level[], int maxLevel) {
 
 			level[i]++;
 		}
-		level[i]++;
 	}
 }

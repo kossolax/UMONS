@@ -157,6 +157,7 @@
     <ClInclude Include="MemoryDump.h" />
     <ClInclude Include="SkipList.h" />
     <ClInclude Include="Tree.h" />
+    <ClInclude Include="xoroshiro128plus.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

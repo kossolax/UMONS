@@ -15,12 +15,14 @@ float pTest[maxPTest] = { 4 / 5.0f, 3 / 4.0f, 2 / 3.0f, 3 / 5.0f, 1 / 2.0f, 2 / 
 void compteurDeTaille(int maxTest, int maxSize);
 void compareAll(int maxTest, double maxTime);
 void calculeDePerf(int maxTest, int maxSize);
+void drawAList(int maxSize, float p);
 void clean_stdin();
 
 int main(int argc, char** argv) {
 	srand((int)time(NULL));
-	
-	double maxTime;
+	RD_init();
+
+	double maxTime, p;
 	int maxTest, maxSize;
 
 	char c;
@@ -31,6 +33,8 @@ int main(int argc, char** argv) {
 		printf(" 1. Variation de p, calcule des hauteurs\n");
 		printf(" 2. Variation de p, calcule de performance\n");
 		printf(" 3. Comparaisons avec d'autres structures\n");
+		printf(" 4. Generer et afficher une skip-list\n");
+
 		printf("\tQuel est le test a effectuer ? ");
 		scanf("%c", &c);
 
@@ -41,7 +45,7 @@ int main(int argc, char** argv) {
 			} while (maxTest < 1);
 		}
 		
-		if( c == '1' || c == '2' ) {
+		if( c == '1' || c == '2' || c == '4' ) {
 			do {
 				printf("\tCombien d'element a inserer (min 4)? ");
 				scanf("%d", &maxSize);
@@ -52,18 +56,19 @@ int main(int argc, char** argv) {
 			printf("\tQuel est la duree maximum du test? ");
 			scanf("%lf", &maxTime);
 		}
+		if (c == '4') {
+			do {
+				printf("\tQuel est la probabilite p ? ");
+				scanf("%lf", &p);
+			} while (p < 0.001 || p > 0.999 );
+		}
 		
 		printf("--------------------------------------------------------------\n");
 		switch (c) {
-			case '1':
-				compteurDeTaille(maxTest, maxSize);
-				break;
-			case '2':
-				calculeDePerf(maxTest, maxSize);
-				break;
-			case '3':
-				compareAll(maxTest, maxTime);
-				break;
+			case '1':	compteurDeTaille(maxTest, maxSize); break;
+			case '2':	calculeDePerf(maxTest, maxSize);	break;
+			case '3':	compareAll(maxTest, maxTime);		break;
+			case '4':	drawAList(maxSize, p);				break;
 		}
 
 		printf("--------------------------------------------------------------\n");
@@ -73,7 +78,7 @@ int main(int argc, char** argv) {
 #if _WIN32
 		system("cls");
 #else
-		system("pause");
+		system("clear");
 #endif
 	} while (c != 'q');
 
@@ -248,4 +253,14 @@ void clean_stdin(void) {
 	do {
 		c = getchar();
 	} while (c != '\n' && c != EOF);
+}
+void drawAList(int maxSize, float p) {
+	int j;
+
+	SkipList* list = SK_init(maxSize, p);
+	for (j = 0; j < maxSize; j++)
+		SK_Insert(list, rand() % maxSize, j);
+	
+	SK_Print(list);
+	SK_free(&list);
 }
