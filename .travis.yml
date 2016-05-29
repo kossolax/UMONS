@@ -3,6 +3,3 @@ language: c
 script:
     - cd SkipList
     - make
-
-after_success:
-    - ./list

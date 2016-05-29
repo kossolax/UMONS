@@ -9,35 +9,116 @@
 
 #include "MemoryDump.h"
 
+#define maxPTest	11
+float pTest[maxPTest] = { 4 / 5.0f, 3 / 4.0f, 2 / 3.0f, 3 / 5.0f, 1 / 2.0f, 2 / 5.0f, 1 / 3.0f, 1 / 4.0f, 1 / 5.0f, 1 / 10.0f, 1 / 20.0f };
+
+void compteurDeTaille(int maxTest, int maxSize);
+void compareAll(int maxTest, double maxTime);
+void calculeDePerf(int maxTest, int maxSize);
+void clean_stdin();
+
 int main(int argc, char** argv) {
 	srand((int)time(NULL));
-	clock_t begin;
-	int i, j, k, timeout[5] = { 0, 0, 0, 0 }, maxSize = 1000;
-	double timer;
-	size_t maxMemoryUsage = 0, memory = 0;
-	int maxTest = (argc >= 2 ? atoi(argv[1]) : 1000000);
-	int maxIteration = (argc >= 3 ? atoi(argv[2]) : 24);
-	float p = (argc >= 4 ? atof(argv[3]) : 0.5f);
-	double maxTime = (argc >= 5 ? atof(argv[4]) : 10.0);
-	int** keys;
-	int maxLevel = 14, maxPTest = 11;
-	unsigned int level[14];
-	float pTest[] = { 4 / 5.0f, 3 / 4.0f, 2 / 3.0f, 3 / 5.0f, 1 / 2.0f, 2 / 5.0f, 1 / 3.0f, 1 / 4.0f, 1 / 5.0f, 1 / 10.0f, 1 / 20.0f };
+	
+	double maxTime;
+	int maxTest, maxSize;
+
+	char c;
 	setbuf(stdout, NULL);
 
+	do {
+		
+		printf(" 1. Variation de p, calcule des hauteurs\n");
+		printf(" 2. Variation de p, calcule de performance\n");
+		printf(" 3. Comparaisons avec d'autres structures\n");
+		printf("\tQuel est le test a effectuer ? ");
+		scanf("%c", &c);
+
+		if( c == '1' || c == '2' || c == '3' ) {
+			do {
+				printf("\tNombre de test a effectuer (min 1)? ");
+				scanf("%d", &maxTest);
+			} while (maxTest < 1);
+		}
+		
+		if( c == '1' || c == '2' ) {
+			do {
+				printf("\tCombien d'element a inserer (min 4)? ");
+				scanf("%d", &maxSize);
+			} while (maxSize < 4);
+		}
+
+		if( c == '3' ) {
+			printf("\tQuel est la duree maximum du test? ");
+			scanf("%lf", &maxTime);
+		}
+		
+		printf("--------------------------------------------------------------\n");
+		switch (c) {
+			case '1':
+				compteurDeTaille(maxTest, maxSize);
+				break;
+			case '2':
+				calculeDePerf(maxTest, maxSize);
+				break;
+			case '3':
+				compareAll(maxTest, maxTime);
+				break;
+		}
+
+		printf("--------------------------------------------------------------\n");
+		printf("Appuyer sur entrer pour continuer, q pour quitter le programme\n");
+		clean_stdin();
+		scanf("%c", &c);
 #if _WIN32
-	system("pause");
+		system("cls");
+#else
+		system("pause");
 #endif
-	printf("--------------------------------------------------------------------------------\n");
-	
+	} while (c != 'q');
+
+	return 0;
+}
+
+void compteurDeTaille(int maxTest, int maxSize) {
+	int i, j, k;
+	int maxLevel = 14;
+	unsigned int level[14];
+
 	printf("     p     |");
 	for (j = 0; j < maxLevel; j++)
 		printf("%8d |", j);
-	printf(" TIME\n");
+	printf("\n");
 
 	for (i = 0; i < maxPTest; i++) {
 		for (j = 0; j < maxLevel; j++)
 			level[j] = 0;
+
+		printf("%10.8f |", pTest[i]);
+
+		for (k = 1; k <= maxTest; k++) {
+			SkipList* list = SK_init(maxSize, pTest[i]);
+			for (j = 0; j < maxSize; j++)
+				SK_Insert(list, j, j);
+
+			SK_countNode(list, level, maxLevel);
+			SK_free(&list);
+		}
+
+		for (j = 0; j < maxLevel; j++)
+			printf("%8.2f |", level[j] / (float)maxTest);
+		printf("\n");
+	}
+}
+void calculeDePerf(int maxTest, int maxSize) {
+	int i, j, k;
+	clock_t begin;
+	double timer;
+	
+
+	printf("     p     | TIME\n");
+
+	for (i = 0; i < maxPTest; i++) {
 
 		printf("%10.8f |", pTest[i]);
 
@@ -47,22 +128,19 @@ int main(int argc, char** argv) {
 			for (j = 0; j < maxSize; j++)
 				SK_Insert(list, j, j);
 
-			SK_countNode(list, level, maxLevel);
 			SK_free(&list);
 		}
 		timer = (double)(clock() - begin) / CLOCKS_PER_SEC;
-		
-
-		k = 0;
-		for (j = 0; j < maxLevel; j++)
-			printf("%8.2f |", level[j] / (float)maxTest);
-		printf("%12.8f\n", timer);
+		printf("%12.6f\n", timer);
 	}
-#if _WIN32
-	system("pause");
-#endif
-	printf("--------------------------------------------------------------------------------\n");
-	maxSize = 1;
+}
+void compareAll(int maxTest, double maxTime) {
+	int i, j, k, timeout[5] = { 0, 0, 0, 0 }, maxSize = 1, maxIteration = 24;
+	clock_t begin;
+	double timer;
+	int** keys;
+	size_t maxMemoryUsage = 0, memory = 0;
+
 	printf("%13s | %25s | %25s | %25s | %25s |\n", "operations", "SkipList         ", "HashTable        ", "BinaryTree         ", "LinkList         ");
 	printf("%13s | %25s | %25s | %25s | %25s |\n", "iter.   elems", "TIME   |   MEMORY  ", "TIME   |   MEMORY  ", "TIME   |   MEMORY  ", "TIME   |   MEMORY  ");
 
@@ -80,7 +158,7 @@ int main(int argc, char** argv) {
 		if (timeout[0] == 0) {
 			begin = clock();
 			for (i = 0; i < maxTest; i++) {
-				SkipList* list = SK_init(maxSize, p);
+				SkipList* list = SK_init(maxSize, 0.5f);
 				for (j = 0; j < maxSize; j++)
 					SK_Insert(list, keys[i][j], j);
 				memory = getCurrentRSS();
@@ -160,10 +238,14 @@ int main(int argc, char** argv) {
 		for (i = 0; i < maxTest; i++)
 			free(keys[i]);
 		free(keys);
-	}
 
-#if _WIN32
-	system("pause");
-#endif
-	return 0;
+		if (timeout[0] == 1 && timeout[1] == 1 && timeout[2] == 1 && timeout[3] == 1 )
+			break;
+	}
+}
+void clean_stdin(void) {
+	int c;
+	do {
+		c = getchar();
+	} while (c != '\n' && c != EOF);
 }

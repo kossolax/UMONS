@@ -11,6 +11,7 @@
 \usepackage{cleveref}
 \usepackage{subfig}
 \usepackage{gensymb}
+\usepackage{slashbox}
 \usepackage[titletoc,title]{appendix}
 \lstset{language=C,rangeprefix=//---------------,rangesuffix=----------------,includerangemarker=false,columns=spaceflexible,extendedchars=true,showspaces=false,showstringspaces=false,inputencoding=ansinew,tabsize=4,frame=shadowbox,morecomment=[is]{\#ifdef}{\#endif},morecomment=[is]{/*}{*/}}
 \title{Lecture et rédaction scientifiques: \\Skip-lists }
@@ -288,12 +289,12 @@
 		\iff h = \log_{2}(n)
 	\]
 	
-	L'algorithme de recherche effectue possède 2 boucles imbriquées. La boucle la plus profonde permet d'avancer de gauche à droite dans la liste. Pour $p=\frac{1}{2}$, en moyenne celle-ci avance de $2$. La boucle supérieure quant à elle varie selon la hauteur de la liste. La hauteur est estimée, avec une forte probabilité, à $\log_{2} n $. Si l'on combine les 2 estimations, nous avons donc une forte probabilité que la recherche s'effectue en $\log_{2}( 2n )$ opérations, soit $\mathcal{O}(log n)$.
+	L'algorithme de recherche effectue possède 2 boucles imbriquées. La boucle la plus profonde permet d'avancer de gauche à droite dans la liste. Pour $p=\frac{1}{2}$, en moyenne celle-ci avance de $2$. La boucle supérieure quant à elle varie selon la hauteur de la liste. La hauteur est estimée, avec une forte probabilité, à $\log_{2} n $. Si l'on combine les 2 estimations, nous avons donc une forte probabilité que la recherche s'effectue en $\log_{2}( 2n )$ opérations, soit $\mathcal{O}(log(n))$.
 	
 	
 	\subsubsection{Généralisation}
 	
-	Le raisonnement utilisé précédemment pour $p=\frac{1}{2}$ reste valable quelque soit la valeur de $p$, voir \cref{recap}. Le raisonnement qui effectue une sommation servant au calcule de lien dans une liste convergera vers $\frac{n}{p}$. Par contre, la somme des probabilités ($p^1 + p^2 + p^3 + ... + p^k$), converge toujours vers 1. 
+	Le raisonnement utilisé précédemment pour $p=\frac{1}{2}$ reste valable quelque soit la valeur de $p$, voir \cref{recap}. Le raisonnement qui effectue une sommation servant au calcule de lien dans une liste convergera vers $\frac{n}{p}$. Par contre, la somme des probabilités ($p^1 + p^2 + p^3 + ... + p^k$), converge toujours vers $\frac{p}{1-p}$. 
 	 	
 	 \begin{table}[h]
 	 \begin{tabular}{|l|c|c|}
@@ -322,11 +323,38 @@
 	 Les ordinateurs ne possèdent pas une mémoire infinie. Par conséquent, il est impossible d'ajouter une infinité d'éléments. C'est pourquoi à la création d'une skip-list, la hauteur maximale est bornée par la formule du cas attendu avec une forte probabilité. Le pire scénario de hauteur infinie est donc impossible. Dans le cas très improbable que chacun des éléments de la skip-list soit à cette hauteur maximale, nous avons une recherche en $n*h$: soit $\mathcal{O}(n)$. 
 	 	
 	 De façon générale, avec une constance $c>1$ $h$ est plus grande que $c log n$ avec une probabilité d'au plus $\frac{1}{n^{c-1}}$. En d'autres mots, la probabilité que $h$ soit plus petit que $c log n$ est d'au moins $1-\frac{1}{n^{c-1}}$. Par conséquent, avec une forte probabilité, la hauteur d'une skip-liste est bien d'ordre $\mathcal{O}(log n)$. Par exemple: si $n=1000$, la probabilité est d'une sur un million.
-
-
+	
+	
 	\subsection{Expérimentation}
 	
-	\section{Comparaison avec d'autres structures de données}
+	Les expérimentations suivantes ont été réalises sur un ordinateur Windows 10 64 bits possédant un AMD FX 8350 et 16Gb de RAM. Les tests ont été lancés $10^5$ fois, les résultats présent sont la moyenne des tests.
+	\newline
+	
+	Afin de vérifier que le $p$ à bien l'effet voulu, il suffit de compter le nombre de lien existant à chaque niveau. S'il y a $n$ éléments à la hauteurs 1, on s'attend à obtenir $np$ éléments de hauteur 2 avec une forte probabilité.
+
+	Dans les faits, en essayant différentes valeurs pour une skip-list de 1000 éléments, on  peut obtenir les résultats présents dans \cref{tbRes1}. Le résultat obtenu, correspond à notre espérance: $p$ influence correctement la hauteur de la liste, et par conséquent sont poids.
+	\begin{table}[h]
+		\resizebox{\columnwidth}{!}{
+		\begin{tabular}{|c|r|r|r|r|r|r|r|r|r|r|r|r|r|r|}
+			\hline
+			\backslashbox{p}{h} & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 \\
+			\hline
+			4/5 & 1001 & 800,98 & 640,98 & 513,02 & 410,69 & 328,76 & 263,2 & 210,79 & 168,81 & 135,26 & 108,41 & 86,94 & 69,73 & 55,99 \\
+			3/4 & 1001 & 751,05 & 563,5 & 422,86 & 317,35 & 238,26 & 178,93 & 134,44 & 101,08 & 76,05 & 57,29 & 43,22 & 32,68 & 24,76 \\
+			2/3 & 1001 & 667,63 & 445,44 & 297,22 & 198,46 & 132,59 & 88,74 & 59,51 & 40,02 & 27 & 18,33 & 12,55 & 8,7 & 6,13 \\
+			3/5 & 1001 & 601,03 & 361,05 & 217,06 & 130,64 & 78,77 & 47,66 & 28,99 & 17,79 & 11,08 & 7,04 & 4,59 & 3,06 & 2,03 \\
+			1/2 & 1001 & 500,99 & 251,01 & 126,04 & 63,53 & 32,27 & 16,62 & 8,81 & 4,88 & 2,81 & 0 & 0 & 0 & 0 \\
+			2/5 & 1001 & 401,01 & 161,02 & 65,02 & 26,61 & 11,24 & 5,08 & 2,45 & 0 & 0 & 0 & 0 & 0 & 0 \\
+			1/3 & 1001 & 334,33 & 112,1 & 38,03 & 13,34 & 5,09 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+			1/4 & 1001 & 250,9 & 63,5 & 16,62 & 4,9 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+			1/5 & 1001 & 201,05 & 41,03 & 9,01 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+			\hline
+		\end{tabular}
+		}
+		\caption{Le nombre de lien par niveau en fonction de $p$}
+		\label{tbRes1}
+	\end{table}
+	
 	
 	
 	\begin{appendices}
