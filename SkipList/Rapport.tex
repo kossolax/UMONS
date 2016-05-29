@@ -69,7 +69,7 @@
 	
 	
 	Tout comme un dictionnaire, une skip-list permet de récupérer la définition d'un terme recherché \textit{(dit clé)}. Cette recherche est rapide, car les éléments \textit{(dit nœud)} présents dans un dictionnaire sont triés et il est possible de commencer une exploration plus approfondie à un endroit précis.
-	Une skip-list bénéficie des avantages de la liste chainée, en limitant fortement ses inconvénients. Cette structure de données utilise les chaines de façon parallèle. Une fonction basée sur des probabilités permet de déterminer la hauteur de la chaine. Plus cette hauteur est élevé, moins la liste contient d'éléments. Une couche haute est donc un accès plus rapide vers des éléments plus loin dans la liste.
+	Une skip-list bénéficie des avantages de la liste chainée, en limitant fortement ses inconvénients. Cette structure de données utilise les chaines de façon parallèle. Une fonction basée sur des probabilités permet de déterminer la hauteur de la chaine. Plus cette hauteur est élevée, moins la liste contient d'éléments. Une couche haute est donc un accès plus rapide vers des éléments plus loin dans la liste.
 	
 	
 	
@@ -84,7 +84,7 @@
 	\subsubsection*{Définition}
 	La hauteur maximale d'une skip-list est définie lors de sa création. Bien qu'il n'y ait pas de taille maximale d'une skip-list, il est conseillé d'utiliser $log_2(n)$ où $n$ est le nombre d'éléments théoriques présents dans la liste.
 	
-	L'insertion dans la liste utilise une fonction basée sur la probabilité $p$ afin de définir sa hauteur maximale. Si $p$ vaut $\frac{1}{2}$, ça signifie que le nœud une probabilité de $\frac{1}{2}$ d'être de hauteur 2, et une probabilité $\frac{1}{4}$ d'être de hauteur 3. Un nœuds de hauteur $h$ possède $h$ pointeur. Un nœuds de hauteur 3 à donc un accès au nœuds suivant de hauteur 3, ainsi que celui de hauteur 2 et 1.
+	L'insertion dans la liste utilise une fonction basée sur la probabilité $p$ afin de définir sa hauteur maximale. Si $p$ vaut $\frac{1}{2}$, ça signifie que le nœud une probabilité de $\frac{1}{2}$ d'être de hauteur 2, et une probabilité $\frac{1}{4}$ d'être de hauteur 3. Un nœuds de hauteur $h$ possède $h$ pointeur. Un nœud de hauteur 3 à donc un accès au nœud suivant de hauteur 3, ainsi que celui de hauteur 2 et 1.
 	
 	En raison des probabilités, les nœuds supérieurs possèdent un pointeur vers un nœud plus avancé dans la liste. Une couche supérieure est donc une voie plus rapide. Ainsi, la couche la plus haute contient les plus grands sauts, et la couche la plus basse permet d'accéder à chacun des éléments.
 		
@@ -101,7 +101,7 @@
 		
 	\newpage
 	\section{Les algorithmes}
-	Une skip-list a besoin d'avoir un pointeur vers sa tête $(node* head)$. La liste doit connaitre le nombre de niveau actuellement utilisés $(level)$. Selon les implémentations, il est possible de définir un nombre de couche maximal $(levelMAX)$. Il est aussi possible de changer le paramètre $(p)$ de probabilité de création d'une nouvelle couche. La variation de ses deux derniers paramètres est étudiée dans le chapitre \nameref{perf}.
+	Une skip-list a besoin d'avoir un pointeur vers sa tête $(node* head)$. La liste doit connaitre le nombre de niveaux actuellement utilisé $(level)$. Selon les implémentations, il est possible de définir un nombre de couches maximal $(levelMAX)$. Il est aussi possible de changer le paramètre $(p)$ de probabilité de création d'une nouvelle couche. La variation de ses deux derniers paramètres est étudiée dans le chapitre \nameref{perf}.
 	Un nœud contient une clé $key$ , une valeur $value$ ainsi qu'un tableau de pointeur vers les nœuds suivants $forward$. Il n'est pas nécessaire d'enregistrer la hauteur d'un nœud dans celui-ci.
 	\lstinputlisting[linerange=BEGINSKStruct-ENDSKStruct]{SkipList/SkipList.h}
 	
@@ -265,12 +265,66 @@
 	\section{Analyse des performances}\label{perf}
 	La caractéristique majeure de la skip-list est l'aléatoire. L'insertion d'un élément nouveau utilise une hauteur qui est déterminée par le hasard. De ce fait, une même séquence produira une liste différente. Cela a comme conséquence qu'aucune séquence prédéterminée de nombres ne peut produire une dégradation des performances, contrairement aux arbres binaires qui eux doivent être constamment rééquilibrés.
 	
+	De par sa nature probabiliste, on suppose que l'utilisateur n'aura pas un comportement à vouloir dégénéré volontairement la liste. C'est-à-dire que les performances peuvent être dégradées en retirant consciemment les éléments après avoir inspecté leur hauteur. Si l'utilisateur supprime tous les nœuds de hauteur $h>1$, le pire scénario de la skip-list équivaut à une liste chainée classique.
 	
-	Pour une variable aléatoire $p=\frac{1}{2}$ et une skip-list de taille infinie, celle-ci tend à ce que chacun des niveaux possèdes $\frac{1}{2}$ moins d'élément. Ainsi, le niveau 1 contient $n$ élément, le niveau 2 $\frac{n}{2}$, le niveau 3 $\frac{n}{4}$, ..., un élément à hauteur $h$: $\frac{n}{{2}^{h-1}}$. Par conséquent, le nombre total de lien dans une skip-list équivaut à $n+\frac{n}{2}+\frac{n}{4}+\frac{n}{8}+\dots \iff \sum_{h=1}^{\infty}\frac{n}{{2}^{h-1}} = 2n$. Ce qui signifie qu'en moyenne un élément dans une skip-list possède 2 liens.
+	Le temps requis pour exécuter l'insertion et la suppression dans une skip-list est prédominé par le temps de la recherche d'un élément. Ces deux derniers n'ont qu'un cout supplémentaire constant par rapport à la hauteur de la liste; alors que le cout de la recherche est proportionnel à la longueur du chemin à parcourir.
 	
-	Afin de déterminer la complexité de la recherche, il faut être capable d'estimer le nombre de fois que l'on doit avancer dans la liste. Vu que la recherche se fait de haut en bas et de gauche à droite, chaque clé examinée à un niveau $i$ ne peut pas appartenir à un niveau $i+1$. 
-	De ce fait, on peut déduire que le nombre de fois que l'on avance dans la liste équivaut au nombre de lien divisé par le nombre d'élément, soit $\frac{2n}{n}=2$.
 	
+	\subsection{Analyse pour $p=\frac{1}{2}$}
+	Pour une variable aléatoire $p=\frac{1}{2}$ et une skip-list de taille infinie, celle-ci tend à ce que chacun des niveaux possèdes $\frac{1}{2}$ moins d'éléments. Ainsi, le niveau 1 contient $n$ élément, le niveau 2 $\frac{n}{2}$, le niveau 3 $\frac{n}{4}$, ..., un élément à hauteur $h$: $\frac{n}{{2}^{h-1}}$. Par conséquent, le nombre total de liens dans une skip-list équivaut à \[n+\frac{n}{2}+\frac{n}{4}+\frac{n}{8}+\dots = \sum_{h=1}^{+\infty}\frac{n}{{2}^{h-1}}=2n\] Ce qui signifie qu'en moyenne un élément dans une skip-list possède 2 liens. Vu que la recherche se fait de haut en bas et de gauche à droite, chaque clé examinée à un niveau précis ($i$) ne peut pas appartenir à un niveau supérieur ($i+1$).
+	De ce fait, on peut déduire qu'en moyenne le nombre de fois que l'on avance dans la liste à un niveau précis équivaut au nombre de liens divisé par le nombre d'éléments, soit $\frac{2n}{n}=2$.
+	
+	\newpage
+	La probabilité qu'un élément soit de hauteur $i$ est de ${p^{i}} = \frac{1}{2^{i}} $. Le facteur $p$ est constant ($\frac{1}{2}$), la probabilité de la hauteur des clés est équiprobable. Si l'on additionne la probabilité de hauteur chacune des clés de la skip-list, et que l'on prend $h$ comme hauteur de la liste, on déduit la formule suivante.
+	\[
+		\frac{1}{{2}^{1}}+\frac{1}{{2}^{2}}+\frac{1}{{2}^{3}}+\dots+\frac{1}{{2}^{h}}
+		= \sum _{i=1}^{h} ({\frac{1}{2}})^{i}
+	\]
+	Cette hauteur, il est possible de l'estimer. Si $h$ tend vers l'infini, la série converge vers 1. Ce qui as comme conséquence:
+	\[
+		n{(\frac{1}{2})}^{h} = 1
+		\iff {(\frac{1}{2})}^{h}=\frac{1}{n}
+		\iff h = \log_{\frac{1}{2}}(\frac{1}{n})
+		\iff h = \log_{2}(n)
+	\]
+	
+	L'algorithme de recherche effectue possède 2 boucles imbriquées. La boucle la plus profonde permet d'avancer de gauche à droite dans la liste. Pour $p=\frac{1}{2}$, en moyenne celle-ci avance de $2$. La boucle supérieure quant à elle varie selon la hauteur de la liste. La hauteur est estimée, avec une forte probabilité, à $\log_{2} n $. Si l'on combine les 2 estimations, nous avons donc une forte probabilité que la recherche s'effectue en $\log_{2}( 2n )$ opérations, soit $\mathcal{O}(log n)$.
+	
+	
+	\subsubsection{Généralisation}
+	
+	Le raisonnement utilisé précédemment pour $p=\frac{1}{2}$ reste valable quelque soit la valeur de $p$, voir \cref{recap}. Le raisonnement qui effectue une sommation servant au calcule de lien dans une liste convergera vers $\frac{n}{p}$. Par contre, la somme des probabilités ($p^1 + p^2 + p^3 + ... + p^k$), converge toujours vers 1. 
+	 	
+	 \begin{table}[h]
+	 \begin{tabular}{|l|c|c|}
+	 	\hline
+	 	Scénario & attendu & pire \\
+	 	\hline
+	 	Nombre d'élément & $n$ & $n$ \\ 
+	 	\hline
+	 	Hauteur & $log_{\frac{1}{p}} n$ & $\infty$ \\ 
+	 	\hline
+	 	Nombre de lien & $n/p$ & $n*h$ \\ 
+	 	\hline
+	 	Recherche & $\mathcal{O}(\log n)$ & $\mathcal{O}(n)$ \\ 
+	 	\hline
+	 	Insertion & $\mathcal{O}(\log n)$ & $\mathcal{O}(n)$ \\
+	 	\hline
+	 	Suppression & $\mathcal{O}(\log n)$ & $\mathcal{O}(n)$\\
+	 	\hline
+	 \end{tabular}
+	 \caption{Tableau récapitulatif}
+	 \label{recap}
+	 \end{table}
+	 
+	 \subsubsection{Le pire cas}
+	 	
+	 Les ordinateurs ne possèdent pas une mémoire infinie. Par conséquent, il est impossible d'ajouter une infinité d'éléments. C'est pourquoi à la création d'une skip-list, la hauteur maximale est bornée par la formule du cas attendu avec une forte probabilité. Le pire scénario de hauteur infinie est donc impossible. Dans le cas très improbable que chacun des éléments de la skip-list soit à cette hauteur maximale, nous avons une recherche en $n*h$: soit $\mathcal{O}(n)$. 
+	 	
+	 De façon générale, avec une constance $c>1$ $h$ est plus grande que $c log n$ avec une probabilité d'au plus $\frac{1}{n^{c-1}}$. En d'autres mots, la probabilité que $h$ soit plus petit que $c log n$ est d'au moins $1-\frac{1}{n^{c-1}}$. Par conséquent, avec une forte probabilité, la hauteur d'une skip-liste est bien d'ordre $\mathcal{O}(log n)$. Par exemple: si $n=1000$, la probabilité est d'une sur un million.
+
+
+	\subsection{Expérimentation}
 	
 	\section{Comparaison avec d'autres structures de données}
 	

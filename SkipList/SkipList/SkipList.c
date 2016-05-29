@@ -6,7 +6,9 @@ SkipList* SK_init(int maxElem, float p) {
 #ifdef DEBUG
 	printf("Creating Skip-List\n");
 #endif
-	list->levelMAX = (int)round(log2(maxElem));
+
+	
+	list->levelMAX = (int)round( log10(maxElem) / log10(1.0 / (double)p) );
 	list->level = 1;
 	list->head = createNode(list, INT_MAX, INT_MAX);
 	for (int i = 0; i < list->levelMAX; i++)
@@ -229,4 +231,22 @@ node* createNode(SkipList* list, int key, int value) {
 }
 int SK_GetValueFromNode(node* noeud) {
 	return noeud->value;
+}
+void SK_countNode(SkipList* list, unsigned int level[], int maxLevel) {
+	if (list->level < maxLevel)
+		maxLevel = list->level;
+
+	node* p;
+	node* q;
+	for (int i = 0; i < list->level; i++) {
+		p = list->head->forward[i];
+
+		while (p != list->head ) {
+			q = p->forward[i];
+			p = q;
+
+			level[i]++;
+		}
+		level[i]++;
+	}
 }
