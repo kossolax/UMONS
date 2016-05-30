@@ -10,7 +10,7 @@ SkipList* SK_init(int maxElem, float p) {
 	printf("Creating Skip-List\n");
 #endif
 
-	list->levelMAX = (int)round(log10(maxElem) / log10(1.0 / (double)p));
+	list->levelMAX = (int)round(log10(maxElem) / log10(1.0 /(double)p));
 	if( list->levelMAX <= 0)
 		list->levelMAX = 1;
 
@@ -167,8 +167,9 @@ int SK_Delete(SkipList* list, int key) {
 			step++;
 #endif
 		}
-		free(x->forward);
-		free(x);
+		
+		removeNode(x);
+
 		while(list->level > 1 &&
 			list->head->forward[list->level-1] == list->head ) {
 			list->level--;
@@ -243,6 +244,10 @@ node* createNode(SkipList* list, int key, int value) {
 	noeud->forward = (node**)malloc(sizeof(node*) * (list->levelMAX));
 
 	return noeud;
+}
+void removeNode(node* node) {
+	free(node->forward);
+	free(node);
 }
 int SK_GetValueFromNode(node* noeud) {
 	return noeud->value;

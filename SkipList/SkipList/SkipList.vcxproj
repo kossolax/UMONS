@@ -148,13 +148,17 @@
     <ClCompile Include="LinkList.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="MemoryDump.c" />
+    <ClCompile Include="RBTree.c" />
     <ClCompile Include="SkipList.c" />
     <ClCompile Include="Tree.c" />
+    <ClCompile Include="xoroshiro128plus.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GetTimer.h" />
     <ClInclude Include="HashTable.h" />
     <ClInclude Include="LinkList.h" />
     <ClInclude Include="MemoryDump.h" />
+    <ClInclude Include="RBTree.h" />
     <ClInclude Include="SkipList.h" />
     <ClInclude Include="Tree.h" />
     <ClInclude Include="xoroshiro128plus.h" />

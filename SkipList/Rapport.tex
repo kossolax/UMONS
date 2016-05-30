@@ -12,6 +12,30 @@
 \usepackage{subfig}
 \usepackage{gensymb}
 \usepackage{slashbox}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\makeatletter
+\pgfplotsset{
+	/tikz/min node/.style={
+		anchor=north
+	},
+	mark min/.style={
+		point meta rel=per plot,
+		visualization depends on={x \as \xvalue},
+		scatter/@pre marker code/.code={
+			\ifx\pgfplotspointmeta\pgfplots@metamin
+			\def\markopts{}
+			\else
+			\def\markopts{mark=none}
+			\fi
+			\expandafter\scope\expandafter[\markopts,every node near coord/.style=green]
+		},
+		scatter/@post marker code/.code={
+			\endscope
+		},
+		scatter,
+	},
+}
 \usepackage[titletoc,title]{appendix}
 \lstset{language=C,rangeprefix=//---------------,rangesuffix=----------------,includerangemarker=false,columns=spaceflexible,extendedchars=true,showspaces=false,showstringspaces=false,inputencoding=ansinew,tabsize=4,frame=shadowbox,morecomment=[is]{\#ifdef}{\#endif},morecomment=[is]{/*}{*/}}
 \title{Lecture et rédaction scientifiques: \\Skip-lists }
@@ -25,14 +49,14 @@
 	\newpage
 	
 	\section{Introduction}
-	En informatique, il est courant de vouloir enregistrer des données quelconques. Une structure de données est une représentation logique de ces données. La manière de représenter les données permet de résoudre  différents problèmes. Une structure précise peut être plus performante pour un cas précis ou, au contraire, être très peu performante. D'autre part, une bonne structure de données peut aussi réduire de façon significative la complexité d'un algorithme.
+	En informatique, il est courant de vouloir enregistrer des données quelconques. Une structure de données est une représentation logique de ces données. La manière de représenter les données permet de résoudre différents problèmes. Une structure précise peut être plus performante pour un cas précis ou, au contraire, être très peu performante. D’autre part, une meilleur organisation de l'information peut aussi réduire de façon significative la complexité d’un algorithme.
 	
-	Il existe un grand nombre de structures de données, toutes proposent aux concepteurs de logiciel deux fonctionnalités standards: enregistrer et récupérer une donnée. Selon l'approche employée pour la représentation logique, les performances seront différentes. Certaines structures de données offrent la possibilité de récupérer le premier élément en temps constant, au détriment du temps d'accès aux autres éléments. Alors que d'autres permettent un accès en temps constant à chacun des éléments en dépit d'une durée plus longue pour l'insertion d'un élément.
+	Il existe un grand nombre de structures de données, toutes proposent aux concepteurs de logiciel deux fonctionnalités standards : enregistrer et récupérer un renseignement. Selon l’approche employée pour la représentation logique, les performances seront différentes. Certaines structures de données offrent la possibilité de récupérer le premier élément en temps constant, au détriment du temps d’accès aux autres éléments. Alors que d’autres permettent un accès en temps constant à chacun des éléments en dépit d’une durée plus longue pour l’enregistrement d'une information.
 	
 	\subsection{Liste chainée}
 	Une liste chainée \cref{LinkedList} est une structure de données de taille variable. Le principe est que chacun des éléments de cette liste contient une référence vers l'élément suivant. Cette pratique facilite l'insertion et la suppression des éléments, au détriment de la rapidité de la recherche.
 	
-	Une liste chainée peut aussi être triée, ce qui inverse les conséquences sur ces performances. Une insertion devient plus compliquée, car il faut rechercher, avant tout, ou placer l'élément dans la liste afin de garder la structure cohérente.
+	Une liste chainée peut aussi être triée, ce qui inverse les conséquences sur ses performances. Une insertion devient plus compliquée, car il faut rechercher, avant tout, ou placer l'élément dans la liste afin de garder la structure cohérente.
 	
 	La recherche dans une liste chainée s'effectue élément par élément: si ce n'est pas le premier élément de la liste, il faut regarder le second. Si ce n'est pas celui-ci, il faut alors regarder celui d'après jusqu'à ce que l'élément recherché soit trouvé ou qu'il n'y ait pas d'élément suivant. Dans le cas d'une liste chainée croissante, la recherche peut s'arrêter plus tôt: si l'élément que l'on regarde est plus grand que celui qui est recherché.
 	
@@ -57,7 +81,7 @@
 			\includegraphics[scale=0.75]{img/tree}
 			\label{tree}
 		}
-		\caption{Différente structures de données}
+		\caption{Différentes structures de données}
 	\end{figure}
 	\begin{figure}
 		\includegraphics[width=\textwidth]{img/skip}
@@ -74,7 +98,7 @@
 	
 	
 	
-	Afin d'illustrer la skip-liste, il faut l'imaginer comme un réseau de transport en commun idéal où le temps d'attente des correspondances sont nuls. Un nœud dans la skip-liste est un arrêt obligatoire dans lequel un passager peut changer de moyen de locomotion. La couche la plus basse dans la skip-liste peut-être interprétée comme un bus. Il s'arrête à chacun de ses arrêts prévus, son temps de parcours est très lent. La couche n\degree2, plus rapide, est un métro. La couche n\degree3, un train. Si un passager souhaite aller voir un concert à Bruxelles alors qu'il est à la gare de Charleroi, il ne va pas faire le trajet en bus. Il est tout naturel et plus rapide dans ce cas de prendre dans un premier temps le train, puis le métro afin qu'il se rapproche le plus près possible du concert. Si le dernier arrêt de métro n'a pas permis d'accéder à la salle du concert, seulement dans ce cas le passager doit emprunter le bus.
+	Afin d'illustrer la skip-liste, il faut l'imaginer comme un réseau de transport en commun idéal où le temps d'attente des correspondances est nul. Un nœud dans la skip-liste est un arrêt obligatoire dans lequel un passager peut changer de moyen de locomotion. La couche la plus basse dans la skip-liste peut-être interprétée comme un bus. Il s'arrête à chacun de ses arrêts prévus, son temps de parcours est très lent. La couche n\degree2, plus rapide, est un métro. La couche n\degree3, un train. Si un passager souhaite aller voir un concert à Bruxelles alors qu'il est à la gare de Charleroi, il ne va pas faire le trajet en bus. Il est tout naturel et plus rapide dans ce cas de prendre dans un premier temps le train, puis le métro afin qu'il se rapproche le plus près possible du concert. Si le dernier arrêt de métro n'a pas permis d'accéder à la salle du concert, seulement dans ce cas le passager doit emprunter le bus.
 	
 	\begin{figure}[h!]
 		\includegraphics[width=\textwidth]{img/metaphore}
@@ -85,7 +109,7 @@
 	\subsubsection*{Définition}
 	La hauteur maximale d'une skip-list est définie lors de sa création. Bien qu'il n'y ait pas de taille maximale d'une skip-list, il est conseillé d'utiliser $log_2(n)$ où $n$ est le nombre d'éléments théoriques présents dans la liste.
 	
-	L'insertion dans la liste utilise une fonction basée sur la probabilité $p$ afin de définir sa hauteur maximale. Si $p$ vaut $\frac{1}{2}$, ça signifie que le nœud une probabilité de $\frac{1}{2}$ d'être de hauteur 2, et une probabilité $\frac{1}{4}$ d'être de hauteur 3. Un nœuds de hauteur $h$ possède $h$ pointeur. Un nœud de hauteur 3 à donc un accès au nœud suivant de hauteur 3, ainsi que celui de hauteur 2 et 1.
+	L'insertion dans la liste utilise une fonction basée sur la probabilité $p$ afin de définir sa hauteur maximale. Si $p$ vaut $\frac{1}{2}$, ça signifie que le nœud a une probabilité de $\frac{1}{2}$ d'être de hauteur 2, et a une probabilité $\frac{1}{4}$ d'être de hauteur 3. Un nœuds de hauteur $h$ possède $h$ pointeur. Un nœud de hauteur 3 a donc un accès au nœud suivant de hauteur 3, ainsi que celui de hauteur 2 et 1.
 	
 	En raison des probabilités, les nœuds supérieurs possèdent un pointeur vers un nœud plus avancé dans la liste. Une couche supérieure est donc une voie plus rapide. Ainsi, la couche la plus haute contient les plus grands sauts, et la couche la plus basse permet d'accéder à chacun des éléments.
 		
@@ -102,7 +126,7 @@
 		
 	\newpage
 	\section{Les algorithmes}
-	Une skip-list a besoin d'avoir un pointeur vers sa tête $(node* head)$. La liste doit connaitre le nombre de niveaux actuellement utilisé $(level)$. Selon les implémentations, il est possible de définir un nombre de couches maximal $(levelMAX)$. Il est aussi possible de changer le paramètre $(p)$ de probabilité de création d'une nouvelle couche. La variation de ses deux derniers paramètres est étudiée dans le chapitre \nameref{perf}.
+	Une skip-list a besoin d'avoir un pointeur vers sa tête $(node* head)$. La liste doit connaitre le nombre de niveaux actuellement utilisés $(level)$. Selon les implémentations, il est possible de définir un nombre de couches maximal $(levelMAX)$. Il est aussi possible de changer le paramètre $(p)$ de probabilité de création d'une nouvelle couche. La variation de ces deux derniers paramètres est étudiée dans le chapitre \nameref{perf}.
 	Un nœud contient une clé $key$ , une valeur $value$ ainsi qu'un tableau de pointeur vers les nœuds suivants $forward$. Il n'est pas nécessaire d'enregistrer la hauteur d'un nœud dans celui-ci.
 	\lstinputlisting[linerange=BEGINSKStruct-ENDSKStruct]{SkipList/SkipList.h}
 	
@@ -138,7 +162,7 @@
 	
 	\emph{L'algorithme écrit en langage C figure en annexe \ref{SKSearch}.}
 	
-	\subsubsection{Exemples}	
+	\subsubsection*{Exemples}	
 	\paragraph*{Comment rechercher l'élément 8 dans \cref{SkipSearch1}?}
 	\begin{itemize}
 		\item Se positionner sur la couche la plus haute: La 4ème voie.
@@ -147,7 +171,7 @@
 		\item 8 est-il plus grand que 13  ? Non, descendre sur la 2ème voie.
 		\item 8 est-il plus grand que 5 ? Oui, se positionner sur le nœud 5.
 		\item 8 est-il plus grand que 13 ? Non, descendre sur la 1ère voie.
-		\item 8 est-il plus grand que 8 ? Non, Il n'existe a pas de voie plus basse.
+		\item 8 est-il plus grand que 8 ? Non, Il n'existe pas de voie plus basse.
 		\item 5 est le dernier nœud parcouru. L'élément suivant sur la voie 1 est 8. 8 est-il l'élément recherché? Oui, la recherche est concluante.
 	\end{itemize}
 	\begin{figure}[h]
@@ -166,7 +190,7 @@
 		\item 8 est-il plus grand que 13  ? Non, descendre sur la 2ème voie.
 		\item 8 est-il plus grand que 5 ? Oui, se positionner sur le nœud 5.
 		\item 8 est-il plus grand que 13 ? Non, descendre sur la 1ère voie.
-		\item 8 est-il plus grand que 8 ? Non, Il n'existe a pas de voie plus basse.
+		\item 8 est-il plus grand que 8 ? Non, Il n'existe pas de voie plus basse.
 		\item 5 est le dernier nœud parcouru. L'élément suivant sur la voie 1 est 9. 9 est-il l'élément recherché? Non, la recherche est infructueuse.
 	\end{itemize}
 	\begin{figure}[h]
@@ -178,7 +202,7 @@
 	
 	\newpage
 	\subsection{L'insertion}
-	L'insertion d'une entrée dans une skip-list est essentiellement la même chose que la recherche. A l'exception qu'un tableau $update$, de taille identique à la hauteur de la liste, est utilisé pour mémoriser les pointeurs chaque l'élément avant de descendre d'un niveau. Ce tableau est utilisé pour mettre à jour les liens nécessaires pour que la structure de donnée reste cohérente.
+	L'insertion d'une entrée dans une skip-list est essentiellement la même chose que la recherche. A l'exception qu'un tableau $update$, de taille identique à la hauteur de la liste, est utilisé pour mémoriser les pointeurs de chaque élément avant de descendre d'un niveau. Ce tableau est utilisé pour mettre à jour les liens nécessaires pour que la structure de donnée reste cohérente.
 	
 	Algorithmiquement parlant, l'insertion d'un élément dans une skip-liste s'effectue de la façon suivante:
 	\begin{enumerate}
@@ -198,7 +222,7 @@
 	\emph{L'algorithme écrit en langage C est présenté en annexe \ref{SKInsert}.}
 	
 	\newpage
-	\subsubsection{Exemples}	
+	\subsubsection*{Exemples}	
 	\paragraph*{Comment insérer l'élément 8 dans \cref{SkipInsert1}?}
 	\begin{itemize}
 		\item Se positionner sur la couche la plus haute: La 4ème voie.
@@ -207,9 +231,9 @@
 		\item 8 est-il plus grand que 13  ? Enregistrer ce lien en mémoire, puis descendre sur la 2ème voie.
 		\item 8 est-il plus grand que 5 ? Oui, se positionner sur le nœud 5.
 		\item 8 est-il plus grand que 13 ? Enregistrer ce lien en mémoire, puis descendre sur la 1ère voie.
-		\item 8 est-il plus grand que 8 ? Enregistrer ce lien en mémoire, Il n'existe a pas de voie plus basse.
-		\item 5 est le dernier nœud parcouru. L'élément suivant sur la voie 1 est 8. 8 est-il l'élément recherché? Non, on créer un nouvel élément. Générer une hauteur aléatoire: hauteur 1.
-		\item Ajouté un lien du nouvel élément 8 en voie 1. Ce lien doit pointer vers l'élément du lien enregistré à cette même voie. Il s'agit de l'élément 13.
+		\item 8 est-il plus grand que 8 ? Enregistrer ce lien en mémoire, Il n'existe pas de voie plus basse.
+		\item 5 est le dernier nœud parcouru. L'élément suivant sur la voie 1 est 8. 8 est-il l'élément recherché? Non, on crée un nouvel élément. Générer une hauteur aléatoire: hauteur 1.
+		\item Ajouter un lien du nouvel élément 8 en voie 1. Ce lien doit pointer vers l'élément du lien enregistré à cette même voie. Il s'agit de l'élément 13.
 		\item Modifier ce lien enregistré en voie 1 (de l'élément 5 vers l'élément 13) pour qu'il pointe vers ce nouvel élément 8.
 		\item FIN.
 	\end{itemize}
@@ -229,10 +253,10 @@
 		\item 5 est-il plus grand que 13 ? Enregistrer ce lien en mémoire, puis descendre sur la 1ère voie.
 		\item 5 est-il plus grand que 3 ? Oui, se positionner sur le nœud 3.
 		\item 5 est-il plus grand que 8 ? Enregistrer ce lien en mémoire, Il n'existe a pas de voie plus basse.
-		\item 5 est le dernier nœud parcouru. L'élément suivant sur la voie 1 est 8. 8 est-il l'élément recherché? Non, on créer un nouvel élément. Générer une hauteur aléatoire: hauteur 2.
-		\item Ajouté un lien du nouvel élément 5 en voie 1. Ce lien doit pointer vers l'élément du lien enregistré à cette même voie. Il s'agit de l'élément 8.
+		\item 5 est le dernier nœud parcouru. L'élément suivant sur la voie 1 est 8. 8 est-il l'élément recherché? Non, on crée un nouvel élément. Générer une hauteur aléatoire: hauteur 2.
+		\item Ajouter un lien du nouvel élément 5 en voie 1. Ce lien doit pointer vers l'élément du lien enregistré à cette même voie. Il s'agit de l'élément 8.
 		\item Modifier ce lien enregistré en voie 1 (de l'élément 3 vers l'élément 8) pour qu'il pointe vers ce nouvel élément 5.
-		\item Ajouté un lien du nouvel élément 5 en voie 2. Ce lien doit pointer vers l'élément du lien enregistré à cette même voie. Il s'agit de l'élément 13.
+		\item Ajouter un lien du nouvel élément 5 en voie 2. Ce lien doit pointer vers l'élément du lien enregistré à cette même voie. Il s'agit de l'élément 13.
 		\item Modifier ce lien enregistré en voie 2 (de l'élément 2 vers l'élément 13) pour qu'il pointe vers ce nouvel élément 5.
 		\item FIN.
 	\end{itemize}
@@ -266,13 +290,13 @@
 	\section{Analyse des performances}\label{perf}
 	La caractéristique majeure de la skip-list est l'aléatoire. L'insertion d'un élément nouveau utilise une hauteur qui est déterminée par le hasard. De ce fait, une même séquence produira une liste différente. Cela a comme conséquence qu'aucune séquence prédéterminée de nombres ne peut produire une dégradation des performances, contrairement aux arbres binaires qui eux doivent être constamment rééquilibrés.
 	
-	De par sa nature probabiliste, on suppose que l'utilisateur n'aura pas un comportement à vouloir dégénéré volontairement la liste. C'est-à-dire que les performances peuvent être dégradées en retirant consciemment les éléments après avoir inspecté leur hauteur. Si l'utilisateur supprime tous les nœuds de hauteur $h>1$, le pire scénario de la skip-list équivaut à une liste chainée classique.
+	De par sa nature probabiliste, on suppose que l'utilisateur n'aura pas un comportement à vouloir dégénérer volontairement la liste. C'est-à-dire que les performances peuvent être dégradées en retirant consciemment les éléments après avoir inspecté leur hauteur. Si l'utilisateur supprime tous les nœuds de hauteur $h>1$, le pire scénario de la skip-list équivaut à une liste chainée classique.
 	
 	Le temps requis pour exécuter l'insertion et la suppression dans une skip-list est prédominé par le temps de la recherche d'un élément. Ces deux derniers n'ont qu'un cout supplémentaire constant par rapport à la hauteur de la liste; alors que le cout de la recherche est proportionnel à la longueur du chemin à parcourir.
 	
 	
 	\subsection{Analyse pour $p=\frac{1}{2}$}
-	Pour une variable aléatoire $p=\frac{1}{2}$ et une skip-list de taille infinie, celle-ci tend à ce que chacun des niveaux possèdes $\frac{1}{2}$ moins d'éléments. Ainsi, le niveau 1 contient $n$ élément, le niveau 2 $\frac{n}{2}$, le niveau 3 $\frac{n}{4}$, ..., un élément à hauteur $h$: $\frac{n}{{2}^{h-1}}$. Par conséquent, le nombre total de liens dans une skip-list équivaut à \[n+\frac{n}{2}+\frac{n}{4}+\frac{n}{8}+\dots = \sum_{h=1}^{+\infty}\frac{n}{{2}^{h-1}}=2n\] Ce qui signifie qu'en moyenne un élément dans une skip-list possède 2 liens. Vu que la recherche se fait de haut en bas et de gauche à droite, chaque clé examinée à un niveau précis ($i$) ne peut pas appartenir à un niveau supérieur ($i+1$).
+	Pour une variable aléatoire $p=\frac{1}{2}$ et une skip-list de taille infinie, celle-ci tend à ce que chacun des niveaux possèdent $\frac{1}{2}$ moins d'éléments. Ainsi, le niveau 1 contient $n$ élément, le niveau 2 $\frac{n}{2}$, le niveau 3 $\frac{n}{4}$, ..., un élément à hauteur $h$: $\frac{n}{{2}^{h-1}}$. Par conséquent, le nombre total de liens dans une skip-list équivaut à \[n+\frac{n}{2}+\frac{n}{4}+\frac{n}{8}+\dots = \sum_{h=1}^{+\infty}\frac{n}{{2}^{h-1}}=2n\] Ce qui signifie qu'en moyenne un élément dans une skip-list possède 2 liens. Vu que la recherche se fait de haut en bas et de gauche à droite, chaque clé examinée à un niveau précis ($i$) ne peut pas appartenir à un niveau supérieur ($i+1$).
 	De ce fait, on peut déduire qu'en moyenne le nombre de fois que l'on avance dans la liste à un niveau précis équivaut au nombre de liens divisé par le nombre d'éléments, soit $\frac{2n}{n}=2$.
 	
 	\newpage
@@ -281,7 +305,7 @@
 		\frac{1}{{2}^{1}}+\frac{1}{{2}^{2}}+\frac{1}{{2}^{3}}+\dots+\frac{1}{{2}^{h}}
 		= \sum _{i=1}^{h} ({\frac{1}{2}})^{i}
 	\]
-	Cette hauteur, il est possible de l'estimer. Si $h$ tend vers l'infini, la série converge vers 1. Ce qui as comme conséquence:
+	Cette hauteur, il est possible de l'estimer. Si $h$ tend vers l'infini, la série converge vers 1. Ce qui a comme conséquence:
 	\[
 		n{(\frac{1}{2})}^{h} = 1
 		\iff {(\frac{1}{2})}^{h}=\frac{1}{n}
@@ -292,9 +316,9 @@
 	L'algorithme de recherche effectue possède 2 boucles imbriquées. La boucle la plus profonde permet d'avancer de gauche à droite dans la liste. Pour $p=\frac{1}{2}$, en moyenne celle-ci avance de $2$. La boucle supérieure quant à elle varie selon la hauteur de la liste. La hauteur est estimée, avec une forte probabilité, à $\log_{2} n $. Si l'on combine les 2 estimations, nous avons donc une forte probabilité que la recherche s'effectue en $\log_{2}( 2n )$ opérations, soit $\mathcal{O}(log(n))$.
 	
 	
-	\subsubsection{Généralisation}
+	\subsection{Généralisation}
 	
-	Le raisonnement utilisé précédemment pour $p=\frac{1}{2}$ reste valable quelque soit la valeur de $p$, voir \cref{recap}. Le raisonnement qui effectue une sommation servant au calcule de lien dans une liste convergera vers $\frac{n}{p}$. Par contre, la somme des probabilités ($p^1 + p^2 + p^3 + ... + p^k$), converge toujours vers $\frac{p}{1-p}$. 
+	Le raisonnement utilisé précédemment pour $p=\frac{1}{2}$ reste valable quelle que soit la valeur de $p$, voir \cref{recap}. Le raisonnement qui effectue une sommation servant au calcul de lien dans une liste convergera vers $\frac{n}{p}$. Par contre, la somme des probabilités ($p^1 + p^2 + p^3 + ... + p^k$), converge toujours vers $\frac{p}{1-p}$. 
 	 	
 	 \begin{table}[h]
 	 \begin{tabular}{|l|c|c|}
@@ -318,7 +342,7 @@
 	 \label{recap}
 	 \end{table}
 	 
-	 \subsubsection{Le pire cas}
+	 \subsubsection*{Le pire cas}
 	 	
 	 Les ordinateurs ne possèdent pas une mémoire infinie. Par conséquent, il est impossible d'ajouter une infinité d'éléments. C'est pourquoi à la création d'une skip-list, la hauteur maximale est bornée par la formule du cas attendu avec une forte probabilité. Le pire scénario de hauteur infinie est donc impossible. Dans le cas très improbable que chacun des éléments de la skip-list soit à cette hauteur maximale, nous avons une recherche en $n*h$: soit $\mathcal{O}(n)$. 
 	 	
@@ -327,38 +351,73 @@
 	
 	\subsection{Expérimentation}
 	
-	Les expérimentations suivantes ont été réalisées sur un ordinateur Windows 10 64 bits possédant un AMD FX 8350 et 16Gb de RAM. Les tests ont été lancés $10^5$ fois, les résultats présentés sont la moyenne de tous les tes tests.
-	\newline
+	Les expérimentations suivantes ont été réalisées sur un ordinateur Windows 10 64 bits possédant un AMD FX 8350 et 16Gb de RAM. Les tests ont été lancés $10^5$ fois, les résultats présentés sont la moyenne de tous les tests. Les très légères différences avec les résultats attendu peuvent s'expliquer par la façon dont un ordinateur génère des nombres aléatoires. On parle d'ailleurs de nombre "pseudo" aléatoire.
 	
-	Afin de vérifier que le $p$ à bien l'effet voulu, il suffit de compter le nombre de liens existants à chaque niveau. S'il y a $n$ éléments à la hauteur 1, on s'attend à obtenir $np$ éléments de hauteur 2 avec une forte probabilité.
-
-	Dans les faits, en essayant différentes valeurs pour une skip-list de 1000 éléments, on  peut obtenir les résultats présents dans \cref{tbRes1}. Le résultat obtenu, correspond à notre espérance: $p$ influence correctement la hauteur de la liste et par conséquent sont poids.
+	L'algorithme utilisé pour générer les nombres aléatoires dans ces tests est \textit{xoroshiro128+}. Il a été développé par David Blackman et Sebastiano Vigna. Il s'agit de l'algorithme le plus rapide aujourd'hui. Il est intéressant d'utiliser un générateur rapide afin de déterminer la hauteur d'un élément de la skip-list. L'utilisation de la fonction \textit{rand} de \textit{stdlib} permet d'insérer $10^7$ éléments en $5.792$ secondes, alors que l'algorithme \textit{xoroshiro128+} permet d'en insérer autant en $4.014$ secondes. Cette différence de $30\%$ n'est pas négligeable.
+	
 	\begin{table}[h]
 		\resizebox{\columnwidth}{!}{
-		\begin{tabular}{|c|r|r|r|r|r|r|r|r|r|r|r|r|r|r|}
-			\hline
-			\backslashbox{p}{h} & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 \\
-			\hline
-			4/5 & 1001 & 800,98 & 640,98 & 513,02 & 410,69 & 328,76 & 263,2 & 210,79 & 168,81 & 135,26 & 108,41 & 86,94 & 69,73 & 55,99 \\
-			3/4 & 1001 & 751,05 & 563,5 & 422,86 & 317,35 & 238,26 & 178,93 & 134,44 & 101,08 & 76,05 & 57,29 & 43,22 & 32,68 & 24,76 \\
-			2/3 & 1001 & 667,63 & 445,44 & 297,22 & 198,46 & 132,59 & 88,74 & 59,51 & 40,02 & 27 & 18,33 & 12,55 & 8,7 & 6,13 \\
-			3/5 & 1001 & 601,03 & 361,05 & 217,06 & 130,64 & 78,77 & 47,66 & 28,99 & 17,79 & 11,08 & 7,04 & 4,59 & 3,06 & 2,03 \\
-			1/2 & 1001 & 500,99 & 251,01 & 126,04 & 63,53 & 32,27 & 16,62 & 8,81 & 4,88 & 2,81 & 0 & 0 & 0 & 0 \\
-			2/5 & 1001 & 401,01 & 161,02 & 65,02 & 26,61 & 11,24 & 5,08 & 2,45 & 0 & 0 & 0 & 0 & 0 & 0 \\
-			1/3 & 1001 & 334,33 & 112,1 & 38,03 & 13,34 & 5,09 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-			1/4 & 1001 & 250,9 & 63,5 & 16,62 & 4,9 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-			1/5 & 1001 & 201,05 & 41,03 & 9,01 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-			\hline
-		\end{tabular}
+			\begin{tabular}{|c|r|r|r|r|r|r|r|r|r|r|}
+				\hline
+				\backslashbox{p}{h} & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\
+				\hline
+				4/5 & 1000.00 & 800.05 & 640.02 & 512.01 & 409.64 & 327.74 & 262.16 & 209.74 & 167.81 & 134.23 \\
+				3/4 & 1000.00 & 749.97 & 562.52 & 421.83 & 316.34 & 237.25 & 177.98 & 133.45 & 100.10 & 75.07 \\
+				2/3 & 1000.00 & 666.76 & 444.52 & 296.35 & 197.60 & 131.70 & 87.79 & 58.49 & 38.98 & 25.99  \\
+				3/5 & 1000.00 & 600.00 & 360.00 & 216.02 & 129.61 & 77.77 & 46.66 & 28.00 & 16.79 & 10.06 \\
+				1/2 & 1000.00 & 500.01 & 250.06 & 125.04 & 62.56 & 31.27 & 15.63 & 7.82 & 3.91 & 1.96 \\
+				2/5 & 1000.00 & 399.96 & 160.02 & 64.01 & 25.60 & 10.23 & 4.09 & 1.63 & 0.00 & 0.00 \\
+				1/3 & 1000.00 & 333.33 & 111.14 & 37.03 & 12.34 & 4.11 & 0.00 & 0.00 & 0.00 & 0.00 \\
+				1/4 & 1000.00 & 249.97 & 62.48 & 15.63 & 3.90 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+				1/5 & 1000.00 & 200.04 & 40.00 & 8.01 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+				1/10 & 1000.00 & 100.01 & 10.02 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+				1/20 & 1000.00 & 50.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+				\hline
+			\end{tabular}
 		}
-		\caption{Le nombre de lien par niveau en fonction de $p$}
+		\caption{Le nombre d'éléments par niveau en fonction de $p$}
 		\label{tbRes1}
 	\end{table}
 	
+	\subsubsection*{Variation de p}
+
+	Afin de vérifier que le $p$ à bien l'effet voulu, il suffit de compter le nombre d'éléments existants à chaque niveau. S'il y a $n$ éléments à la hauteur 1, on s'attend à obtenir $np$ éléments de hauteur 2 avec une forte probabilité.
 	
+	Dans les faits, en essayant différentes valeurs pour une skip-list de 1000 éléments, on  peut obtenir les résultats présents dans la \cref{tbRes1}. Le résultat obtenu, correspond à notre espérance: $p$ influence correctement la hauteur de la liste et par conséquent son poids. 
+	
+	Une question plus intéressante à se poser serait: Quel est la meilleure valeur pour $p$ ? Choisir un petit nombre réduit le nombre de liens dans la liste. Cela a comme conséquence de pouvoir faire de plus grand saut, mais moins souvent. Par exemple avec $p=0.1$, il sera fort probable de faire des sauts d'une dizaine d'éléments. Mais la recherche du 9ème élément se fera sur la couche la plus basse qui elle, est 10 fois lente. En revanche, choisir un grand nombre pour $p$, augmentera fortement le nombre de liens dans la skip-list. Celle-ci possède donc un grand nombre de hauteurs, et donc plus de saut. Cela a comme conséquence de faire plus souvent des sauts, mais ils seront plus petits.
+	 
+	\begin{figure}[h]
+		\centering
+		\resizebox{0.8\columnwidth}{!}{
+			\begin{tikzpicture}
+			\begin{axis}[
+				ymin=300,xmin=0.05,xmax=0.80,xtick distance=0.1,ytick distance=100,
+				ylabel={Temps},
+				xlabel=Valeur de $p$
+			]
+			\addplot+[smooth,mark min] table [x=p,y=1000] {data/pvar.dat};
+			\addplot+[smooth,mark min] table [x=p,y=10000] {data/pvar.dat};
+			\addplot+[smooth,mark min] table [x=p,y=100000] {data/pvar.dat};
+			\addplot+[smooth,mark min] table [x=p,y=1000000] {data/pvar.dat};		
+			\end{axis}
+			\end{tikzpicture}
+		}
+		\caption{Vitesse d'exécution en fonction de $p$}
+		\label{tbRes2}
+	\end{figure}
+	
+	\section{Comparaisons avec d'autres structures}
+	\newpage
+	
+	
+	\newpage
+	c
+	\newpage
+	d
+	\newpage
 	
 	\begin{appendices}
-	\newpage
 	\section{Représentation d'une Skip-List en langage C}
 	\subsection{Initiation}\label{SKInit}
 	\lstinputlisting[linerange=BEGINSKInit-ENDSKInit]{SkipList/SkipList.c}

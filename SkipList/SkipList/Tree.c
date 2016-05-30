@@ -5,12 +5,17 @@ Tree* TR_init() {
 	return NULL;
 }
 void TR_free(Tree** list) {
-	if ( (*list)->left != NULL)
-		TR_free(&((*list)->left));
-	if ((*list)->right != NULL)
-		TR_free(&((*list)->right));
-	free(*list);
-	list = NULL;
+	// Source: http://codereview.stackexchange.com/a/46822
+	Tree *tmp, *old;
+	for (tmp = *list; tmp != NULL && tmp->left != NULL; tmp = tmp->left);
+
+	while ( *list != NULL) {
+		for (tmp->left = (*list)->right; tmp != NULL && tmp->left != NULL; tmp = tmp->left);
+		
+		old = *list;
+		*list = (*list)->left;
+		free(old);
+	}
 }
 Tree* TR_Search(Tree* list, int key) {
 	Tree* p = (list);
@@ -26,11 +31,14 @@ Tree* TR_Search(Tree* list, int key) {
 }
 void TR_Insert(Tree** list, int key, int value) {
 	Tree** p = (list);
+	Tree* tmp = NULL;
 	while ( *p != NULL && (*p)->key != key ) {
 		if ((*p)->key > key) {
+			tmp = *p;
 			p = &((*p)->left);
 		}
 		else if ((*p)->key < key) {
+			tmp = *p;
 			p = &((*p)->right);
 		}
 	}
@@ -43,6 +51,7 @@ void TR_Insert(Tree** list, int key, int value) {
 		(*p)->value = value;
 		(*p)->left = NULL;
 		(*p)->right = NULL;
+		(*p)->parent = tmp;
 	}
 }
 int TR_GetValueFromNode(Tree* noeud) {

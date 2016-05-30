@@ -45,7 +45,7 @@ uint64_t RD_next(void) {
 	return result;
 }
 void RD_init() {
-	s[0]= rand();
+	s[0] = rand();
 	s[0] = (s[1] << 32) | rand();
 	s[1] = rand();
 	s[1] = (s[1] << 32) | rand();

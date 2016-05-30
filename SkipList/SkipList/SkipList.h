@@ -32,5 +32,6 @@ void SK_Print(SkipList* list);
 
 // Private: eyes only.
 node* createNode(SkipList*, int key, int value);
+void removeNode(node* node);
 int getRandomLevel(SkipList* list);
 void SK_countNode(SkipList* list, unsigned int level[], int maxLevel);

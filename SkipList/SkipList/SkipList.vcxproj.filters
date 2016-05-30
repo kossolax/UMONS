@@ -33,7 +33,10 @@
     <ClCompile Include="MemoryDump.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\xoroshiro128plus.c">
+    <ClCompile Include="xoroshiro128plus.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RBTree.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -50,10 +53,16 @@
     <ClInclude Include="Tree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MemoryDump.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="xoroshiro128plus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryDump.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GetTimer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RBTree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

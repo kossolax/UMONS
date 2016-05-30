@@ -11,6 +11,7 @@ typedef struct Tree {
 	int value;
 	struct Tree* left;
 	struct Tree* right;
+	struct Tree* parent;
 } Tree;
 
 Tree* TR_init();
