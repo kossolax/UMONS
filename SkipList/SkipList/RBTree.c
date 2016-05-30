@@ -2,6 +2,8 @@
 
 // Source: https://github.com/sebastiencs/red-black-tree/blob/master/rbtree.c
 
+RBTree* balance_me_that(RBTree* node);
+
 void flip_color(RBTree* node) {
 	node->color = !(node->color);
 	node->left->color = !(node->left->color);

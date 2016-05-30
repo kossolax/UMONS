@@ -42,11 +42,11 @@ int main(int argc, char** argv) {
 	setbuf(stdout, NULL);
 
 	do {
-		
+
 		printf(" 1. Variation de p, calcule des hauteurs\n");
 		printf(" 2. Variation de p, calcule de performance\n");
 		printf(" 3. Comparaisons avec d'autres structures\n");
-		printf(" 4. Différence entre les insertions\n");
+		printf(" 4. Difference entre les insertions\n");
 		printf(" 5. Generer et afficher une skip-list\n");
 
 		printf("\tQuel est le test a effectuer ? ");
@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
 				scanf("%d", &maxTest);
 			} while (maxTest < 1);
 		}
-		
+
 		if( c == '1' || c == '2' || c == '4' || c == '5') {
 			do {
 				printf("\tCombien d'element a inserer (min 4)? ");
@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
 		}
 		if (c == '3') {
 			do {
-				printf("\tLes éléments doivent être (1) séquentiel, (2) semi-séquentiel, (3) aléatoire ? ");
+				printf("\tLes elements doivent etre (1) sequentiel, (2) semi-sequentiel, (3) aleatoire ? ");
 				scanf("%d", &mode);
 			} while (mode <= 0 || mode > 3);
 		}
@@ -82,7 +82,7 @@ int main(int argc, char** argv) {
 				scanf("%lf", &p);
 			} while (p < 0.001 || p > 0.999 );
 		}
-		
+
 		printf("--------------------------------------------------------------\n");
 		switch (c) {
 			case '1':	compteurDeTaille(maxTest, maxSize);		break;
@@ -140,7 +140,7 @@ void calculeDePerf(int maxTest, int maxSize) {
 	int i, j, k;
 	clock_t begin;
 	double timer;
-	
+
 
 	printf("     p     | TIME\n");
 
@@ -162,7 +162,7 @@ void calculeDePerf(int maxTest, int maxSize) {
 }
 void compareAll(int maxTest, double maxTime, double p, int mode) {
 	int i, j, k, timeout[6] = { 0, 0, 0, 0 , 0}, maxSize = 1, maxIteration = 32;
-	clock_t begin, deltaTimer;
+	clock_t begin;
 	double timer;
 	int** keys;
 	size_t maxMemoryUsage = 0, memory = 0;
@@ -291,12 +291,12 @@ void compareAll(int maxTest, double maxTime, double p, int mode) {
 }
 
 void deltaAll(int maxTest, int maxSize, double p) {
-	int i, j, k, timeout[6] = { 0, 0, 0, 0 , 0 };
-	long long begin, timer, maxTimer;
+	int i, j, k;
+	long long begin, timer, maxTimer, maxTimerOverall;
 	int** keys;
 
 	printf("%13s | %16s | %16s | %16s |\n", "operations", "SkipList   ", "HashTable   ", "RedBlackTree ");
-	printf("%13s | %16s | %16s | %16s |\n", "iter.   elems", "  TIME   ", "  TIME   ", "  TIME   ", "  TIME   ");
+	printf("%13s | %16s | %16s | %16s |\n", "iter.   elems", "  TIME   ", "  TIME   ", "  TIME   ");
 
 	for (k = 1; k <= 3; k++) {
 		keys = (int**)malloc(sizeof(int*) * maxTest);
@@ -311,7 +311,7 @@ void deltaAll(int maxTest, int maxSize, double p) {
 
 		printf("%3d %9d | ", maxTest, maxSize);
 
-		maxTimer = 0.0;
+		maxTimer = maxTimerOverall = 0.0;
 		for (i = 0; i < maxTest; i++) {
 			SkipList* list = SK_init(maxSize, p);
 			for (j = 0; j < maxSize; j++) {
@@ -321,11 +321,12 @@ void deltaAll(int maxTest, int maxSize, double p) {
 				if (timer > maxTimer) maxTimer = timer;
 			}
 			SK_free(&list);
+			maxTimerOverall += maxTimer;
 		}
-		printf("%16d | ", maxTimer);
-		
+		printf("%16.1f | ", maxTimerOverall/(double)maxTest);
 
-		maxTimer = 0.0;
+
+		maxTimer = maxTimerOverall = 0.0;
 		for (i = 0; i < maxTest; i++) {
 			HashTable* list = HT_init(128, 4);
 			for (j = 0; j < maxSize; j++) {
@@ -335,11 +336,12 @@ void deltaAll(int maxTest, int maxSize, double p) {
 				if (timer > maxTimer) maxTimer = timer;
 			}
 			HT_free(&list);
+			maxTimerOverall += maxTimer;
 		}
-		printf("%16d | ", maxTimer);
-		
+		printf("%16.1f | ", maxTimerOverall/(double)maxTest);
 
-		maxTimer = 0.0;
+
+		maxTimer = maxTimerOverall = 0.0;
 		for (i = 0; i < maxTest; i++) {
 			RBTree* list = RB_init(maxSize, p);
 			for (j = 0; j < maxSize; j++) {
@@ -349,8 +351,9 @@ void deltaAll(int maxTest, int maxSize, double p) {
 				if (timer > maxTimer) maxTimer = timer;
 			}
 			RB_free(&list);
+			maxTimerOverall += maxTimer;
 		}
-		printf("%16d | ", maxTimer);
+		printf("%16.1f | ", maxTimerOverall/(double)maxTest);
 
 		printf("\n");
 
@@ -371,7 +374,7 @@ void drawAList(int maxSize, double p) {
 	SkipList* list = SK_init(maxSize, p);
 	for (j = 0; j < maxSize; j++)
 		SK_Insert(list, rand() % maxSize, j);
-	
+
 	SK_Print(list);
 	SK_free(&list);
 }
