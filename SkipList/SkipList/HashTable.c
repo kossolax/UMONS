@@ -1,6 +1,6 @@
 #include "HashTable.h"
 
-HashTable* HT_init(int size, int ratio) {
+HashTable* HT_init(int size, float ratio) {
 	HashTable* list = (HashTable*)malloc(sizeof(HashTable));
 	
 	list->size = size;
@@ -26,7 +26,7 @@ void HT_Insert(HashTable** list, int key, int value) {
 	int position = LL_Insert( &ptr, key, value);
 	(*list)->table[key % (*list)->size] = ptr;
 
-	if (position > (*list)->ratio ) {
+	if( (float)position > (*list)->ratio ) {
 		*list = HT_Resize(*list);
 	}
 }

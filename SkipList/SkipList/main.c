@@ -14,11 +14,14 @@
 double pTest[maxPTest] = { 4 / 5.0, 3 / 4.0, 2 / 3.0, 3 / 5.0, 1 / 2.0, 2 / 5.0, 1 / 3.0, 1 / 4.0, 1 / 5.0, 1 / 10.0, 1 / 20.0 };
 
 void compteurDeTaille(int maxTest, int maxSize);
-void compareAll(int maxTest, double maxTime, double p, int mode);
-void deltaAll(int maxTest, int maxSize, double p);
 void calculeDePerf(int maxTest, int maxSize);
-void drawAList(int maxSize, double p);
-void clean_stdin();
+int compareOne(int maxTest, int maxSize, double maxTime, int timedout, int** keys, void* fctInit(int, float), void* fctInsert(void*, int, int), void* fctFree(void**), const int a, const float p);
+void compareAll(int maxTest, double maxTime, float p, int mode);
+int cmp(const void * a, const void * b);
+void deltaOne(int maxTest, int maxSize, int** keys, long long** dataTimer, void* fctInit(int, float), void* fctInsert(void*, int, int), void* fctFree(void**), int a, float p);
+void deltaAll(int maxTest, int maxSize, float p);
+void clean_stdin(void);
+void drawAList(int maxSize, float p);
 
 #ifdef _WIN32
 #include <intrin.h>
@@ -35,7 +38,8 @@ int main(int argc, char** argv) {
 	srand((int)time(NULL));
 	RD_init();
 
-	double maxTime, p;
+	double maxTime;
+	float p;
 	int maxTest, maxSize, mode;
 
 	char c;
@@ -79,7 +83,7 @@ int main(int argc, char** argv) {
 		if (c == '3' || c == '4' || c == '5') {
 			do {
 				printf("\tQuel est la probabilite p ? ");
-				scanf("%lf", &p);
+				scanf("%f", &p);
 			} while (p < 0.001 || p > 0.999 );
 		}
 
@@ -123,9 +127,9 @@ void compteurDeTaille(int maxTest, int maxSize) {
 		printf("%10.8f |", pTest[i]);
 
 		for (k = 1; k <= maxTest; k++) {
-			SkipList* list = SK_init(maxSize, pTest[i]);
+			SkipList* list = SK_init(maxSize, (float)pTest[i]);
 			for (j = 0; j < maxSize; j++)
-				SK_Insert(list, j, j);
+				SK_Insert(&list, j, j);
 
 			SK_countNode(list, level, maxLevel);
 			SK_free(&list);
@@ -150,9 +154,9 @@ void calculeDePerf(int maxTest, int maxSize) {
 
 		begin = clock();
 		for (k = 1; k <= maxTest; k++) {
-			SkipList* list = SK_init(maxSize, pTest[i]);
+			SkipList* list = SK_init(maxSize, (float)pTest[i]);
 			for (j = 0; j < maxSize; j++)
-				SK_Insert(list, j, j);
+				SK_Insert(&list, j, j);
 
 			SK_free(&list);
 		}
@@ -160,12 +164,34 @@ void calculeDePerf(int maxTest, int maxSize) {
 		printf("%12.6f\n", timer);
 	}
 }
-void compareAll(int maxTest, double maxTime, double p, int mode) {
-	int i, j, k, timeout[6] = { 0, 0, 0, 0 , 0}, maxSize = 1, maxIteration = 32;
+int compareOne(int maxTest, int maxSize, double maxTime, int timedout, int** keys, void* fctInit(int,float), void* fctInsert(void**, int, int), void* fctFree(void**), const int a, const float p) {
 	clock_t begin;
+	int i, j;
 	double timer;
-	int** keys;
 	size_t maxMemoryUsage = 0, memory = 0;
+
+	if ( timedout == 0 ) {
+		begin = clock();
+		for (i = 0; i < maxTest; i++) {
+			void* list = fctInit(a, p);
+			for (j = 0; j < maxSize; j++)
+				fctInsert(&list, keys[i][j], j);
+			memory = getCurrentRSS();
+			if (memory > maxMemoryUsage) maxMemoryUsage = memory;
+			fctFree(&list);
+		}
+		timer = (double)(clock() - begin) / CLOCKS_PER_SEC;
+		printf("%12.8f | %10zd | ", timer, maxMemoryUsage);
+		if (timer > maxTime) timedout = 1;
+	}
+	else {
+		printf("  -TIMEOUT-  | -TIMEOUT-  | ");
+	}
+	return timedout;
+}
+void compareAll(int maxTest, double maxTime, float p, int mode) {
+	int i, j, k, timeout[5] = { 0, 0, 0, 0, 0}, maxSize = 1, maxIteration = 32;
+	int** keys;
 
 	printf("%13s | %25s | %25s | %25s | %25s | %25s |\n", "operations", "SkipList         ", "HashTable        ", "BinaryTree         ", "RedBlackTree       ", "LinkList         ");
 	printf("%13s | %25s | %25s | %25s | %25s | %25s |\n", "iter.   elems", "TIME   |   MEMORY  ", "TIME   |   MEMORY  ", "TIME   |   MEMORY  ", "TIME   |   MEMORY  ", "TIME   |   MEMORY  ");
@@ -184,100 +210,11 @@ void compareAll(int maxTest, double maxTime, double p, int mode) {
 
 		printf("%3d %9d | ", maxTest, maxSize);
 
-		if (timeout[0] == 0) {
-			begin = clock();
-			for (i = 0; i < maxTest; i++) {
-				SkipList* list = SK_init(maxSize, p);
-				for (j = 0; j < maxSize; j++)
-					SK_Insert(list, keys[i][j], j);
-				memory = getCurrentRSS();
-				if (memory > maxMemoryUsage) maxMemoryUsage = memory;
-				SK_free(&list);
-			}
-			timer = (double)(clock() - begin) / CLOCKS_PER_SEC;
-			printf("%12.8f | %10zd | ", timer, maxMemoryUsage);
-			if (timer > maxTime) timeout[0] = 1;
-		}
-		else {
-			printf("  -TIMEOUT-  | -TIMEOUT-  | ");
-		}
-
-
-		maxMemoryUsage = 0;
-		if (timeout[1] == 0) {
-			begin = clock();
-			for (i = 0; i < maxTest; i++) {
-				HashTable* list = HT_init(128, 4);
-				for (j = 0; j < maxSize; j++)
-					HT_Insert(&list, keys[i][j], j);
-				memory = getCurrentRSS();
-				if (memory > maxMemoryUsage) maxMemoryUsage = memory;
-				HT_free(&list);
-			}
-			timer = (double)(clock() - begin) / CLOCKS_PER_SEC;
-			printf("%12.8f | %10zd | ", timer, maxMemoryUsage);
-			if (timer > maxTime) timeout[1] = 1;
-		}
-		else {
-			printf("  -TIMEOUT-  | -TIMEOUT-  | ");
-		}
-
-
-
-		maxMemoryUsage = 0;
-		if (timeout[2] == 0) {
-			begin = clock();
-			for (i = 0; i < maxTest; i++) {
-				Tree* list = TR_init();
-				for (j = 0; j < maxSize; j++)
-					TR_Insert(&list, keys[i][j], j);
-				memory = getCurrentRSS();
-				if (memory > maxMemoryUsage) maxMemoryUsage = memory;
-				TR_free(&list);
-			}
-			timer = (double)(clock() - begin) / CLOCKS_PER_SEC;
-			printf("%12.8f | %10zd | ", timer, maxMemoryUsage);
-			if (timer > maxTime) timeout[2] = 1;
-		}
-		else {
-			printf("  -TIMEOUT-  | -TIMEOUT-  | ");
-		}
-
-		maxMemoryUsage = 0;
-		if (timeout[3] == 0) {
-			begin = clock();
-			for (i = 0; i < maxTest; i++) {
-				RBTree* list = RB_init();
-				for (j = 0; j < maxSize; j++)
-					RB_Insert(&list, keys[i][j], j);
-				if (memory > maxMemoryUsage) maxMemoryUsage = memory;
-				RB_free(&list);
-			}
-			timer = (double)(clock() - begin) / CLOCKS_PER_SEC;
-			printf("%12.8f | %10zd | ", timer, maxMemoryUsage);
-			if (timer > maxTime) timeout[3] = 1;
-		}
-		else {
-			printf("  -TIMEOUT-  | -TIMEOUT-  | ");
-		}
-
-		maxMemoryUsage = 0;
-		if (timeout[4] == 0) {
-			begin = clock();
-			for (i = 0; i < maxTest; i++) {
-				LinkList* list = LL_init();
-				for (j = 0; j < maxSize; j++)
-					LL_Insert(&list, keys[i][j], j);
-				if (memory > maxMemoryUsage) maxMemoryUsage = memory;
-				LL_free(&list);
-			}
-			timer = (double)(clock() - begin) / CLOCKS_PER_SEC;
-			printf("%12.8f | %10zd | ", timer, maxMemoryUsage);
-			if (timer > maxTime) timeout[4] = 1;
-		}
-		else {
-			printf("  -TIMEOUT-  | -TIMEOUT-  | ");
-		}
+		timeout[0] = compareOne(maxTest, maxSize, maxTime, timeout[0], keys, SK_init, SK_Insert, SK_free, maxSize, p);
+		timeout[1] = compareOne(maxTest, maxSize, maxTime, timeout[1], keys, HT_init, HT_Insert, HT_free, 128, 4.0f);
+		timeout[2] = compareOne(maxTest, maxSize, maxTime, timeout[2], keys, TR_init, TR_Insert, TR_free, 0, 0.0f);
+		timeout[3] = compareOne(maxTest, maxSize, maxTime, timeout[3], keys, RB_init, RB_Insert, RB_free, 0, 0.0f);
+		timeout[4] = compareOne(maxTest, maxSize, maxTime, timeout[4], keys, LL_init, LL_Insert, LL_free, 0, 0.0f);
 
 		printf("\n");
 
@@ -285,23 +222,60 @@ void compareAll(int maxTest, double maxTime, double p, int mode) {
 			free(keys[i]);
 		free(keys);
 
-		if (timeout[0] == 1 && timeout[1] == 1 && timeout[2] == 1 && timeout[3] == 1 )
+		if (timeout[0] == 1 && timeout[1] == 1 && timeout[2] == 1 && timeout[3] == 1 && timeout[4] == 1 )
 			break;
 	}
 }
+int cmp(const void * a, const void * b) {
+	return (int)(*(long long*)a - *(long long*)b);
+}
+void deltaOne(int maxTest, int maxSize, int** keys, long long** dataTimer, void* fctInit(int, float), void* fctInsert(void**, int, int), void* fctFree(void**), int a, float p) {
+	int i, j;
+	long long begin, timer, min, max, tmp;
+	double avg, var, tmp2;
 
-void deltaAll(int maxTest, int maxSize, double p) {
+	for (i = 0; i < maxTest; i++) for (j = 0; j < maxSize; j++) dataTimer[i][j] = 0;
+	min = max = tmp = 0;
+	avg = var = 0.0;
+
+	for (i = 0; i < maxTest; i++) {
+		tmp = 0;
+		void* list = fctInit(a, p);
+		for (j = 0; j < maxSize; j++) {
+			begin = rdtsc();
+			fctInsert(&list, keys[i][j], j);
+			timer = rdtsc(); timer -= begin;
+
+			dataTimer[i][j] = timer;
+			tmp += timer;
+		}
+		fctFree(&list);
+
+		qsort(dataTimer[i], maxSize, sizeof(long long), cmp);
+		min += dataTimer[i][0];
+		max += dataTimer[i][maxSize - 1];
+		avg += tmp / (double)maxSize;
+		tmp2 = tmp / (double)maxSize;
+		for (j = 0; j < maxSize; j++) var += (tmp2 - (double)dataTimer[i][j])*(tmp2 - (double)dataTimer[i][j]);
+	}
+	printf("%8.1f %12.1f %8.1f %8.1f | ", min / (double)maxTest, max / (double)maxTest, avg / (double)maxTest, sqrt(var / (double)(maxTest*maxSize)));
+}
+void deltaAll(int maxTest, int maxSize, float p) {
 	int i, j, k;
-	long long begin, timer, maxTimer, maxTimerOverall;
 	int** keys;
+	long long** dataTimer;
 
-	printf("%13s | %16s | %16s | %16s |\n", "operations", "SkipList   ", "HashTable   ", "RedBlackTree ");
-	printf("%13s | %16s | %16s | %16s |\n", "iter.   elems", "  TIME   ", "  TIME   ", "  TIME   ");
+	printf("%13s | %39s | %39s | %39s |\n", "operations", "SkipList   ", "HashTable   ", "RedBlackTree ");
+	printf("%13s | %39s | %39s | %39s |\n", "iter.   elems", "MIN      MAX      AVG      VAR ", "MIN      MAX      AVG      VAR ", "MIN      MAX      AVG      VAR ", "MIN       MAX       AVG       ", "MIN       MAX       AVG       ");
 
 	for (k = 1; k <= 3; k++) {
 		keys = (int**)malloc(sizeof(int*) * maxTest);
+		dataTimer = (long long**)malloc(sizeof(long long*) * maxTest);
+
 		for (i = 0; i < maxTest; i++) {
 			keys[i] = (int*)malloc(sizeof(int) * maxSize);
+			dataTimer[i] = (long long*)malloc(sizeof(long long)*maxSize);
+
 			switch (k) {
 				case 1:	for (j = 0; j < maxSize; j++) keys[i][j] = j; break;
 				case 2:	for (j = 0; j < maxSize; j++) keys[i][j] = rand() % (j + 1); break;
@@ -311,49 +285,9 @@ void deltaAll(int maxTest, int maxSize, double p) {
 
 		printf("%3d %9d | ", maxTest, maxSize);
 
-		maxTimer = maxTimerOverall = 0.0;
-		for (i = 0; i < maxTest; i++) {
-			SkipList* list = SK_init(maxSize, p);
-			for (j = 0; j < maxSize; j++) {
-				begin = rdtsc();
-				SK_Insert(list, keys[i][j], j);
-				timer = rdtsc(); timer -= begin;
-				if (timer > maxTimer) maxTimer = timer;
-			}
-			SK_free(&list);
-			maxTimerOverall += maxTimer;
-		}
-		printf("%16.1f | ", maxTimerOverall/(double)maxTest);
-
-
-		maxTimer = maxTimerOverall = 0.0;
-		for (i = 0; i < maxTest; i++) {
-			HashTable* list = HT_init(128, 4);
-			for (j = 0; j < maxSize; j++) {
-				begin = rdtsc();
-				HT_Insert(&list, keys[i][j], j);
-				timer = rdtsc(); timer -= begin;
-				if (timer > maxTimer) maxTimer = timer;
-			}
-			HT_free(&list);
-			maxTimerOverall += maxTimer;
-		}
-		printf("%16.1f | ", maxTimerOverall/(double)maxTest);
-
-
-		maxTimer = maxTimerOverall = 0.0;
-		for (i = 0; i < maxTest; i++) {
-			RBTree* list = RB_init(maxSize, p);
-			for (j = 0; j < maxSize; j++) {
-				begin = rdtsc();
-				RB_Insert(&list, keys[i][j], j);
-				timer = rdtsc(); timer -= begin;
-				if (timer > maxTimer) maxTimer = timer;
-			}
-			RB_free(&list);
-			maxTimerOverall += maxTimer;
-		}
-		printf("%16.1f | ", maxTimerOverall/(double)maxTest);
+		deltaOne(maxTest, maxSize, keys, dataTimer, SK_init, SK_Insert, SK_free, maxSize, p);
+		deltaOne(maxTest, maxSize, keys, dataTimer, HT_init, HT_Insert, HT_free, 128, 4.f);
+		deltaOne(maxTest, maxSize, keys, dataTimer, RB_init, RB_Insert, RB_free, 0, 0.f);
 
 		printf("\n");
 
@@ -368,12 +302,12 @@ void clean_stdin(void) {
 		c = getchar();
 	} while (c != '\n' && c != EOF);
 }
-void drawAList(int maxSize, double p) {
+void drawAList(int maxSize, float p) {
 	int j;
 
 	SkipList* list = SK_init(maxSize, p);
 	for (j = 0; j < maxSize; j++)
-		SK_Insert(list, rand() % maxSize, j);
+		SK_Insert(&list, rand() % maxSize, j);
 
 	SK_Print(list);
 	SK_free(&list);

@@ -25,7 +25,7 @@ typedef struct node {
 SkipList* SK_init(int maxElem, float p);
 void SK_free(SkipList** list);
 node* SK_Search(SkipList* list, int key);
-int SK_Insert(SkipList* list, int key, int value);
+int SK_Insert(SkipList** list, int key, int value);
 int SK_Delete(SkipList* list, int key);
 int SK_GetValueFromNode(node* noeud);
 void SK_Print(SkipList* list);
