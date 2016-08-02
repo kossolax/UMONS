@@ -15,10 +15,10 @@ double pTest[maxPTest] = { 4 / 5.0, 3 / 4.0, 2 / 3.0, 3 / 5.0, 1 / 2.0, 2 / 5.0,
 
 void compteurDeTaille(int maxTest, int maxSize);
 void calculeDePerf(int maxTest, int maxSize);
-int compareOne(int maxTest, int maxSize, double maxTime, int timedout, int** keys, void* fctInit(int, float), void* fctInsert(void*, int, int), void* fctFree(void**), const int a, const float p);
+int compareOne(int maxTest, int maxSize, double maxTime, int timedout, int** keys, void* fctInit(int, float), void* fctInsert(void**, int, int), void* fctFree(void**), const int a, const float p);
 void compareAll(int maxTest, double maxTime, float p, int mode);
 int cmp(const void * a, const void * b);
-void deltaOne(int maxTest, int maxSize, int** keys, long long** dataTimer, void* fctInit(int, float), void* fctInsert(void*, int, int), void* fctFree(void**), int a, float p);
+void deltaOne(int maxTest, int maxSize, int** keys, long long** dataTimer, void* fctInit(int, float), void* fctInsert(void**, int, int), void* fctFree(void**), int a, float p);
 void deltaAll(int maxTest, int maxSize, float p);
 void clean_stdin(void);
 void drawAList(int maxSize, float p);
