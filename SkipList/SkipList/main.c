@@ -22,6 +22,7 @@ void deltaOne(int maxTest, int maxSize, int** keys, long long** dataTimer, void*
 void deltaAll(int maxTest, int maxSize, float p);
 void clean_stdin(void);
 void drawAList(int maxSize, float p);
+double Percentile(long long tab[], int N, double pc);
 
 #ifdef _WIN32
 #include <intrin.h>
@@ -232,14 +233,15 @@ int cmp(const void * a, const void * b) {
 void deltaOne(int maxTest, int maxSize, int** keys, long long** dataTimer, void* fctInit(int, float), void* fctInsert(void**, int, int), void* fctFree(void**), int a, float p) {
 	int i, j;
 	long long begin, timer, min, max, tmp;
-	double avg, var, tmp2;
+	double avg, var, tmp2, tmp3, pc;
 
 	for (i = 0; i < maxTest; i++) for (j = 0; j < maxSize; j++) dataTimer[i][j] = 0;
 	min = max = tmp = 0;
-	avg = var = 0.0;
+	tmp3 = tmp2 = avg = var = pc = 0.0;
 
 	for (i = 0; i < maxTest; i++) {
 		tmp = 0;
+		tmp3 = 0.0;
 		void* list = fctInit(a, p);
 		for (j = 0; j < maxSize; j++) {
 			begin = rdtsc();
@@ -255,18 +257,21 @@ void deltaOne(int maxTest, int maxSize, int** keys, long long** dataTimer, void*
 		min += dataTimer[i][0];
 		max += dataTimer[i][maxSize - 1];
 		avg += tmp / (double)maxSize;
-		tmp2 = tmp / (double)maxSize;
-		for (j = 0; j < maxSize; j++) var += (tmp2 - (double)dataTimer[i][j])*(tmp2 - (double)dataTimer[i][j]);
+		pc += Percentile(dataTimer[i], maxSize, 0.95);
+		tmp2 = (tmp / (double)maxSize);
+		for (j = 0; j < maxSize; j++) tmp3 += (tmp2 - (double)dataTimer[i][j])*(tmp2 - (double)dataTimer[i][j]);
+		var += sqrt(tmp3 / (double)(maxSize));
+		
 	}
-	printf("%8.1f %12.1f %8.1f %8.1f | ", min / (double)maxTest, max / (double)maxTest, avg / (double)maxTest, sqrt(var / (double)(maxTest*maxSize)));
+	printf("%8.1f %12.1f %8.1f %8.1f %8.1f | ", min / (double)maxTest, max / (double)maxTest, avg / (double)maxTest, var / (double)maxTest, pc/(double)maxTest );
 }
 void deltaAll(int maxTest, int maxSize, float p) {
 	int i, j, k;
 	int** keys;
 	long long** dataTimer;
 
-	printf("%13s | %39s | %39s | %39s |\n", "operations", "SkipList   ", "HashTable   ", "RedBlackTree ");
-	printf("%13s | %39s | %39s | %39s |\n", "iter.   elems", "MIN      MAX      AVG      VAR ", "MIN      MAX      AVG      VAR ", "MIN      MAX      AVG      VAR ", "MIN       MAX       AVG       ", "MIN       MAX       AVG       ");
+	printf("%13s | %48s | %48s | %48s |\n", "operations", "SkipList                    ", "HashTable                    ", "RedBlackTree                    ");
+	printf("%13s | %48s | %48s | %48s |\n", "iter.   elems", "MIN          MAX      AVG      DEV     PC95", "MIN          MAX      AVG      DEV     PC95", "MIN          MAX      AVG      DEV     PC95");
 
 	for (k = 1; k <= 3; k++) {
 		keys = (int**)malloc(sizeof(int*) * maxTest);
@@ -311,4 +316,11 @@ void drawAList(int maxSize, float p) {
 
 	SK_Print(list);
 	SK_free(&list);
+}
+
+double Percentile(long long tab[], int N, double pc) {
+	double n = (N - 1) * pc + 1;
+	int k = (int)n;
+	double d = n - k;
+	return (double)tab[k - 1] + d * (double)(tab[k] - tab[k - 1]);
 }

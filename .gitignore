@@ -18,3 +18,4 @@ SkipList/Rapport.*
 SkipList/SkipList/Release/SkipList.tlog/CL.command.1.tlog
 *.tlog
 SkipList/SkipList/Release/SkipList.log
+*.sdf
