@@ -169,20 +169,29 @@ int compareOne(int maxTest, int maxSize, double maxTime, int timedout, int** key
 	clock_t begin;
 	int i, j;
 	double timer;
-	size_t maxMemoryUsage = 0, memory = 0;
+	void* list;
+	size_t maxMemoryUsage = 0, memory = 0, begin_memory = 0;
+	begin_memory = getCurrentRSS();
 
 	if ( timedout == 0 ) {
 		begin = clock();
+		timer = 0;
 		for (i = 0; i < maxTest; i++) {
-			void* list = fctInit(a, p);
+			list = fctInit(a, p);
 			for (j = 0; j < maxSize; j++)
 				fctInsert(&list, keys[i][j], j);
+
+			timer += (double)(clock() - begin) / CLOCKS_PER_SEC;
+
 			memory = getCurrentRSS();
 			if (memory > maxMemoryUsage) maxMemoryUsage = memory;
+
+			begin = clock();
 			fctFree(&list);
+			timer += (double)(clock() - begin) / CLOCKS_PER_SEC;
 		}
-		timer = (double)(clock() - begin) / CLOCKS_PER_SEC;
-		printf("%12.8f | %10zd | ", timer, maxMemoryUsage);
+		
+		printf("%12.8f | %10zd | ", timer, maxMemoryUsage - begin_memory);
 		if (timer > maxTime) timedout = 1;
 	}
 	else {
