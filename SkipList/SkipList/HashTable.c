@@ -55,3 +55,10 @@ HashTable* HT_Resize(HashTable* list) {
 	HT_free(&list);
 	return list2;
 }
+size_t HT_Size(HashTable* list) {
+	size_t ret = 0;
+	for (int i = 0; i < list->size; i++) {
+		ret += LL_Size(list->table[i]);
+	}
+	return ret + sizeof(HashTable) + (sizeof(LinkList*)*list->size);
+}

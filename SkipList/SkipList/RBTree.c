@@ -203,3 +203,36 @@ void RB_Insert(RBTree** list, int key, int value) {
 int RB_GetValueFromNode(RBTree* noeud) {
 	return noeud->value;
 }
+
+
+size_t RB_Size(RBTree* list) {
+	int node = 0;
+
+	// Morris pre-order algorithme
+	RBTree* c = list;
+	RBTree* p = list;
+
+	while (c != NULL) {
+		if (c->left == NULL) {
+			node++;
+			c = c->right;
+		}
+		else {
+			p = c->left;
+			while (p->right != NULL && p->right != c) {
+				p = p->right;
+			}
+			if (p->right == NULL) {
+				p->right = c;
+				c = c->left;
+			}
+			else {
+				p->right = NULL;
+				node++;
+				c = c->right;
+			}
+		}
+	}
+
+	return sizeof(RBTree)*node;
+}

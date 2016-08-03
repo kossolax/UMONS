@@ -82,3 +82,15 @@ void LL_Print(LinkList* list) {
 	}
 	printf("\n");
 }
+size_t LL_Size(LinkList* list) {
+	int node = 0;
+	size_t ret = 0;
+
+	LinkList* p = list;
+	while (p != NULL) {
+		node++;
+		p = p->forward;
+	}
+
+	return sizeof(LinkList)*node;
+}

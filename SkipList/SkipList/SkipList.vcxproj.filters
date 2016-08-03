@@ -30,9 +30,6 @@
     <ClCompile Include="Tree.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MemoryDump.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="xoroshiro128plus.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -54,9 +51,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="xoroshiro128plus.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MemoryDump.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GetTimer.h">

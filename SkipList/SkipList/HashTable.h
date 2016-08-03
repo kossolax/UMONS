@@ -20,6 +20,7 @@ LinkList* HT_Search(HashTable* list, int key);
 void HT_Insert(HashTable** list, int key, int value);
 void HT_Delete(HashTable* list, int key);
 void HT_Print(HashTable* list);
+size_t HT_Size(HashTable* list);
 
 // Private: eyes only.
 HashTable* HT_Resize(HashTable* list);

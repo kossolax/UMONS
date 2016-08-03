@@ -19,3 +19,4 @@ int LL_Insert(LinkList** list, int key, int value);
 void LL_Delete(LinkList** list, int key);
 int LL_GetValueFromNode(LinkList* noeud);
 void LL_Print(LinkList* list);
+size_t LL_Size(LinkList* list);

@@ -32,3 +32,4 @@ void RB_Insert(RBTree** list, int key, int value);
 int RB_GetValueFromNode(RBTree* noeud);
 RBTree* remove_key(RBTree *node, int key);
 
+size_t RB_Size(RBTree* list);

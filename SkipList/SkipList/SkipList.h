@@ -17,7 +17,7 @@ typedef struct SkipList {
 	struct node* head;
 } SkipList;
 typedef struct node {
-	int key, value;
+	int key, value, height;
 	struct node** forward;
 } node;
 //---------------ENDSKStruct----------------
@@ -31,7 +31,8 @@ int SK_GetValueFromNode(node* noeud);
 void SK_Print(SkipList* list);
 
 // Private: eyes only.
-node* createNode(SkipList*, int key, int value);
+node* createNode(SkipList*, int key, int value, int height);
 void removeNode(node* node);
 int getRandomLevel(SkipList* list);
 void SK_countNode(SkipList* list, unsigned int level[], int maxLevel);
+size_t SK_Size(SkipList* list);

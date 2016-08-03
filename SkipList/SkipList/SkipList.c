@@ -15,7 +15,7 @@ SkipList* SK_init(int maxElem, float p) {
 		list->levelMAX = 1;
 
 	list->level = 1;
-	list->head = createNode(list, INT_MAX, INT_MAX);
+	list->head = createNode(list, INT_MAX, INT_MAX, list->levelMAX);
 	for (int i = 0; i < list->levelMAX; i++)
 		list->head->forward[i] = list->head;
 	list->p = p;
@@ -117,7 +117,7 @@ int SK_Insert(SkipList** list, int key, int value) {
 			(*list)->level = level;
 		}
 
-		x = createNode(*list, key, value);
+		x = createNode(*list, key, value, level);
 		for (int i = 0; i < level; i++) {
 			// ???
 			x->forward[i] = update[i]->forward[i];
@@ -217,6 +217,19 @@ void SK_Print(SkipList* list) {
 	printf("\n\n");
 }
 
+size_t SK_Size(SkipList* list) {
+	size_t ret = 0;
+	node* p = list->head;
+
+	while( p->forward[0] != list->head ) {
+		ret += sizeof(node) + (sizeof(node*) * p->height);
+
+		p = p->forward[0];
+	}
+
+	return ret + sizeof(SkipList);
+}
+
 static inline double to_double(uint64_t x) {
 	const union { uint64_t i; double d; } u = { .i = UINT64_C(0x3FF) << 52 | x >> 12 };
 	return u.d - 1.0;
@@ -236,12 +249,13 @@ int getRandomLevel(SkipList* list) {
 }
 //---------------ENDSKRandom----------------
 
-node* createNode(SkipList* list, int key, int value) {
+node* createNode(SkipList* list, int key, int value, int level) {
 	node* noeud = (node*)malloc(sizeof(node));
 
 	noeud->key = key;
 	noeud->value = value;
-	noeud->forward = (node**)malloc(sizeof(node*) * (list->levelMAX));
+	noeud->height = level;
+	noeud->forward = (node**)malloc(sizeof(node*) * level);
 
 	return noeud;
 }

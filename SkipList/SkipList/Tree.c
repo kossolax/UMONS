@@ -51,7 +51,6 @@ void TR_Insert(Tree** list, int key, int value) {
 		(*p)->value = value;
 		(*p)->left = NULL;
 		(*p)->right = NULL;
-		(*p)->parent = tmp;
 	}
 }
 int TR_GetValueFromNode(Tree* noeud) {
@@ -83,4 +82,35 @@ void TR_Print(Tree* list) {
 			}
 		}
 	}
+}
+size_t TR_Size(Tree* list) {
+	int node = 0;
+
+	// Morris pre-order algorithme
+	Tree* c = list;
+	Tree* p = list;
+
+	while (c != NULL) {
+		if (c->left == NULL) {
+			node++;
+			c = c->right;
+		}
+		else {
+			p = c->left;
+			while (p->right != NULL && p->right != c) {
+				p = p->right;
+			}
+			if (p->right == NULL) {
+				p->right = c;
+				c = c->left;
+			}
+			else {
+				p->right = NULL;
+				node++;
+				c = c->right;
+			}
+		}
+	}
+
+	return sizeof(Tree)*node;
 }

@@ -7,7 +7,6 @@
 #include "HashTable.h"
 #include "Tree.h"
 #include "RBTree.h"
-#include "MemoryDump.h"
 #include "GetTimer.h"
 
 #define maxPTest	11
@@ -15,10 +14,10 @@ double pTest[maxPTest] = { 4 / 5.0, 3 / 4.0, 2 / 3.0, 3 / 5.0, 1 / 2.0, 2 / 5.0,
 
 void compteurDeTaille(int maxTest, int maxSize);
 void calculeDePerf(int maxTest, int maxSize);
-int compareOne(int maxTest, int maxSize, double maxTime, int timedout, int** keys, void* fctInit(int, float), void* fctInsert(void**, int, int), void* fctFree(void**), const int a, const float p);
+int compareOne(int maxTest, int maxSize, double maxTime, int timedout, int** keys, void* fctInit(int, float), void fctInsert(void**, int, int), void fctFree(void**), size_t fctGetSize(void*), const int a, const float p);
 void compareAll(int maxTest, double maxTime, float p, int mode);
 int cmp(const void * a, const void * b);
-void deltaOne(int maxTest, int maxSize, int** keys, long long** dataTimer, void* fctInit(int, float), void* fctInsert(void**, int, int), void* fctFree(void**), int a, float p);
+void deltaOne(int maxTest, int maxSize, int** keys, long long** dataTimer, void* fctInit(int, float), void fctInsert(void**, int, int), void fctFree(void**), int a, float p);
 void deltaAll(int maxTest, int maxSize, float p);
 void clean_stdin(void);
 void drawAList(int maxSize, float p);
@@ -165,13 +164,12 @@ void calculeDePerf(int maxTest, int maxSize) {
 		printf("%12.6f\n", timer);
 	}
 }
-int compareOne(int maxTest, int maxSize, double maxTime, int timedout, int** keys, void* fctInit(int,float), void* fctInsert(void**, int, int), void* fctFree(void**), const int a, const float p) {
+int compareOne(int maxTest, int maxSize, double maxTime, int timedout, int** keys, void* fctInit(int,float), void fctInsert(void**, int, int), void fctFree(void**), size_t fctGetSize(void*), const int a, const float p) {
 	clock_t begin;
 	int i, j;
 	double timer;
 	void* list;
-	size_t maxMemoryUsage = 0, memory = 0, begin_memory = 0;
-	begin_memory = getCurrentRSS();
+	size_t memory = 0;
 
 	if ( timedout == 0 ) {
 		begin = clock();
@@ -182,21 +180,19 @@ int compareOne(int maxTest, int maxSize, double maxTime, int timedout, int** key
 				fctInsert(&list, keys[i][j], j);
 
 			timer += (double)(clock() - begin) / CLOCKS_PER_SEC;
-
-			memory = getCurrentRSS();
-			if (memory > maxMemoryUsage) maxMemoryUsage = memory;
-
+			memory += fctGetSize(list);
 			begin = clock();
 			fctFree(&list);
 			timer += (double)(clock() - begin) / CLOCKS_PER_SEC;
 		}
 		
-		printf("%12.8f | %10zd | ", timer, maxMemoryUsage - begin_memory);
+		printf("%12.8f | %10.1f | ", timer, memory/(double)maxTest );
 		if (timer > maxTime) timedout = 1;
 	}
 	else {
 		printf("  -TIMEOUT-  | -TIMEOUT-  | ");
 	}
+
 	return timedout;
 }
 void compareAll(int maxTest, double maxTime, float p, int mode) {
@@ -220,11 +216,11 @@ void compareAll(int maxTest, double maxTime, float p, int mode) {
 
 		printf("%3d %9d | ", maxTest, maxSize);
 
-		timeout[0] = compareOne(maxTest, maxSize, maxTime, timeout[0], keys, SK_init, SK_Insert, SK_free, maxSize, p);
-		timeout[1] = compareOne(maxTest, maxSize, maxTime, timeout[1], keys, HT_init, HT_Insert, HT_free, 128, 4.0f);
-		timeout[2] = compareOne(maxTest, maxSize, maxTime, timeout[2], keys, TR_init, TR_Insert, TR_free, 0, 0.0f);
-		timeout[3] = compareOne(maxTest, maxSize, maxTime, timeout[3], keys, RB_init, RB_Insert, RB_free, 0, 0.0f);
-		timeout[4] = compareOne(maxTest, maxSize, maxTime, timeout[4], keys, LL_init, LL_Insert, LL_free, 0, 0.0f);
+		timeout[0] = compareOne(maxTest, maxSize, maxTime, timeout[0], keys, SK_init, SK_Insert, SK_free, SK_Size, maxSize, p);
+		timeout[1] = compareOne(maxTest, maxSize, maxTime, timeout[1], keys, HT_init, HT_Insert, HT_free, HT_Size, 128, 4.0f);
+		timeout[2] = compareOne(maxTest, maxSize, maxTime, timeout[2], keys, TR_init, TR_Insert, TR_free, TR_Size, 0, 0.0f);
+		timeout[3] = compareOne(maxTest, maxSize, maxTime, timeout[3], keys, RB_init, RB_Insert, RB_free, RB_Size, 0, 0.0f);
+		timeout[4] = compareOne(maxTest, maxSize, maxTime, timeout[4], keys, LL_init, LL_Insert, LL_free, LL_Size, 0, 0.0f);
 
 		printf("\n");
 
@@ -239,7 +235,7 @@ void compareAll(int maxTest, double maxTime, float p, int mode) {
 int cmp(const void * a, const void * b) {
 	return (int)(*(long long*)a - *(long long*)b);
 }
-void deltaOne(int maxTest, int maxSize, int** keys, long long** dataTimer, void* fctInit(int, float), void* fctInsert(void**, int, int), void* fctFree(void**), int a, float p) {
+void deltaOne(int maxTest, int maxSize, int** keys, long long** dataTimer, void* fctInit(int, float), void fctInsert(void**, int, int), void fctFree(void**), int a, float p) {
 	int i, j;
 	long long begin, timer, min, max, tmp;
 	double avg, var, tmp2, tmp3, pc;
