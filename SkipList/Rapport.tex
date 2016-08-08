@@ -408,8 +408,247 @@
 	\end{figure}
 	
 	\section{Comparaisons avec d'autres structures}
-	\newpage
+	Dans la conception logiciel, choisir la bonne structure de donnée permet aux logiciels de s'exécuter plus rapidement. Laquelle présentera les meilleurs performances? Quels sont les avantages et le prix à payer? Pour l'ensemble de ces tests, un logiciel de comparaisons doit être utilisé spécialement développé pour ce projet.
+	Il existe un grand nombre de méthode différente pour enregistrer des données au format "clé-valeur". Ces structures de donnée sont appelés des dictionnaires. Dans un dictionnaire de langue française, chacun des mots est associé à une définition. Ces mots sont triés par ordre alphabétique afin d'effectuer des recherches rapides. En informatique, c'est le même concept qui est utilisé: Chacune des clés (mots) correspond une valeur (définitions). Les clés, quand à elle, seront structurée de façon organisée afin de pouvoir les trouver rapidement.
 	
+	\subsection{La table de hachage}
+	La table de hachage une structure de donnée qui fonctionne grâce à des listes chainées. Le pointeur du premier élément est placé dans un vecteur. Ce vecteur est typiquement initialisé pour contenir 128 éléments. 
+	
+	Lors de l'insertion dans cette table, la clé est transformé à l'aide d'une méthode de "hachage". Cette dernière doit être capable de répartir efficacement les éléments tout en étant déterministe. C'est à dire, qu'insérer ou rechercher un élément ayant comme clé "4000" doit toujours atteindre la même case du vecteur. 
+	
+	Si 2 éléments doivent s'insérer dans la même case du vecteur, ceux-ci sont alors placé dans une liste chainée. Par exemple, si la clé "48" et la clé "24" ont comme résultat la case 12 par la fonction de hachage. L'élément 24 sera le premier élément de la liste chainée, suivit de 48.
+	
+	Lorsque trop d'élément sont présent dans une même case, la table de hachage doit pouvoir agrandir la taille de son vecteur. Cette modification, impose que chacun des éléments présent dans la table soit déplacé pour correspondre aux nouveaux indices calculés par la fonction de hachage. Le nombre maximum de collision autorisée par case est typiquement 4, mais peut-être configuré autrement. Une table de hachage de 128 case, peut dont contenir 512 éléments. 
+	
+	\lstinputlisting[linerange=BEGINStruct-ENDStruct]{SkipList/HashTable.h}
+	\lstinputlisting[linerange=BEGINStruct-ENDStruct]{SkipList/LinkList.h}
+	
+	\subsubsection*{Avantages}
+	\begin{itemize}
+		\item Rapidité d'insertion et de recherche
+		\item Mises en place simple
+	\end{itemize}
+	\subsubsection*{Inconvénient}
+	\begin{itemize}
+		\item La fonction de hachage doit être suffisamment efficace pour éviter les collisions.
+		\item Réallocation et déplacement des éléments en cas de grand nombre de collisions.
+		\item L'utilisation d'un vecteur pour la table, limite le nombre maximum d'élément.
+	\end{itemize}
+	\subsubsection*{Performances}
+	Afin de négliger la méthode de hachage pour ce test: les clés sont des entiers et la méthode de hachage est la clé modulo la taille de la table. Ainsi, il est possible d'utiliser l'intégralité de la table en minimisant les collisions. Il suffit alors d'insérer des clés de façon séquentielles (0, 1, 2, 3...).
+	
+	 \begin{table}[h]
+	 	\begin{tabular}{|l|c|c|}
+	 		\hline
+	 		Scénario & attendu & pire \\
+	 		\hline
+	 		Recherche & $\mathcal{O}(1)$ & $\mathcal{O}(n)$ \\ 
+	 		\hline
+	 		Insertion & $\mathcal{O}(1)$ & $\mathcal{O}(2n)$ \\
+	 		\hline
+	 		Suppression & $\mathcal{O}(1)$ & $\mathcal{O}(n)$\\
+	 		\hline
+	 	\end{tabular}
+	 	\caption{Tableau récapitulatif}
+	 \end{table}
+	
+	\begin{figure}[h]
+		\centering
+		\resizebox{\columnwidth}{!}{
+			\begin{tikzpicture}
+			\begin{axis} [
+				axis y line*=left,
+				ymin=0,ymax=5270,xmin=0,xmax=1048576,
+				ylabel=Temps en ms,
+				ylabel near ticks,
+				scaled x ticks={base 10:-3},
+				scaled y ticks={base 10:-3},
+				xlabel=Le nombre d élément,
+				legend pos=north west,
+			]
+			\addplot+[smooth, mark=none] table [x=elem,y=time] {data/hashtable.dat};
+				
+			\end{axis}
+			
+			\end{tikzpicture}
+		}
+		\caption{Vitesse d'exécution de la table de hachage}
+	\end{figure}
+	
+	\newpage
+	\subsection{Les arbres binaires}
+	Un arbres binaires de recherche est une structure de donnée dans laquelle chacun des éléments possèdent 2 sous éléments. On parle alors de "fils gauche" et de "fils droit". Ces derniers peuvent eux-aussi à leur tour, posséder un fils gauche et droit. On parle dès lors, de structures récursive.
+	
+	\lstinputlisting[linerange=BEGINStruct-ENDStruct]{SkipList/Tree.h}
+	
+	Chacun des nœuds a donc 2 fils: le gauche contient un élément plus petit que son parent; le fils droit qui contient un élément plus grand que son parent. Par exemple, un nœud de valeur 5 aura comme fils de gauche 3, et comme fils droit 13.
+	
+	Les recherches dans un arbre s'effectuent depuis la racine de l'arbre, soit le nœud le plus haut dans sa hiérarchie. Il faut ensuite comparer l'élément courant avec celui qui est recherché. S'il est plus grand, il faut descendre sur le fils droit, sinon sur le fils gauche. La recherche continue en comparant avec ce dernier élément sélectionné. L'exploration de l'arbre s'arrête lorsque l'élément est trouvé, ou qu'un nœud n'a plus de fils.
+	
+	Les insertions et suppressions dans un arbre dépendent de la recherche. Il faut en effet garder la structure cohérente. Si un élément parent est supprimé, il faut être capable de le remplacer par un autre sans détériorer l'arbre.
+	
+	Les insertions séquentielles posent problème dans un arbre. En effet, dans une suite de nombres strictement croissants, chacun des nombres est par définition plus grand que son précédent. Par conséquent, de telles insertions dans un arbre provoqueront une dégradation significative des performances. Le nombre inséré étant plus grand que son précédent, celui-ci est toujours ajouté sur le fils droit. Le fils de gauche n'est par conséquent jamais utilisé; ce qui transforme l'arbre en liste chainée ordonnée.
+	
+	 \begin{table}[h]
+	 	\begin{tabular}{|l|c|c|}
+	 		\hline
+	 		Scénario & attendu & pire \\
+	 		\hline
+	 		Recherche & $\mathcal{O}(\log n)$ & $\mathcal{O}(n)$ \\ 
+	 		\hline
+	 		Insertion & $\mathcal{O}(\log n)$ & $\mathcal{O}(n)$ \\
+	 		\hline
+	 		Suppression & $\mathcal{O}(\log n)$ & $\mathcal{O}(n)$\\
+	 		\hline
+	 	\end{tabular}
+	 	\caption{Tableau récapitulatif}
+	 \end{table}
+	
+	\subsubsection*{Avantages}
+	\begin{itemize}
+		\item Rapidité d'exécution, si l'arbre est équilibré
+		\item Mises en place simple et rapide.
+	\end{itemize}
+	\subsubsection*{Inconvénient}
+	\begin{itemize}
+		\item L'insertion provoque rapidement un déséquilibre, ce qui détériore très fortement les performances
+	\end{itemize}
+	\subsubsection*{Performances}
+	\begin{figure}[h]
+		\centering
+		\resizebox{\columnwidth}{!}{
+			\begin{tikzpicture}
+			\begin{axis} [
+			axis y line*=left,
+			ymin=0,ymax=5270,xmin=0,xmax=65536,
+			ylabel=Temps en ms,
+			ylabel near ticks,
+			scaled x ticks={base 10:-3},
+			scaled y ticks={base 10:-3},
+			xlabel=Le nombre d élément,
+			legend pos=north east,
+			]
+			\addplot+[mark=none, blue] table [x=elem,y=sequence] {data/tree.dat};
+			\addplot+[mark=none, green] table [x=elem,y=random] {data/tree.dat};
+			
+			\addlegendentry{séquence}
+			\addlegendentry{random}
+			
+			
+			\end{axis}
+			
+			\end{tikzpicture}
+		}
+		\caption{Vitesse d'exécution d'un arbre binaire}
+	\end{figure}
+	\begin{table}[h]
+		\begin{tabular}{|l|c|c|}
+			\hline
+			Scénario & attendu & pire \\
+			\hline
+			Recherche & $\mathcal{O}(\log n)$ & $\mathcal{O}(n)$ \\ 
+			\hline
+			Insertion & $\mathcal{O}(\log n)$ & $\mathcal{O}(n)$ \\
+			\hline
+			Suppression & $\mathcal{O}(\log n)$ & $\mathcal{O}(n)$\\
+			\hline
+		\end{tabular}
+		\caption{Tableau récapitulatif}
+	\end{table}
+	
+	\subsection{Les arbres rouge noire}
+	Les arbres rouges noires sont une amélioration des arbres binaires. Un nœud possède un attribue supplémentaire, sa couleur qui peut être soit rouge, soit noir. Ceci permet d'ajouter des contraintes dans l'arbre. Ces contraintes permettent à ré-équilibrer l'arbre par des rotations. Il faut transformer l'arbre afin que le parent d'un nœud rouge est noir. Mais aussi pour que le chemin de chaque feuille à la racine contient le même nombre de nœud noir.
+	
+	Lors de l'insertion un nœud est rouge, mais en raison des transformation appliquée afin de garantir l'intégrité de la structure, il est possible qu'un nœud inséré ne soit pas une feuille, mais un parent. Il peut donc devenir à son tour noir. La recherche s'effectue exactement de la même façon qu'un arbre binaire. 
+	\subsubsection*{Avantages}
+	\begin{itemize}
+		\item Rapidité d'exécution
+		\item L'arbre est toujours équilibré
+	\end{itemize}
+	\subsubsection*{Inconvénient}
+	\begin{itemize}
+		\item Algorithme complexe à mettre en place en raison de nombreuses études de cas.
+		\item Certaines séquences de nombre provoqueront un rééquilibrage systématique.
+	\end{itemize}
+	\subsubsection*{Performances}
+	\begin{figure}[h]
+		\centering
+		\resizebox{\columnwidth}{!}{
+			\begin{tikzpicture}
+			\begin{axis} [
+			axis y line*=left,
+			ymin=0,ymax=10000,xmin=0,xmax=2000000,
+			ylabel=Temps en ms,
+			ylabel near ticks,
+			scaled x ticks={base 10:-3},
+			scaled y ticks={base 10:-3},
+			xlabel=Le nombre d élément,
+			legend pos=north east,
+			]
+			\addplot+[mark=none, blue] table [x=elem,y=sequence] {data/rbtree.dat};
+			\addplot+[mark=none, green] table [x=elem,y=random] {data/rbtree.dat};
+			
+			\addlegendentry{séquence}
+			\addlegendentry{random}
+			
+			\end{axis}
+			
+			\end{tikzpicture}
+		}
+		\caption{Vitesse d'exécution d'un arbre rouge noir}
+	\end{figure}
+	\begin{table}[h]
+		\begin{tabular}{|l|c|c|}
+			\hline
+			Scénario & attendu & pire \\
+			\hline
+			Recherche & $\mathcal{O}(\log n)$ & $\mathcal{O}(\log n)$ \\ 
+			\hline
+			Insertion & $\mathcal{O}(\log n)$ & $\mathcal{O}(\log n)$ \\
+			\hline
+			Suppression & $\mathcal{O}(\log n)$ & $\mathcal{O}(\log n)$\\
+			\hline
+		\end{tabular}
+		\caption{Tableau récapitulatif}
+	\end{table}
+	
+	\subsection{La Skip-List}
+	\subsubsection*{Avantages}
+	\begin{itemize}
+		\item Rapidité d'exécution
+		\item Algorithme simple
+	\end{itemize}
+	\subsubsection*{Inconvénient}
+	\begin{itemize}
+		\item Non déterministe
+	\end{itemize}
+	\subsubsection*{Performances}
+	\begin{figure}[h]
+		\centering
+		\resizebox{\columnwidth}{!}{
+			\begin{tikzpicture}
+			\begin{axis} [
+			axis y line*=left,
+			ymin=0,ymax=10000,xmin=0,xmax=2000000,
+			ylabel=Temps en ms,
+			ylabel near ticks,
+			scaled x ticks={base 10:-3},
+			scaled y ticks={base 10:-3},
+			xlabel=Le nombre d élément,
+			legend pos=north east,
+			]
+			\addplot+[mark=none, blue] table [x=elem,y=sequence] {data/skiplist.dat};
+			\addplot+[mark=none, green] table [x=elem,y=random] {data/skiplist.dat};
+			
+			\addlegendentry{séquence}
+			\addlegendentry{random}
+			
+			\end{axis}
+			
+			\end{tikzpicture}
+		}
+		\caption{Vitesse d'exécution d'une skip-list}
+	\end{figure}
 	
 	\newpage
 	c
@@ -448,5 +687,7 @@
 		date = {25/02/2016},
 		url = {http://www.iro.umontreal.ca/~hamelsyl/SkipList.pdf},
 	}
+	
+	https://openclassrooms.com/courses/c-bien-choisir-ses-structures-de-donnees
 	
 \end{document} 
