@@ -6,11 +6,13 @@
 #include <limits.h>
 #include <time.h>
 
+//---------------BEGINStruct----------------
 typedef struct LinkList {
 	int key;
 	int value;
 	struct LinkList* forward;
 } LinkList;
+//---------------ENDStruct----------------
 
 LinkList* LL_init();
 void LL_free(LinkList** list);

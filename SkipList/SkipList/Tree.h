@@ -6,12 +6,14 @@
 #include <limits.h>
 #include <time.h>
 
+//---------------BEGINStruct----------------
 typedef struct Tree {
 	int key;
 	int value;
 	struct Tree* left;
 	struct Tree* right;
 } Tree;
+//---------------ENDStruct----------------
 
 Tree* TR_init();
 void TR_free(Tree** list);

@@ -172,9 +172,9 @@ int compareOne(int maxTest, int maxSize, double maxTime, int timedout, int** key
 	size_t memory = 0;
 
 	if ( timedout == 0 ) {
-		begin = clock();
 		timer = 0;
 		for (i = 0; i < maxTest; i++) {
+			begin = clock();
 			list = fctInit(a, p);
 			for (j = 0; j < maxSize; j++)
 				fctInsert(&list, keys[i][j], j);
@@ -197,6 +197,7 @@ int compareOne(int maxTest, int maxSize, double maxTime, int timedout, int** key
 }
 void compareAll(int maxTest, double maxTime, float p, int mode) {
 	int i, j, k, timeout[5] = { 0, 0, 0, 0, 0}, maxSize = 1, maxIteration = 32;
+	int a, b, c;
 	int** keys;
 
 	printf("%13s | %25s | %25s | %25s | %25s | %25s |\n", "operations", "SkipList         ", "HashTable        ", "BinaryTree         ", "RedBlackTree       ", "LinkList         ");
@@ -210,7 +211,17 @@ void compareAll(int maxTest, double maxTime, float p, int mode) {
 			switch (mode) {
 				case 1:	for (j = 0; j < maxSize; j++) keys[i][j] = j; break;
 				case 2:	for (j = 0; j < maxSize; j++) keys[i][j] = rand() % (j + 1); break;
-				case 3:	for (j = 0; j < maxSize; j++) keys[i][j] = rand() % maxSize; break;
+				case 3: {
+					for (j = 0; j < maxSize; j++) keys[i][j] = j;
+					for (j = 0; j < maxSize; j++) {
+						a = rand() % maxSize;
+						b = rand() % maxSize;
+						c = keys[i][a];
+						keys[i][a] = keys[i][b];
+						keys[i][b] = c;
+					}
+					break;
+				}
 			}
 		}
 
@@ -322,7 +333,6 @@ void drawAList(int maxSize, float p) {
 	SK_Print(list);
 	SK_free(&list);
 }
-
 double Percentile(long long tab[], int N, double pc) {
 	double n = (N - 1) * pc + 1;
 	int k = (int)n;

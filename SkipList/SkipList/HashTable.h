@@ -8,11 +8,13 @@
 
 #include "LinkList.h"
 
+//---------------BEGINStruct----------------
 typedef struct HashTable {
 	int size;
 	float ratio;
 	LinkList** table;
 } HashTable;
+//---------------ENDStruct----------------
 
 HashTable* HT_init(int size, float ratio);
 void HT_free(HashTable** list);
