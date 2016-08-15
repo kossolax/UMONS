@@ -14,6 +14,8 @@
 \usepackage{slashbox}
 \usepackage{pgfplots}
 \usepackage{pgfplotstable}
+\usepackage{siunitx}
+\usepackage{xcolor,colortbl}
 \makeatletter
 \pgfplotsset{
 	/tikz/min node/.style={
@@ -38,7 +40,7 @@
 }
 \usepackage[titletoc,title]{appendix}
 \lstset{language=C,rangeprefix=//---------------,rangesuffix=----------------,includerangemarker=false,columns=spaceflexible,extendedchars=true,showspaces=false,showstringspaces=false,inputencoding=ansinew,tabsize=4,frame=shadowbox,morecomment=[is]{\#ifdef}{\#endif},morecomment=[is]{/*}{*/}}
-\title{Lecture et rédaction scientifiques: \\Skip-lists }
+\title{ La skip-list }
 \author{Steve Zaretti}
 
 \begin{document}
@@ -49,14 +51,14 @@
 	\newpage
 	
 	\section{Introduction}
-	En informatique, il est courant de vouloir enregistrer des données quelconques. Une structure de données est une représentation logique de ces données. La manière de représenter les données permet de résoudre différents problèmes. Une structure précise peut être plus performante pour un cas précis ou, au contraire, être très peu performante. D’autre part, une meilleur organisation de l'information peut aussi réduire de façon significative la complexité d’un algorithme.
+	En informatique, il est courant de vouloir enregistrer des données quelconques. Une structure de données est une représentation logique de ces données. La manière de représenter les données permet de résoudre différents problèmes. Une structure précise peut être plus performante pour un cas précis ou, au contraire, être très peu performante. D’autre part, une meilleure organisation de l'information peut aussi réduire de façon significative la complexité d’un algorithme.
 	
 	Il existe un grand nombre de structures de données, toutes proposent aux concepteurs de logiciel deux fonctionnalités standards : enregistrer et récupérer un renseignement. Selon l’approche employée pour la représentation logique, les performances seront différentes. Certaines structures de données offrent la possibilité de récupérer le premier élément en temps constant, au détriment du temps d’accès aux autres éléments. Alors que d’autres permettent un accès en temps constant à chacun des éléments en dépit d’une durée plus longue pour l’enregistrement d'une information.
 	
-	\subsection{Liste chainée}
-	Une liste chainée \cref{LinkedList} est une structure de données de taille variable. Le principe est que chacun des éléments de cette liste contient une référence vers l'élément suivant. Cette pratique facilite l'insertion et la suppression des éléments, au détriment de la rapidité de la recherche.
+	\subsection{Liste chainée}\label{linkList}
+	Une liste chainée (\cref{LinkedList}) est une structure de données de taille variable. Le principe est que chacun des éléments de cette liste contient une référence vers l'élément suivant. Cette pratique facilite l'insertion et la suppression des éléments, au détriment de la rapidité de la recherche.
 	
-	Une liste chainée peut aussi être triée, ce qui inverse les conséquences sur ses performances. Une insertion devient plus compliquée, car il faut rechercher, avant tout, ou placer l'élément dans la liste afin de garder la structure cohérente.
+	Une liste chainée peut aussi être triée, ce qui porte des conséquences sur ses performances. Une insertion devient plus compliquée, car il faut rechercher, avant tout, où placer l'élément dans la liste afin de garder la structure cohérente.
 	
 	La recherche dans une liste chainée s'effectue élément par élément: si ce n'est pas le premier élément de la liste, il faut regarder le second. Si ce n'est pas celui-ci, il faut alors regarder celui d'après jusqu'à ce que l'élément recherché soit trouvé ou qu'il n'y ait pas d'élément suivant. Dans le cas d'une liste chainée croissante, la recherche peut s'arrêter plus tôt: si l'élément que l'on regarde est plus grand que celui qui est recherché.
 	
@@ -66,10 +68,12 @@
 		\label{LinkedList}
 	\end{figure}
 	
+	Par exemple dans la \cref{LinkedList}, pour rechercher l'élément contenant la valeur 6. La recherche commence par la gauche de la liste. 1 est plus petit que 6, il faut alors regarder l'élément suivant. 2, 3, et 5 sont toujours plus petits que 6, la recherche progresse élément par élément. Par contre, 8 est plus grand que 6. La recherche se termine, infructueuse.
+	
 	\subsubsection*{Les alternatives}
-	Il existe de nombreuses alternatives aux listes chainées pour trouver un élément plus rapidement: les tables de hashage \cref{hashing}, les arbres binaires \cref{tree}, etc. Mais certaines séquences d'insertions peuvent être catastrophiques. Par exemple, insérer des éléments croissants dans un arbre binaire provoque un rééquilibrage de l'arbre. En revanche, si les éléments sont insérés de façon aléatoire, l'équilibrage devient plus rare.
+	Il existe de nombreuses alternatives aux listes chainées pour trouver un élément plus rapidement: les tables de hachage (\cref{hashing}), les arbres binaires de recherche (\cref{tree}), etc. Mais certaines séquences d'insertions peuvent être catastrophiques. Par exemple, insérer des éléments croissants dans un arbre binaire de recherche provoque un rééquilibrage de l'arbre. En revanche, si les éléments sont insérés de façon aléatoire, l'équilibrage devient plus rare. Plus d'information dans la \cref{compare}.
 
-	Grâce aux probabilités, les \og skip-list \fg{} \cref{skip} bénéficient d'un atout majeur: aucune séquence ne peut provoquer systématiquement le pire scénario. Mieux encore, les skip-lists utilisent des algorithmes plus simples que ses concurrents.
+	Grâce aux probabilités, les \og skip-list \fg{} (\cref{skip}) bénéficient d'un atout majeur: il ne faut pas les rééquilibrer. Mieux encore, les skip-lists utilisent des algorithmes plus simples que ses concurrents.
 	
 	\begin{figure}[h]
 		\centering
@@ -77,7 +81,7 @@
 			\includegraphics[scale=0.75]{img/hashing}
 			\label{hashing}
 		}
-		\subfloat[Arbre binaire] {
+		\subfloat[Arbre binaire de recherche] {
 			\includegraphics[scale=0.75]{img/tree}
 			\label{tree}
 		}
@@ -91,29 +95,25 @@
 	
 	\newpage
 	\subsection{Skip-List}
+	Tout comme un dictionnaire, une skip-list permet de récupérer la définition d'un terme recherché \textit{(dit clé)}. Cette recherche est rapide, car les éléments \textit{(dit nœud)} présents dans un dictionnaire sont triés et il est possible de commencer une exploration à un endroit précis.
+	Une skip-list bénéficie des avantages de la liste chainée (\cref{linkList}), en limitant fortement ses inconvénients. Cette structure de données utilise les chaines de façon parallèle. Une fonction basée sur des probabilités permet de déterminer la hauteur de la chaine. Plus cette hauteur est élevée, moins la liste contient d'éléments. Une couche haute est donc un accès plus rapide vers des éléments plus loin dans la liste.
 	
-	
-	Tout comme un dictionnaire, une skip-list permet de récupérer la définition d'un terme recherché \textit{(dit clé)}. Cette recherche est rapide, car les éléments \textit{(dit nœud)} présents dans un dictionnaire sont triés et il est possible de commencer une exploration plus approfondie à un endroit précis.
-	Une skip-list bénéficie des avantages de la liste chainée, en limitant fortement ses inconvénients. Cette structure de données utilise les chaines de façon parallèle. Une fonction basée sur des probabilités permet de déterminer la hauteur de la chaine. Plus cette hauteur est élevée, moins la liste contient d'éléments. Une couche haute est donc un accès plus rapide vers des éléments plus loin dans la liste.
-	
-	
-	
-	Afin d'illustrer la skip-liste, il faut l'imaginer comme un réseau de transport en commun idéal où le temps d'attente des correspondances est nul. Un nœud dans la skip-liste est un arrêt obligatoire dans lequel un passager peut changer de moyen de locomotion. La couche la plus basse dans la skip-liste peut-être interprétée comme un bus. Il s'arrête à chacun de ses arrêts prévus, son temps de parcours est très lent. La couche n\degree2, plus rapide, est un métro. La couche n\degree3, un train. Si un passager souhaite aller voir un concert à Bruxelles alors qu'il est à la gare de Charleroi, il ne va pas faire le trajet en bus. Il est tout naturel et plus rapide dans ce cas de prendre dans un premier temps le train, puis le métro afin qu'il se rapproche le plus près possible du concert. Si le dernier arrêt de métro n'a pas permis d'accéder à la salle du concert, seulement dans ce cas le passager doit emprunter le bus.
-	
-	\begin{figure}[h!]
+	\begin{figure}[h]
 		\includegraphics[width=\textwidth]{img/metaphore}
-		\caption{Métaphore d'une skip-liste par un réseau de transport en commun}
+		\caption{Métaphore d'une skip-list par un réseau de transport en commun}
 		\label{skip-meta}
 	\end{figure}
 	
-	\subsubsection*{Définition}
-	La hauteur maximale d'une skip-list est définie lors de sa création. Bien qu'il n'y ait pas de taille maximale d'une skip-list, il est conseillé d'utiliser $log_2(n)$ où $n$ est le nombre d'éléments théoriques présents dans la liste.
+	Afin d'illustrer la skip-list, il faut l'imaginer comme un réseau de transport en commun idéal où le temps d'attente des correspondances est nul. Un nœud dans la skip-list est un arrêt obligatoire dans lequel un passager peut changer de moyen de locomotion. La couche la plus basse dans la skip-list peut-être interprétée comme un bus. Il s'arrête à chacun de ses arrêts prévus, son temps de parcours est très lent. La couche n\degree2, plus rapide, est un métro. La couche n\degree3, un train. Si un passager souhaite aller voir un concert à Bruxelles alors qu'il est à la gare de Charleroi, il ne va pas faire le trajet en bus. Il est tout naturel et plus rapide dans ce cas de prendre dans un premier temps le train, puis le métro afin qu'il se rapproche le plus près possible du concert. Si le dernier arrêt de métro n'a pas permis d'accéder à la salle du concert, seulement dans ce cas le passager doit emprunter le bus.
 	
-	L'insertion dans la liste utilise une fonction basée sur la probabilité $p$ afin de définir sa hauteur maximale. Si $p$ vaut $\frac{1}{2}$, ça signifie que le nœud a une probabilité de $\frac{1}{2}$ d'être de hauteur 2, et a une probabilité $\frac{1}{4}$ d'être de hauteur 3. Un nœuds de hauteur $h$ possède $h$ pointeur. Un nœud de hauteur 3 a donc un accès au nœud suivant de hauteur 3, ainsi que celui de hauteur 2 et 1.
+	\subsubsection*{Définition}
+	La hauteur maximale d'une skip-list est définie lors de sa création. Si $p=\frac{1}{2}$, il est conseillé d'utiliser $log_2(n)$ où $n$ est le nombre d'éléments théoriques présents dans la liste (voir \cref{perf}).
+	
+	L'insertion dans la liste utilise une fonction basée sur la probabilité $p$ afin de définir sa hauteur maximale. Si $p$ vaut $\frac{1}{2}$, ça signifie que le nœud a une probabilité de $\frac{1}{2}$ d'être de niveau 1, et a une probabilité $\frac{1}{2}$ d'être plus haut que 1. Un nœud de hauteur $h$ possède $h$ pointeur. Un nœud de hauteur 3 a donc un accès au nœud suivant de hauteur 3, ainsi que celui de hauteur 2 et 1.
 	
 	En raison des probabilités, les nœuds supérieurs possèdent un pointeur vers un nœud plus avancé dans la liste. Une couche supérieure est donc une voie plus rapide. Ainsi, la couche la plus haute contient les plus grands sauts, et la couche la plus basse permet d'accéder à chacun des éléments.
 		
-	Le parcours d'une skip-list se fait de haut en bas, et de gauche à droite. Si la clé de l'élément suivant sur une couche est plus grande que celle qu'on recherche, celle-ci continue sur une voie inférieure.	
+	Le parcours d'une skip-list se fait de haut en bas, et de gauche à droite. Si la clé de l'élément suivant sur une couche est plus grande que celle qu'on recherche, celle-ci continue sur une voie inférieure. (Voir \cref{SkipSearch1} et \cref{SkipSearch2} )	
 	
 	\begin{figure}[h]
 		\includegraphics[width=\textwidth]{img/struct}
@@ -122,27 +122,27 @@
 	\end{figure}
 	
 	\subsection{La hauteur}
-	La notion de hauteur est très importante dans une skip-liste. En effet, celle-ci permet de définir à combien de nœuds un élément est attaché. Si trop d'éléments possèdent la même hauteur, la recherche devient trop lente.	Cette méthode est définie à l'aide d'une fonction aléatoire. La hauteur ne dépend ni de la clé de l'élément ni de sa valeur. La fonction aléatoire doit être définie pour qu'un élément de hauteur $h$ possède le double de probabilités qu'un élément de hauteur $h+1$. Ainsi, si un nœud de hauteur 1 a une probabilité $p$ de $0.5$ alors le niveau 2 a une probabilité de $0.25$.
+	La notion de hauteur est très importante dans une skip-list. En effet, celle-ci permet de définir à combien de nœuds un élément est attaché. Si trop d'éléments possèdent la même hauteur, la recherche devient trop lente.	Cette hauteur est définie à l'aide d'une fonction aléatoire. Celle-ci ne dépend ni de la clé de l'élément ni de sa valeur. Dans le cas où $p=\frac{1}{2}$, la fonction aléatoire doit être définie pour qu'un élément de hauteur $h$ possède le double de probabilités qu'un élément de hauteur $h+1$. Ainsi, si un nœud de hauteur 1 a une probabilité $p$ de $0.5$ alors le niveau 2 a une probabilité de $0.25$.
 		
 	\newpage
 	\section{Les algorithmes}
-	Une skip-list a besoin d'avoir un pointeur vers sa tête $(node* head)$. La liste doit connaitre le nombre de niveaux actuellement utilisés $(level)$. Selon les implémentations, il est possible de définir un nombre de couches maximal $(levelMAX)$. Il est aussi possible de changer le paramètre $(p)$ de probabilité de création d'une nouvelle couche. La variation de ces deux derniers paramètres est étudiée dans le chapitre \nameref{perf}.
+	Une skip-list a besoin d'avoir un pointeur vers sa tête. La liste doit connaitre le nombre de niveaux actuellement utilisés $(level)$. Selon les implémentations, il est possible de définir la hauteur maximale $(levelMAX)$. Il est aussi possible de changer le paramètre $(p)$ de probabilité de création d'une nouvelle couche. La variation de ces deux derniers paramètres est étudiée dans le chapitre \nameref{perf}.
 	Un nœud contient une clé $key$ , une valeur $value$ ainsi qu'un tableau de pointeur vers les nœuds suivants $forward$. Il n'est pas nécessaire d'enregistrer la hauteur d'un nœud dans celui-ci.
 	\lstinputlisting[linerange=BEGINSKStruct-ENDSKStruct]{SkipList/SkipList.h}
 	
 	L'initiation se fait de la manière suivante:
 	\begin{itemize}
-		\item La hauteur maximale est déterminée par le nombre d'éléments totaux $(n)$ présents dans la liste. Pour des questions de rapidité, la valeur $log_2(n)$ est recommandée.
-		\item Création d'un élément $NIL$ possédant une clé plus grande que le maximum autorisé. Cette élément est aussi appelé \textit{élément bidon}.
-		\item Définitions de ses pointeurs $forward$ vers lui-même.
+		\item La hauteur maximale est déterminée par le nombre d'éléments totaux $(n)$ présents dans la liste. Pour des questions de rapidité, la valeur $log_\frac{1}{p}(n)$ est recommandée.
+		\item Création d'un élément $NIL$ possédant une clé plus grande que le maximum autorisé. Cet élément est aussi appelé \textit{élément bidon}.
+		\item Définition de ses pointeurs $forward$ vers lui-même.
 		\item Le nombre de voies actuelles est fixé à 1.
 		\item Le pointeur de tête est défini par cet élément $NIL$.
 	\end{itemize}
-	\emph{La création d'une skip-liste en langage C figure en annexe \ref{SKInit}.}
+	\emph{La création d'une skip-list en langage C figure en annexe \ref{SKInit}.}
 	
 	\begin{figure}[h]
-		\includegraphics{img/init}
-		\caption{Initialisation d'une skip-liste}
+		\includegraphics[scale=0.95]{img/init}
+		\caption{Initialisation d'une skip-list}
 		\label{SkipInit}
 	\end{figure}
 	
@@ -153,17 +153,19 @@
 	Algorithmiquement parlant, La recherche d'un élément s'exécute de la façon suivante:
 	\begin{enumerate}
 		\item Commencer l'exploration de la liste par l'élément en tête, et se positionner sur la plus haute voie.
-		\item Sur la voie actuelle, regarder la clé de l'élément suivant.
-		\item Si elle est plus grande et qu'il existe une voie inférieure, descendre d'une voie.
-		\item Sinon aller en 2.
+		\item Sur la voie actuelle, notre clé est-elle plus grande que celle de l'élément suivant?
+		\item Si oui, se positionner sur cet élément et retourner en 2.
+		\item Si non, existe-t-il une voie inférieure?
+		\subitem Si oui, descendre d'une voie et retourner en 2. 
+		\subitem S'il n'existe pas de voie inférieure, continuer en 5.
+		\subitem
 		\item Si la clé de l'élément suivant correspond à celle qui est recherchée: l'élément a été trouvé.
 		\item Sinon, l'élément n'a pas été trouvé.
 	\end{enumerate}
 	
 	\emph{L'algorithme écrit en langage C figure en annexe \ref{SKSearch}.}
 	
-	\subsubsection*{Exemples}	
-	\paragraph*{Comment rechercher l'élément 8 dans \cref{SkipSearch1}?}
+	\paragraph*{Comment rechercher l'élément 8 dans l'exemple de la \cref{SkipSearch1}?}
 	\begin{itemize}
 		\item Se positionner sur la couche la plus haute: La 4ème voie.
 		\item 8 est-il plus grand que 2 ? Oui, se positionner sur le nœud 2.
@@ -176,12 +178,12 @@
 	\end{itemize}
 	\begin{figure}[h]
 		\includegraphics[width=\textwidth]{img/search}
-		\caption{Recherche de l'élément 8 dans une skip-liste}
+		\caption{Recherche de l'élément 8 dans une skip-list}
 		\label{SkipSearch1}
 	\end{figure}
 	
 	\newpage
-	\paragraph*{Comment rechercher l'élément 9 dans \cref{SkipSearch2}?}
+	\paragraph*{Comment rechercher l'élément 8 dans \cref{SkipSearch2}?}
 	
 	\begin{itemize}
 		\item Se positionner sur la couche la plus haute: La 4ème voie.
@@ -195,65 +197,49 @@
 	\end{itemize}
 	\begin{figure}[h]
 		\includegraphics[width=\textwidth]{img/search2}
-		\caption{Recherche de l'élément 9 dans une skip-liste}
+		\caption{Recherche de l'élément 8 dans une skip-list}
 		\label{SkipSearch2}
 	\end{figure}
 	
 	
 	\newpage
 	\subsection{L'insertion}
-	L'insertion d'une entrée dans une skip-list est essentiellement la même chose que la recherche. A l'exception qu'un tableau $update$, de taille identique à la hauteur de la liste, est utilisé pour mémoriser les pointeurs de chaque élément avant de descendre d'un niveau. Ce tableau est utilisé pour mettre à jour les liens nécessaires pour que la structure de donnée reste cohérente.
+	L'insertion d'une entrée dans une skip-list est essentiellement la même chose que la recherche. À l'exception qu'un tableau $update$, de taille identique à la hauteur de la liste, est utilisé pour mémoriser les pointeurs de chaque élément avant de descendre d'un niveau. Ce tableau est utilisé pour mettre à jour les liens nécessaires pour que la structure de données reste cohérente.
 	
-	Algorithmiquement parlant, l'insertion d'un élément dans une skip-liste s'effectue de la façon suivante:
+	Algorithmiquement parlant, l'insertion d'un élément dans une skip-list s'effectue de la façon suivante:
+	
 	\begin{enumerate}
 		\item Commencer l'exploration de la liste par l'élément en tête, et se positionner sur la plus haute voie.
-		\item Sur la voie actuelle, regarder la clé de l'élément suivant.
-		\item Si elle est plus grande et qu'il existe une voie inférieure, marquer ce pointeur. Puis, descendre d'une voie.
-		\item Sinon aller en 2.
+		\item Sur la voie actuelle, notre clé est-elle plus grande que celle de l'élément suivant?
+		\item Si oui, se positionner sur cet élément et retourner en 2.
+		\item Si non, existe une voie inférieure? 
+		\subitem Si oui, marquer ce pointeur, descendre d'une voie et retourner en 2.
+		\subitem Si non, continuer en 5.
+		\subitem 
 		\item Si la clé de l'élément suivant correspond à celle qui est recherchée: modifier la valeur de l'élément par celle de la valeur à insérer. \textbf{FIN}.
-		\item Sinon, appeler la fonction de probabilité pour récupérer sa valeur $n$.
-		\item Si $n$ est plus grand que la hauteur $h$ de la liste, mettre à jour les pointeurs supérieurs à $h$ vers $NIL$. Ensuite, définir la hauteur maximum actuelle $h$ à $n$.
+		\item Sinon, appeler la fonction de probabilité pour récupérer le niveau $n$.
+		
+		\item Si $n$ est plus grand que la hauteur $h$ de la liste: mettre à jour les pointeurs supérieurs marqués à $h$ vers $NIL$. Ensuite, définir la hauteur maximum actuelle $h$ à $n$.
 		\item Créer le nœud $x$ de hauteur $n$.
-		\item Pour chaque voie de $1$ à $n$.
-		\item Mettre à jour les pointeurs de $x$ vers l'élément suivant de l'élément marqué de cette voie.
-		\item Mettre à jour les pointeurs de l'élément marqué de cette voie vers $x$.
+		
+		\item Pour toutes les voies plus petites ou égales à $n$.
+		\subitem  Mettre à jour les pointeurs de $x$ vers l'élément suivant de l'élément marqué. Modifier les pointeurs de l'élément marqué vers $x$.
+		
 		\item \textbf{FIN}.
 	\end{enumerate}
 	\emph{L'algorithme écrit en langage C est présenté en annexe \ref{SKInsert}.}
 	
 	\newpage
-	\subsubsection*{Exemples}	
-	\paragraph*{Comment insérer l'élément 8 dans \cref{SkipInsert1}?}
-	\begin{itemize}
-		\item Se positionner sur la couche la plus haute: La 4ème voie.
-		\item 8 est-il plus grand que 2 ? Oui, se positionner sur le nœud 2.
-		\item 8 est-il plus grand que $+\infty$ \textit{(NIL)}? Enregistrer ce lien en mémoire, puis descendre sur la 3ème voie.
-		\item 8 est-il plus grand que 13  ? Enregistrer ce lien en mémoire, puis descendre sur la 2ème voie.
-		\item 8 est-il plus grand que 5 ? Oui, se positionner sur le nœud 5.
-		\item 8 est-il plus grand que 13 ? Enregistrer ce lien en mémoire, puis descendre sur la 1ère voie.
-		\item 8 est-il plus grand que 8 ? Enregistrer ce lien en mémoire, Il n'existe pas de voie plus basse.
-		\item 5 est le dernier nœud parcouru. L'élément suivant sur la voie 1 est 8. 8 est-il l'élément recherché? Non, on crée un nouvel élément. Générer une hauteur aléatoire: hauteur 1.
-		\item Ajouter un lien du nouvel élément 8 en voie 1. Ce lien doit pointer vers l'élément du lien enregistré à cette même voie. Il s'agit de l'élément 13.
-		\item Modifier ce lien enregistré en voie 1 (de l'élément 5 vers l'élément 13) pour qu'il pointe vers ce nouvel élément 8.
-		\item FIN.
-	\end{itemize}
-	\begin{figure}[h]
-		\includegraphics[width=\textwidth]{img/insert}
-		\caption{Insertion dans une skip-liste}
-		\label{SkipInsert1}
-	\end{figure}
-	
-	\newpage
-	\paragraph*{Comment insérer l'élément 5 dans \cref{SkipInsert1}?}
+	\paragraph*{Comment insérer l'élément 5 dans \cref{SkipInsert2}?}
 	\begin{itemize}
 		\item Se positionner sur la couche la plus haute: La 4ème voie.
 		\item 5 est-il plus grand que 2 ? Oui, se positionner sur le nœud 2.
-		\item 5 est-il plus grand que $+\infty$ \textit{(NIL)}? Enregistrer ce lien en mémoire, puis descendre sur la 3ème voie.
-		\item 5 est-il plus grand que 13 ? Enregistrer ce lien en mémoire, puis descendre sur la 2ème voie.
-		\item 5 est-il plus grand que 13 ? Enregistrer ce lien en mémoire, puis descendre sur la 1ère voie.
+		\item 5 est-il plus grand que $+\infty$ \textit{(NIL)}? Non, enregistrer ce lien en mémoire, puis descendre sur la 3ème voie.
+		\item 5 est-il plus grand que 13 ? Non, enregistrer ce lien en mémoire, puis descendre sur la 2ème voie.
+		\item 5 est-il plus grand que 13 ? Non, enregistrer ce lien en mémoire, puis descendre sur la 1ère voie.
 		\item 5 est-il plus grand que 3 ? Oui, se positionner sur le nœud 3.
-		\item 5 est-il plus grand que 8 ? Enregistrer ce lien en mémoire, Il n'existe a pas de voie plus basse.
-		\item 5 est le dernier nœud parcouru. L'élément suivant sur la voie 1 est 8. 8 est-il l'élément recherché? Non, on crée un nouvel élément. Générer une hauteur aléatoire: hauteur 2.
+		\item 5 est-il plus grand que 8 ? Non, enregistrer ce lien en mémoire, Il n'existe a pas de voie plus basse.
+		\item 5 est le dernier nœud parcouru. L'élément suivant sur la voie 1 est 8. Est-il l'élément recherché? Non, on crée un nouvel élément. Générer une hauteur aléatoire: hauteur 2.
 		\item Ajouter un lien du nouvel élément 5 en voie 1. Ce lien doit pointer vers l'élément du lien enregistré à cette même voie. Il s'agit de l'élément 8.
 		\item Modifier ce lien enregistré en voie 1 (de l'élément 3 vers l'élément 8) pour qu'il pointe vers ce nouvel élément 5.
 		\item Ajouter un lien du nouvel élément 5 en voie 2. Ce lien doit pointer vers l'élément du lien enregistré à cette même voie. Il s'agit de l'élément 13.
@@ -262,33 +248,54 @@
 	\end{itemize}
 	\begin{figure}[h]
 		\includegraphics[width=\textwidth]{img/insert2}
-		\caption{Insertion dans une skip-liste}
+		\caption{Insertion dans une skip-list}
 		\label{SkipInsert2}
 	\end{figure}
 	
 	\newpage
 	\subsection{La suppression}
-	La suppression d'un élément dans une skip-liste s'effectue de la façon suivante:
+	La suppression d'un élément dans une skip-list s'effectue de la façon suivante:
 	\begin{enumerate}
 		\item Commencer l'exploration de la liste par l'élément en tête, et se positionner sur la plus haute voie.
-		\item Sur la voie actuelle, regarder la clé de l'élément suivant.
-		\item Si elle est plus grande et qu'il existe une voie inférieure, marquer ce nœud. Puis, descendre d'une voie.
-		\item Sinon aller en 2.
+		\item Sur la voie actuelle, notre clé est-elle plus grande que celle de l'élément suivant?
+		\item Si oui, se positionner sur cet élément et retourner en 2.
+		\item Si non, existe une voie inférieure? 
+		\subitem Si oui, marquer ce pointeur, descendre d'une voie et retourner en 2.
+		\subitem Si non, continuer en 5.
+		\subitem 
 		\item Si la clé de l'élément suivant ne correspond pas à celle qui est recherchée, \textbf{FIN}.
-		\item Sinon pour chaque niveau de l'élément trouvé $x$, mettre à jour les pointeurs de l'élément marqué de cette voie vers l'élément suivant de $x$.
-		\item Supprimer $x$.
-		\item Si l'élément de tête de la hauteur actuelle de la liste pointe vers $NIL$, diminuer la hauteur actuelle de la liste de 1.
-		\item Sinon, \textbf{FIN}.
-		\item Si la hauteur est plus grande que 1, aller en 8.
+		\item Pour toutes les voies plus petites ou égales à $n$.
+		\subitem  Mettre à jour les pointeurs marqués vers l'élément suivant de l'élément trouvé.	
+		\item Supprimer l'élément trouvé.
+		\item Si l'élément de tête de la hauteur actuelle de la liste pointe vers $NIL$, diminuer la hauteur actuelle de la liste de 1. Répéter l'opération si possible.
+		\item \textbf{FIN}.
 	\end{enumerate}
 	\emph{L'algorithme écrit en langage C figure en annexe \ref{SKDelete}.}
-	\begin{center}
+	
+	\newpage
+	\paragraph*{Comment supprimer l'élément 5 dans la \cref{SkipDelete}?}
+	\begin{itemize}
+		\item Se positionner sur la couche la plus haute: La 4ème voie.
+		\item 5 est-il plus grand que 5? Non, enregistrer ce lien en mémoire, puis descendre sur la 3ème voie.
+		\item 5 est-il plus grand que 2 ? Oui, se positionner sur le nœud 2.
+		\item 5 est-il plus grand que 5? Non, enregistrer ce lien en mémoire, puis descendre sur la 2ème voie.
+		\item 5 est-il plus grand que 5? Non, enregistrer ce lien en mémoire, puis descendre sur la 1ière voie.
+		\item 5 est-il plus grand que 3 ? Oui, se positionner sur le nœud 3.
+		\item 5 est-il plus grand que 5 ? Non, enregistrer ce lien en mémoire, Il n'existe a pas de voie plus basse.
+		\item35 est le dernier nœud parcouru. L'élément suivant sur la voie 1 est 5. Est-il l'élément recherché? Oui, mettre à jour les pointeurs enregistrés sur les voies 4 et 3 vers NIL. Mettre à jour les pointeurs enregistrés sur les voies 2 et 1 vers le nœud 13.
+		\item Supprimer l'élément 5.
+		\item Diminuer la hauteur actuelle de la liste à 3 car la voie 4 pointes vers $NIL$.
+		\item FIN.
+	\end{itemize}
+	\begin{figure}[h]
 		\includegraphics[width=\textwidth]{img/delete}
-	\end{center}
+		\caption{Suppression de l'élément 5 dans une skip-list}
+		\label{SkipDelete}
+	\end{figure}
 	
 	\newpage
 	\section{Analyse des performances}\label{perf}
-	La caractéristique majeure de la skip-list est l'aléatoire. L'insertion d'un élément nouveau utilise une hauteur qui est déterminée par le hasard. De ce fait, une même séquence produira une liste différente. Cela a comme conséquence qu'aucune séquence prédéterminée de nombres ne peut produire une dégradation des performances, contrairement aux arbres binaires qui eux doivent être constamment rééquilibrés.
+	La caractéristique majeure de la skip-list est l'aléatoire. L'insertion d'un élément nouveau utilise une hauteur qui est déterminée par le hasard. De ce fait, une même séquence produira une liste différente.
 	
 	De par sa nature probabiliste, on suppose que l'utilisateur n'aura pas un comportement à vouloir dégénérer volontairement la liste. C'est-à-dire que les performances peuvent être dégradées en retirant consciemment les éléments après avoir inspecté leur hauteur. Si l'utilisateur supprime tous les nœuds de hauteur $h>1$, le pire scénario de la skip-list équivaut à une liste chainée classique.
 	
@@ -296,40 +303,63 @@
 	
 	
 	\subsection{Analyse pour $p=\frac{1}{2}$}
-	Pour une variable aléatoire $p=\frac{1}{2}$ et une skip-list de taille infinie, celle-ci tend à ce que chacun des niveaux possèdent $\frac{1}{2}$ moins d'éléments. Ainsi, le niveau 1 contient $n$ élément, le niveau 2 $\frac{n}{2}$, le niveau 3 $\frac{n}{4}$, ..., un élément à hauteur $h$: $\frac{n}{{2}^{h-1}}$. Par conséquent, le nombre total de liens dans une skip-list équivaut à \[n+\frac{n}{2}+\frac{n}{4}+\frac{n}{8}+\dots = \sum_{h=1}^{+\infty}\frac{n}{{2}^{h-1}}=2n\] Ce qui signifie qu'en moyenne un élément dans une skip-list possède 2 liens. Vu que la recherche se fait de haut en bas et de gauche à droite, chaque clé examinée à un niveau précis ($i$) ne peut pas appartenir à un niveau supérieur ($i+1$).
-	De ce fait, on peut déduire qu'en moyenne le nombre de fois que l'on avance dans la liste à un niveau précis équivaut au nombre de liens divisé par le nombre d'éléments, soit $\frac{2n}{n}=2$.
+	Pour une variable aléatoire $p=\frac{1}{2}$ et une skip-list de taille infinie, celle-ci tend à ce que chacun des niveaux possède $\frac{1}{2}$ moins d'éléments. Ainsi, le niveau 1 contient $n$ élément, le niveau 2 $\frac{n}{2}$, le niveau 3 $\frac{n}{4}$, ..., un élément à hauteur $h$: $\frac{n}{{2}^{h-1}}$.
+	
+	Par conséquent, le nombre total de liens dans une skip-list équivaut à: \[n+\frac{n}{2}+\frac{n}{4}+\frac{n}{8}+\dots = \sum_{h=1}^{+\infty}\frac{n}{{2}^{h-1}}=2n\] Ce qui signifie qu'en moyenne un élément dans une skip-list possède 2 liens. On peut donc déduire qu'en moyenne le nombre de fois que l'on avance dans la liste à un niveau précis équivaut au nombre de liens divisé par le nombre d'éléments, soit $\frac{2n}{n}=2$. En effet, chaque nœud examiné à un niveau $i$, ne peut pas appartenir à un niveau $i+1$. Pour chaque clé apparaissant au niveau $i$, la probabilité qu'elles n'apparaissent pas au niveau $i+1$ est $\frac{1}{2}$. En d'autres mots, si le niveau $i$ contient $k$ éléments. Le niveau $i+1$ en contiendra $k*p$ éléments.
 	
 	\newpage
-	La probabilité qu'un élément soit de hauteur $i$ est de ${p^{i}} = \frac{1}{2^{i}} $. Le facteur $p$ est constant ($\frac{1}{2}$), la probabilité de la hauteur des clés est équiprobable. Si l'on additionne la probabilité de hauteur chacune des clés de la skip-list, et que l'on prend $h$ comme hauteur de la liste, on déduit la formule suivante.
+	La probabilité qu'un élément soit de hauteur $i$ est de ${p^{i-1}*(1-p)} = \frac{1}{2^{i}} $. Le facteur $p$ est constant ($\frac{1}{2}$), la probabilité de la hauteur des clés est équiprobable. Si l'on additionne la probabilité de hauteur chacune des clés de la skip-list, et que l'on prend $h$ comme hauteur de la liste, on déduit la formule suivante.
 	\[
 		\frac{1}{{2}^{1}}+\frac{1}{{2}^{2}}+\frac{1}{{2}^{3}}+\dots+\frac{1}{{2}^{h}}
 		= \sum _{i=1}^{h} ({\frac{1}{2}})^{i}
 	\]
-	Cette hauteur, il est possible de l'estimer. Si $h$ tend vers l'infini, la série converge vers 1. Ce qui a comme conséquence:
 	\[
-		n{(\frac{1}{2})}^{h} = 1
-		\iff {(\frac{1}{2})}^{h}=\frac{1}{n}
+		\sum _{i=1}^{\infty} ({\frac{1}{2}})^{i} = \frac{1}{2} + \frac{1}{4} + \frac{1}{8} + \frac{1}{16} + ... = 1
+	\]
+	
+	Il est possible d'estimer cette hauteur. Si $h$ tend vers l'infini, la série converge vers 1. Il est donc possible de rechercher une hauteur moyenne à laquelle il n'y a plus d'élément. Posons alors $h$ tel que ${(\frac{1}{2})}^h*n = 1$. 
+
+	\[
+		{(\frac{1}{2})}^{h}=\frac{1}{n}
 		\iff h = \log_{\frac{1}{2}}(\frac{1}{n})
 		\iff h = \log_{2}(n)
 	\]
 	
-	L'algorithme de recherche effectue possède 2 boucles imbriquées. La boucle la plus profonde permet d'avancer de gauche à droite dans la liste. Pour $p=\frac{1}{2}$, en moyenne celle-ci avance de $2$. La boucle supérieure quant à elle varie selon la hauteur de la liste. La hauteur est estimée, avec une forte probabilité, à $\log_{2} n $. Si l'on combine les 2 estimations, nous avons donc une forte probabilité que la recherche s'effectue en $\log_{2}( 2n )$ opérations, soit $\mathcal{O}(log(n))$.
+	L'algorithme de recherche possède 2 boucles imbriquées. La boucle la plus profonde permet d'avancer de gauche à droite dans la liste. Pour $p=\frac{1}{2}$, en moyenne celle-ci avance de $2$. La boucle supérieure quant à elle varie selon la hauteur de la liste. La hauteur est estimée, avec une forte probabilité, à $\log_{2} n $. Si l'on combine les 2 estimations, nous avons donc une forte probabilité que la recherche s'effectue en $\log_{2}( 2n )$ opérations, soit $\mathcal{O}(log(n))$.
+	
+	\subsection{Forte probabilité}
+	La recherche pour $p=\frac{1}{2}$ s'effectue avec une forte probabilité en $\mathcal{O}(log(n))$. Mais cette valeur de "forte probabilité", quelle est-elle? Il est possible de le théoriser en posant des valeurs. Posons donc $\mathcal{O}(3log(n))$ comme temps de recherche maximum acceptable et calculons sa probabilité $P$ pour $n$ éléments.
+	\[
+		P \le {\frac{n}{2}}^{i}
+		\longrightarrow P \le {\frac{n}{2}}^{log_2(n)} = 1
+		\longrightarrow P \le {\frac{n}{2}}^{3log_2(n)} = \frac{1}{n^2}
+	\]
+	Ce qui signifie que si $n=1000$, il y a une probabilité d'une chance sur un million que la hauteur de la liste soit plus grande que prévu. De façon plus générale pour n'importe quelle constance $c>1$, $h$ est plus grand que $c log_2(n)$ est d'au plus $\frac{1}{n^{c-1}}$. Alors que la probabilité que  $h$ soit plus petit que $c log_2(n)$ est de $1-\frac{1}{n^{c-1}}$. Par conséquent, la hauteur d'une skip-list est définie avec une forte probabilité en $\log_{2}(n)$.
 	
 	
-	\subsection{Généralisation}
-	
-	Le raisonnement utilisé précédemment pour $p=\frac{1}{2}$ reste valable quelle que soit la valeur de $p$, voir \cref{recap}. Le raisonnement qui effectue une sommation servant au calcul de lien dans une liste convergera vers $\frac{n}{p}$. Par contre, la somme des probabilités ($p^1 + p^2 + p^3 + ... + p^k$), converge toujours vers $\frac{p}{1-p}$. 
-	 	
+	\subsection{La hauteur}
+	 Afin de calculer la probabilité qu'un nœud atteint un niveau précis $i$, il faut prendre un autre exemple que $p=\frac{1}{2}$. Avec $\frac{1}{4}$, nous pouvons calculé son niveau de cette façon: ${p^{i-1}*(1-p)} = \frac{1}{{4}^{i-1}}*(1-\frac{1}{4}) $. Ainsi, la fonction "getRandomLevel" de la skip-list peut être illustrée de cette façon.
+	 
+	 \begin{figure}[h]
+	 	\includegraphics[width=\textwidth]{img/probatree}
+	 	\caption{Arbre de probabilité}
+	 	\label{ProbaTree}
+	 \end{figure}
+	 
+	 \subsection{Généralisation}
+	 Le raisonnement utilisé précédemment pour $p=\frac{1}{2}$ reste valable, quelle que soit la valeur de $p$, voir \cref{recap}. Le raisonnement qui effectue une sommation servant au calcul de lien dans une liste convergera vers $\frac{n}{p}$. Par contre, la somme des probabilités ($p^1 + p^2 + p^3 + ... + p^k$), converge toujours vers $\frac{p}{1-p}$ si $p<1$. 
+	 
+	 
 	 \begin{table}[h]
 	 \begin{tabular}{|l|c|c|}
 	 	\hline
 	 	Scénario & attendu & pire \\
 	 	\hline
-	 	Nombre d'élément & $n$ & $n$ \\ 
+	 	Nombre d'éléments & $n$ & $n$ \\ 
 	 	\hline
-	 	Hauteur & $log_{\frac{1}{p}} n$ & $\infty$ \\ 
+	 	Hauteur & $log_{\frac{1}{p}} n$ & $\infty$\footnotemark  \\ 
 	 	\hline
-	 	Nombre de lien & $n/p$ & $n*h$ \\ 
+	 	Nombre de liens & $n/p$ & $n*h$ \\ 
 	 	\hline
 	 	Recherche & $\mathcal{O}(\log n)$ & $\mathcal{O}(n)$ \\ 
 	 	\hline
@@ -340,18 +370,17 @@
 	 \end{tabular}
 	 \caption{Tableau récapitulatif}
 	 \label{recap}
+	 
 	 \end{table}
 	 
-	 \subsubsection*{Le pire cas}
+	\footnotetext{Les ordinateurs ne possèdent pas une mémoire infinie. C'est pourquoi à la création d'une skip-list, la hauteur maximale est bornée par la formule du cas attendu. Par conséquent, il est impossible d'avoir une hauteur infinie. }
 	 	
-	 Les ordinateurs ne possèdent pas une mémoire infinie. Par conséquent, il est impossible d'ajouter une infinité d'éléments. C'est pourquoi à la création d'une skip-list, la hauteur maximale est bornée par la formule du cas attendu avec une forte probabilité. Le pire scénario de hauteur infinie est donc impossible. Dans le cas très improbable que chacun des éléments de la skip-list soit à cette hauteur maximale, nous avons une recherche en $n*h$: soit $\mathcal{O}(n)$. 
-	 	
-	 De façon générale, avec une constance $c>1$ $h$ est plus grande que $c log n$ avec une probabilité d'au plus $\frac{1}{n^{c-1}}$. En d'autres mots, la probabilité que $h$ soit plus petit que $c log n$ est d'au moins $1-\frac{1}{n^{c-1}}$. Par conséquent, avec une forte probabilité, la hauteur d'une skip-liste est bien d'ordre $\mathcal{O}(log n)$. Par exemple: si $n=1000$, la probabilité est d'une sur un million.
+	 
 	
-	
+	\newpage
 	\subsection{Expérimentation}
 	
-	Les expérimentations suivantes ont été réalisées sur un ordinateur Windows 10 64 bits possédant un AMD FX 8350 et 16Gb de RAM. Les tests ont été lancés $10^5$ fois, les résultats présentés sont la moyenne de tous les tests. Les très légères différences avec les résultats attendu peuvent s'expliquer par la façon dont un ordinateur génère des nombres aléatoires. On parle d'ailleurs de nombre "pseudo" aléatoire.
+	Les expérimentations suivantes ont été réalisées sur un ordinateur Windows 10 64 bits possédant un AMD FX 8350 et 16Gb de RAM. Les tests ont été lancés $10^5$ fois, les résultats présentés sont la moyenne de tous les tests. Les très légères différences avec les résultats attendus peuvent s'expliquer par la façon dont un ordinateur génère des nombres aléatoires. On parle d'ailleurs de nombre "pseudo" aléatoire.
 	
 	L'algorithme utilisé pour générer les nombres aléatoires dans ces tests est \textit{xoroshiro128+}. Il a été développé par David Blackman et Sebastiano Vigna. Il s'agit de l'algorithme le plus rapide aujourd'hui. Il est intéressant d'utiliser un générateur rapide afin de déterminer la hauteur d'un élément de la skip-list. L'utilisation de la fonction \textit{rand} de \textit{stdlib} permet d'insérer $10^7$ éléments en $5.792$ secondes, alors que l'algorithme \textit{xoroshiro128+} permet d'en insérer autant en $4.014$ secondes. Cette différence de $30\%$ n'est pas négligeable.
 	
@@ -381,11 +410,11 @@
 	
 	\subsubsection*{Variation de p}
 
-	Afin de vérifier que le $p$ à bien l'effet voulu, il suffit de compter le nombre d'éléments existants à chaque niveau. S'il y a $n$ éléments à la hauteur 1, on s'attend à obtenir $np$ éléments de hauteur 2 avec une forte probabilité.
+	Afin de vérifier que le $p$ à bien l'effet voulu, il suffit de compter le nombre d'éléments existants à chaque niveau. S'il y a $n$ éléments à la hauteur 1, on s'attend à obtenir $np$ éléments de hauteur 2.
 	
 	Dans les faits, en essayant différentes valeurs pour une skip-list de 1000 éléments, on  peut obtenir les résultats présents dans la \cref{tbRes1}. Le résultat obtenu, correspond à notre espérance: $p$ influence correctement la hauteur de la liste et par conséquent son poids. 
 	
-	Une question plus intéressante à se poser serait: Quel est la meilleure valeur pour $p$ ? Choisir un petit nombre réduit le nombre de liens dans la liste. Cela a comme conséquence de pouvoir faire de plus grand saut, mais moins souvent. Par exemple avec $p=0.1$, il sera fort probable de faire des sauts d'une dizaine d'éléments. Mais la recherche du 9ème élément se fera sur la couche la plus basse qui elle, est 10 fois lente. En revanche, choisir un grand nombre pour $p$, augmentera fortement le nombre de liens dans la skip-list. Celle-ci possède donc un grand nombre de hauteurs, et donc plus de saut. Cela a comme conséquence de faire plus souvent des sauts, mais ils seront plus petits.
+	Une question plus intéressante à se poser serait: Quel est la meilleure valeur pour $p$ ? Choisir un petit nombre réduit le nombre de liens dans la liste. Cela a comme conséquence de pouvoir faire de plus grand saut, mais moins souvent. Par exemple avec $p=0.1$, il sera fort probable de faire des sauts d'une dizaine d'éléments. En revanche, choisir un grand nombre pour $p$, augmentera fortement le nombre de liens dans la skip-list. Celle-ci possède donc un grand nombre de hauteurs, et donc permet plus de sauts. Cela a comme conséquence de faire plus souvent des sauts, mais ils seront plus petits.
 	 
 	\begin{figure}[h]
 		\centering
@@ -407,18 +436,18 @@
 		\label{tbRes2}
 	\end{figure}
 	
-	\section{Comparaisons avec d'autres structures}
-	Dans la conception logiciel, choisir la bonne structure de donnée permet aux logiciels de s'exécuter plus rapidement. Laquelle présentera les meilleurs performances? Quels sont les avantages et le prix à payer? Pour l'ensemble de ces tests, un logiciel de comparaisons doit être utilisé spécialement développé pour ce projet.
-	Il existe un grand nombre de méthode différente pour enregistrer des données au format "clé-valeur". Ces structures de donnée sont appelés des dictionnaires. Dans un dictionnaire de langue française, chacun des mots est associé à une définition. Ces mots sont triés par ordre alphabétique afin d'effectuer des recherches rapides. En informatique, c'est le même concept qui est utilisé: Chacune des clés (mots) correspond une valeur (définitions). Les clés, quand à elle, seront structurée de façon organisée afin de pouvoir les trouver rapidement.
+	\section{Comparaisons avec d'autres structures}\label{compare}
+	Dans la conception logicielle, choisir la bonne structure de données permet aux logiciels de s'exécuter plus rapidement. Laquelle présentera les meilleures performances? Quels sont les avantages et le prix à payer? Pour l'ensemble de ces tests, un logiciel de comparaisons doit être utilisé, spécialement développé pour ce projet.
+	Il existe un grand nombre de méthodes différentes pour enregistrer des données au format "clé-valeur". Ces structures de données sont appelées des dictionnaires. Dans un dictionnaire de langue française, chacun des mots est associé à une définition. Ces mots sont triés par ordre alphabétique afin d'effectuer des recherches rapides. En informatique, c'est le même concept qui est utilisé: Chacune des clés (mots) correspond à une valeur (définitions). Les clés, quant à elles, seront structurées de façon organisée afin de pouvoir les trouver rapidement.
 	
 	\subsection{La table de hachage}
-	La table de hachage une structure de donnée qui fonctionne grâce à des listes chainées. Le pointeur du premier élément est placé dans un vecteur. Ce vecteur est typiquement initialisé pour contenir 128 éléments. 
+	La table de hachage est une structure de données qui fonctionne grâce à des listes chainées. Le pointeur du premier élément est placé dans un vecteur. Ce vecteur est typiquement initialisé pour contenir 128 éléments. 
 	
-	Lors de l'insertion dans cette table, la clé est transformé à l'aide d'une méthode de "hachage". Cette dernière doit être capable de répartir efficacement les éléments tout en étant déterministe. C'est à dire, qu'insérer ou rechercher un élément ayant comme clé "4000" doit toujours atteindre la même case du vecteur. 
+	Lors de l'insertion dans cette table, la clé est transformée à l'aide d'une méthode de "hachage". Cette dernière doit être capable de répartir efficacement les éléments tout en étant déterministe. C'est à dire, qu'insérer ou rechercher un élément ayant comme clé "4000" doit toujours atteindre la même case du vecteur. 
 	
-	Si 2 éléments doivent s'insérer dans la même case du vecteur, ceux-ci sont alors placé dans une liste chainée. Par exemple, si la clé "48" et la clé "24" ont comme résultat la case 12 par la fonction de hachage. L'élément 24 sera le premier élément de la liste chainée, suivit de 48.
+	Si 2 éléments doivent s'insérer dans la même case du vecteur, ceux-ci sont alors placés dans une liste chainée. Par exemple si la clé "48" et la clé "24" ont comme résultat de la fonction de hachage 12; L'élément 24 sera le premier élément de la liste chainée, suivi de 48.
 	
-	Lorsque trop d'élément sont présent dans une même case, la table de hachage doit pouvoir agrandir la taille de son vecteur. Cette modification, impose que chacun des éléments présent dans la table soit déplacé pour correspondre aux nouveaux indices calculés par la fonction de hachage. Le nombre maximum de collision autorisée par case est typiquement 4, mais peut-être configuré autrement. Une table de hachage de 128 case, peut dont contenir 512 éléments. 
+	Lorsque trop d'éléments sont présents dans une même case, la table de hachage doit pouvoir agrandir la taille de son vecteur. Cette modification impose que chacun des éléments présents dans la table soit déplacé pour correspondre aux nouveaux indices calculés par la fonction de hachage. Le nombre maximum de collisions autorisées par case est typiquement 4, mais peut-être configuré autrement. Une table de hachage de 128 cases peut donc contenir 512 éléments. 
 	
 	\lstinputlisting[linerange=BEGINStruct-ENDStruct]{SkipList/HashTable.h}
 	\lstinputlisting[linerange=BEGINStruct-ENDStruct]{SkipList/LinkList.h}
@@ -426,16 +455,17 @@
 	\subsubsection*{Avantages}
 	\begin{itemize}
 		\item Rapidité d'insertion et de recherche
-		\item Mises en place simple
+		\item Simple mise en place 
 	\end{itemize}
-	\subsubsection*{Inconvénient}
+	\subsubsection*{Inconvénients}
 	\begin{itemize}
 		\item La fonction de hachage doit être suffisamment efficace pour éviter les collisions.
 		\item Réallocation et déplacement des éléments en cas de grand nombre de collisions.
-		\item L'utilisation d'un vecteur pour la table, limite le nombre maximum d'élément.
+		\item L'utilisation d'un vecteur pour la table, limite le nombre maximum d'éléments.
 	\end{itemize}
 	\subsubsection*{Performances}
-	Afin de négliger la méthode de hachage pour ce test: les clés sont des entiers et la méthode de hachage est la clé modulo la taille de la table. Ainsi, il est possible d'utiliser l'intégralité de la table en minimisant les collisions. Il suffit alors d'insérer des clés de façon séquentielles (0, 1, 2, 3...).
+	
+	Afin de négliger la méthode de hachage pour ce test: les clés sont des entiers. La méthode de hachage reprend le reste de la division euclidienne de la clé par la taille de la table. Ainsi, il est possible d'utiliser l'intégralité de la table en minimisant les collisions. Il suffit alors d'insérer des clés de façon séquentielle (0, 1, 2, 3...).
 	
 	 \begin{table}[h]
 	 	\begin{tabular}{|l|c|c|}
@@ -452,38 +482,15 @@
 	 	\caption{Tableau récapitulatif}
 	 \end{table}
 	
-	\begin{figure}[h]
-		\centering
-		\resizebox{\columnwidth}{!}{
-			\begin{tikzpicture}
-			\begin{axis} [
-				axis y line*=left,
-				ymin=0,ymax=5270,xmin=0,xmax=1048576,
-				ylabel=Temps en ms,
-				ylabel near ticks,
-				scaled x ticks={base 10:-3},
-				scaled y ticks={base 10:-3},
-				xlabel=Le nombre d élément,
-				legend pos=north west,
-			]
-			\addplot+[smooth, mark=none] table [x=elem,y=time] {data/hashtable.dat};
-				
-			\end{axis}
-			
-			\end{tikzpicture}
-		}
-		\caption{Vitesse d'exécution de la table de hachage}
-	\end{figure}
-	
 	\newpage
-	\subsection{Les arbres binaires}
-	Un arbres binaires de recherche est une structure de donnée dans laquelle chacun des éléments possèdent 2 sous éléments. On parle alors de "fils gauche" et de "fils droit". Ces derniers peuvent eux-aussi à leur tour, posséder un fils gauche et droit. On parle dès lors, de structures récursive.
+	\subsection{Les arbres binaires}\label{BinaryTree}
+	Un arbre binaire de recherche est une structure de données dans laquelle chacun des éléments possède 2 sous éléments. On parle alors de "fils gauche" et de "fils droit". Ces derniers peuvent eux aussi à leur tour, posséder un fils gauche et droit. On parle dès lors, de structures récursives.
 	
 	\lstinputlisting[linerange=BEGINStruct-ENDStruct]{SkipList/Tree.h}
 	
-	Chacun des nœuds a donc 2 fils: le gauche contient un élément plus petit que son parent; le fils droit qui contient un élément plus grand que son parent. Par exemple, un nœud de valeur 5 aura comme fils de gauche 3, et comme fils droit 13.
+	Chacun des nœuds a donc 2 fils: le gauche contient un élément plus petit que son parent et le fils droit qui contient un élément plus grand que son parent. Par exemple, un nœud de valeur 5 aura comme fils de gauche 3, et comme fils droit 13.
 	
-	Les recherches dans un arbre s'effectuent depuis la racine de l'arbre, soit le nœud le plus haut dans sa hiérarchie. Il faut ensuite comparer l'élément courant avec celui qui est recherché. S'il est plus grand, il faut descendre sur le fils droit, sinon sur le fils gauche. La recherche continue en comparant avec ce dernier élément sélectionné. L'exploration de l'arbre s'arrête lorsque l'élément est trouvé, ou qu'un nœud n'a plus de fils.
+	Les recherches dans un arbre s'effectuent depuis la racine de l'arbre, soit le nœud le plus haut dans sa hiérarchie. Il faut ensuite comparer l'élément courant avec celui qui est recherché. S'il est plus grand, il faut descendre sur le fils droit, sinon sur le fils gauche. La recherche continue en comparant avec le dernier élément sélectionné. L'exploration de l'arbre s'arrête lorsque l'élément est trouvé, ou qu'un nœud n'a plus de fils.
 	
 	Les insertions et suppressions dans un arbre dépendent de la recherche. Il faut en effet garder la structure cohérente. Si un élément parent est supprimé, il faut être capable de le remplacer par un autre sans détériorer l'arbre.
 	
@@ -507,40 +514,13 @@
 	\subsubsection*{Avantages}
 	\begin{itemize}
 		\item Rapidité d'exécution, si l'arbre est équilibré
-		\item Mises en place simple et rapide.
+		\item Mise en place simple et rapide.
 	\end{itemize}
 	\subsubsection*{Inconvénient}
 	\begin{itemize}
 		\item L'insertion provoque rapidement un déséquilibre, ce qui détériore très fortement les performances
 	\end{itemize}
 	\subsubsection*{Performances}
-	\begin{figure}[h]
-		\centering
-		\resizebox{\columnwidth}{!}{
-			\begin{tikzpicture}
-			\begin{axis} [
-			axis y line*=left,
-			ymin=0,ymax=5270,xmin=0,xmax=65536,
-			ylabel=Temps en ms,
-			ylabel near ticks,
-			scaled x ticks={base 10:-3},
-			scaled y ticks={base 10:-3},
-			xlabel=Le nombre d élément,
-			legend pos=north east,
-			]
-			\addplot+[mark=none, blue] table [x=elem,y=sequence] {data/tree.dat};
-			\addplot+[mark=none, green] table [x=elem,y=random] {data/tree.dat};
-			
-			\addlegendentry{séquence}
-			\addlegendentry{random}
-			
-			
-			\end{axis}
-			
-			\end{tikzpicture}
-		}
-		\caption{Vitesse d'exécution d'un arbre binaire}
-	\end{figure}
 	\begin{table}[h]
 		\begin{tabular}{|l|c|c|}
 			\hline
@@ -556,47 +536,24 @@
 		\caption{Tableau récapitulatif}
 	\end{table}
 	
-	\subsection{Les arbres rouge noire}
-	Les arbres rouges noires sont une amélioration des arbres binaires. Un nœud possède un attribue supplémentaire, sa couleur qui peut être soit rouge, soit noir. Ceci permet d'ajouter des contraintes dans l'arbre. Ces contraintes permettent à ré-équilibrer l'arbre par des rotations. Il faut transformer l'arbre afin que le parent d'un nœud rouge est noir. Mais aussi pour que le chemin de chaque feuille à la racine contient le même nombre de nœud noir.
+	\subsection{Les arbres rouge-noir}
+	Les arbres rouge-noir ou arbres bicolores, sont une amélioration des arbres binaires. Un nœud possède un attribut supplémentaire: sa couleur. Celle-ci peut être soit rouge, soit noir. Cela permet d'ajouter des contraintes dans l'arbre. Ces contraintes permettent de rééquilibrer l'arbre par des rotations. Il faut transformer l'arbre afin que le parent d'un nœud rouge soit noir. Mais aussi pour que le chemin de chaque feuille à la racine contienne le même nombre de nœuds noir.
 	
-	Lors de l'insertion un nœud est rouge, mais en raison des transformation appliquée afin de garantir l'intégrité de la structure, il est possible qu'un nœud inséré ne soit pas une feuille, mais un parent. Il peut donc devenir à son tour noir. La recherche s'effectue exactement de la même façon qu'un arbre binaire. 
+	Lors de l'insertion, un nœud est rouge, mais en raison des transformations appliquées il peut devenir noir. Afin de garantir l'intégrité de la structure, il est possible qu'un nœud inséré ne soit pas une feuille, mais un parent. La recherche s'effectue exactement de la même façon qu'un arbre binaire.
+	
+	\lstinputlisting[linerange=BEGINStruct-ENDStruct]{SkipList/RBTree.h}
+	
 	\subsubsection*{Avantages}
 	\begin{itemize}
 		\item Rapidité d'exécution
 		\item L'arbre est toujours équilibré
 	\end{itemize}
-	\subsubsection*{Inconvénient}
+	\subsubsection*{Inconvénients}
 	\begin{itemize}
 		\item Algorithme complexe à mettre en place en raison de nombreuses études de cas.
-		\item Certaines séquences de nombre provoqueront un rééquilibrage systématique.
+		\item Certaines séquences de nombres provoqueront un rééquilibrage systématique.
 	\end{itemize}
 	\subsubsection*{Performances}
-	\begin{figure}[h]
-		\centering
-		\resizebox{\columnwidth}{!}{
-			\begin{tikzpicture}
-			\begin{axis} [
-			axis y line*=left,
-			ymin=0,ymax=10000,xmin=0,xmax=2000000,
-			ylabel=Temps en ms,
-			ylabel near ticks,
-			scaled x ticks={base 10:-3},
-			scaled y ticks={base 10:-3},
-			xlabel=Le nombre d élément,
-			legend pos=north east,
-			]
-			\addplot+[mark=none, blue] table [x=elem,y=sequence] {data/rbtree.dat};
-			\addplot+[mark=none, green] table [x=elem,y=random] {data/rbtree.dat};
-			
-			\addlegendentry{séquence}
-			\addlegendentry{random}
-			
-			\end{axis}
-			
-			\end{tikzpicture}
-		}
-		\caption{Vitesse d'exécution d'un arbre rouge noir}
-	\end{figure}
 	\begin{table}[h]
 		\begin{tabular}{|l|c|c|}
 			\hline
@@ -612,6 +569,35 @@
 		\caption{Tableau récapitulatif}
 	\end{table}
 	
+	\subsection{La liste chainée triée}
+	Une liste chainée (\cref{linkList}) est une simple chaine d'éléments. Chacun des éléments de cette liste contient une référence vers l'élément suivant. Lors d'une insertion, il faut rechercher où placer l'élément dans la liste afin de garder la structure triée.
+	\lstinputlisting[linerange=BEGINStruct-ENDStruct]{SkipList/LinkList.h}
+	
+	\subsubsection*{Avantage}
+	\begin{itemize}
+		\item Algorithme extrêmement simple
+	\end{itemize}
+	\subsubsection*{Inconvénient}
+	\begin{itemize}
+		\item Très peu performant
+	\end{itemize}
+	\subsubsection*{Performances}
+	\begin{table}[h]
+		\begin{tabular}{|l|c|c|c|}
+			\hline
+			Scénario & Insertion en tête & Insertion en fin & Triée \\
+			\hline
+			Recherche & $\mathcal{O}(n)$ & $\mathcal{O}(n)$ & $\mathcal{O}(n)$ \\ 
+			\hline
+			Insertion & $\mathcal{O}(1)$ & $\mathcal{O}(n)$ & recherche +  $\mathcal{O}(1)$ \\
+			\hline
+			Suppression & $\mathcal{O}(n)$ & $\mathcal{O}(1)$ & recherche + $\mathcal{O}(1)$ \\
+			\hline
+		\end{tabular}
+		\caption{Tableau récapitulatif}
+	\end{table}
+	
+
 	\subsection{La Skip-List}
 	\subsubsection*{Avantages}
 	\begin{itemize}
@@ -623,39 +609,150 @@
 		\item Non déterministe
 	\end{itemize}
 	\subsubsection*{Performances}
-	\begin{figure}[h]
+	Les performances de la skip-list varient selon le paramètre $p$.
+	\begin{figure}[h!]
 		\centering
 		\resizebox{\columnwidth}{!}{
 			\begin{tikzpicture}
-			\begin{axis} [
-			axis y line*=left,
-			ymin=0,ymax=10000,xmin=0,xmax=2000000,
-			ylabel=Temps en ms,
-			ylabel near ticks,
-			scaled x ticks={base 10:-3},
-			scaled y ticks={base 10:-3},
-			xlabel=Le nombre d élément,
-			legend pos=north east,
-			]
-			\addplot+[mark=none, blue] table [x=elem,y=sequence] {data/skiplist.dat};
-			\addplot+[mark=none, green] table [x=elem,y=random] {data/skiplist.dat};
+			\tikzstyle{every node}=[font=\tiny]
 			
-			\addlegendentry{séquence}
-			\addlegendentry{random}
+			\begin{axis} [
+				axis y line*=left,
+				ytick distance=0.1,
+				width=7cm,height=3.5cm,
+				legend style={font=\tiny,legend columns=-1},
+				legend image post style={scale=0.3},
+				ymin=0,ymax=0.5,xmin=0,xmax=128,
+				ylabel=Temps en ms,
+				ylabel near ticks,
+				xlabel=Le nombre d'éléments,
+				legend pos=north west
+				]
+			]
+			\addplot+[mark=none, red, restrict x to domain=0:128] table [x=elem,y=sequence2] {data/skiplist.dat};
+			\addplot+[mark=none, green, restrict x to domain=0:128] table [x=elem,y=sequence3] {data/skiplist.dat};
+			\addplot+[mark=none, blue, restrict x to domain=0:128] table [x=elem,y=sequence4] {data/skiplist.dat};
+			
+			\addlegendentry{p=1/2}
+			\addlegendentry{p=1/3}
+			\addlegendentry{p=1/4}
 			
 			\end{axis}
 			
 			\end{tikzpicture}
 		}
-		\caption{Vitesse d'exécution d'une skip-list}
+		\caption{Vitesse d'exécution d'une skip-list en fonction de $p$}
+	\end{figure}
+	\newpage
+	\newpage
+	
+	\begin{figure}[h!]
+		\centering
+		\resizebox{\columnwidth}{!}{
+			\begin{tikzpicture}
+			\begin{axis} [
+				axis y line*=left,
+				ymin=0,ymax=10000,xmin=0,xmax=2000000,
+				legend style={font=\tiny},
+				ylabel=Temps en ms,
+				ylabel near ticks,
+				scaled x ticks={base 10:-3},
+				scaled y ticks={base 10:-3},
+				xlabel=Le nombre d'éléments,
+				legend pos=south east,
+			]
+			\addplot+[mark=none, red] table [x=elem,y=sequence2] {data/skiplist.dat};
+			\addplot+[mark=none, green] table [x=elem,y=sequence3] {data/skiplist.dat};
+			\addplot+[mark=none, blue] table [x=elem,y=sequence4] {data/skiplist.dat};
+			
+			
+			\addlegendentry{p=1/2}
+			\addlegendentry{p=1/3}
+			\addlegendentry{p=1/4}
+			
+			\end{axis}
+			
+			\end{tikzpicture}
+		}
+		\caption{Vitesse d'exécution d'une skip-list en fonction de $p$}
 	\end{figure}
 	
 	\newpage
-	c
-	\newpage
-	d
-	\newpage
+	\subsection{Comparaisons des performances d'insertion}
+	Afin de comparer ces différentes structures de données, il est possible d'analyser leur temps d'exécution. Le tableau (\cref{compareAllTiming}) est la moyenne des résultats du logiciel de comparaison (option 3). Les temps affichés sont en $10^{-4}$ secondes. Ces temps ont été calculés à l'aide de l'instruction RDTSC présente sur les processeurs.
 	
+	
+	
+	\begin{table}[h]
+		\resizebox{\columnwidth}{!}{
+			\begin{tabular}{|S[table-format=8.0]|S[table-format=6.3]|S[table-format=6.3]|S[table-format=6.3]|S[table-format=6.3]|S[table-format=6.3]|}
+				\hline
+				{éléments} & {skip-list} & {link-list} & {tree} & {rb-tree} & {hashtable} \\
+				\hline
+				2 & 0.009 &  0.002 \cellcolor[gray]{0.8} & 0.003 & 0.003 & 0.005 \\
+				4 & 0.016 &  0.004 \cellcolor[gray]{0.8} & 0.006 & 0.006 & 0.016 \\
+				8 & 0.028 &  0.008 \cellcolor[gray]{0.8} & 0.010 & 0.010 & 0.023 \\
+				16 & 0.055 &  0.017 \cellcolor[gray]{0.8} & 0.021 & 0.021 & 0.029 \\
+				32 & 0.117 &  0.048 \cellcolor[gray]{0.8} & 0.050 & 0.054 & 0.068 \\
+				64 & 0.228 & 0.096 & 0.093 \cellcolor[gray]{0.8} & 0.114 & 0.115 \\
+				128 & 0.486 & 0.286 & 0.222 \cellcolor[gray]{0.8} & 0.243 & 0.234 \\
+				256 & 0.995 & 0.898 & 0.436 \cellcolor[gray]{0.8} & 0.519 & 0.484 \\
+				512 & 2.052 & 3.576 & 0.946 \cellcolor[gray]{0.8} & 1.083 & 0.973 \\
+				1024 & 4.060 & 20.301 & 1.955 \cellcolor[gray]{0.8} & 2.228 & 2.567 \\
+				2048 & 8.186 & 85.643 & 4.194 \cellcolor[gray]{0.8} & 4.573 & 5.930 \\
+				4096 & 16.121 & 340.616 & 8.896 \cellcolor[gray]{0.8} & 9.749 & 12.966 \\
+				8192 & 32.310 & 1375.928 & 20.218 \cellcolor[gray]{0.8} & 20.668 & 26.297 \\
+				16384 & 65.748 & 5601.32 & 46.455 & 43.807 \cellcolor[gray]{0.8} & 52.140 \\
+				32768 & 131.151 & 21765.4 & 111.791 & 93.318 \cellcolor[gray]{0.8} & 105.629 \\
+				65536 & 273.893 & 957331 & 2124.687 & 202.261 \cellcolor[gray]{0.8} & 211.775 \\
+				131072 & 570.276 &  & 26693 & 444.62 \cellcolor[gray]{0.8} & 464.442 \\
+				262144 & 1189.503 &  & 191341 & 1013.92 \cellcolor[gray]{0.8} & 1086.389 \\
+				524288 & 2372.10 &  &  & 2191.19 \cellcolor[gray]{0.8} & 2330.10 \\
+				1048576 & 4843.64 &  &  & 4607.14 \cellcolor[gray]{0.8} & 5269.62 \\
+				2097152 & 9998.07 &  &  & 9667.17 & 9458.14 {\cellcolor[gray]{0.8}} \\
+				4194304 & 21672.3 &  &  & 19908.1 & 19841.2 {\cellcolor[gray]{0.8}} \\
+				8388608 & 43113 &  &  & 42597 & 40985 {\cellcolor[gray]{0.8}} \\
+				16777216 & 87929 &  &  & 88972 & 79736 {\cellcolor[gray]{0.8}} \\
+				33554432 & 182116 &  &  & 213401 & 163435 {\cellcolor[gray]{0.8}} \\
+				67108864 & 414702 &  &  & 544060 & 353891 {\cellcolor[gray]{0.8}} \\
+				\hline
+			\end{tabular}
+		}
+		\caption{Comparaisons du temps d'insertion}
+		\label{compareAllTiming}
+	\end{table}
+	On peut en déduire qu'une liste chainée est plus rapide que les autres structures, si le nombre d'éléments est inférieur à 64. Un arbre binaire de recherche est plus rapide, s'il y a moins de $2^{12}$ éléments. Ceci s'explique, car ces derniers ont une complexité $\mathcal{O}(log n)$ alors qu'une liste chainée est en complexité $\mathcal{O}(n)$.
+	
+	Au-delà de $2^{12}$ éléments, l'arbre rouge-noir est plus rapide qu'un arbre binaire de recherche. Ce dernier commence à se déséquilibrer, ce qui ne garantit plus une performance optimale de $\mathcal{O}(log n)$. L'arbre rouge-noir quant à lui, possède des algorithmes permettant son rééquilibrage de façon automatique.
+	
+	À partir de $2^{22}$ éléments, la table de hachage devient plus rapide qu'un arbre rouge-noir. Il est aussi possible d'observer qu'au-delà de $2^{24}$ éléments, la skip-list devient plus rapide que l'arbre bicolore. Cela s'explique par le fait qu'une skip-list n'a pas besoin d'être rééquilibrée, quel que soit le nombre d'éléments inséré.
+	
+	\subsection{Différence entre les temps d'insertion}
+	La rapidité d'insertion n'est pas la seule chose qui permet de privilégier une structure de données au lieu d'une autre. Par exemple, la skip-list ne doit pas être rééquilibrée alors qu'un arbre rouge-noir oui. À première vue, la skip-list a donc des temps d'insertion qui varient moins que les arbres bicolores. Les tables de hachage doivent s'agrandir au fur et à mesure des insertions. Le temps de la réallocation de la mémoire peut donc devenir un gros inconvénient, alors qu'elle était la plus rapide dans la plupart des cas. Le tableau (\cref{deltaTiming}) est la moyenne des résultats du logiciel de comparaison (option 4). Les temps affichés sont en $10^{-4}$ secondes, $2^{24}$ éléments ont été insérés.
+	
+	Les résultats du test révèlent que la table de hashing a eu le temps d'insertion le plus court. Ce qui est normal, étant donné que le temps d'accès à un vecteur par un système d'exploitation est très faible. Par contre, le temps d'exécution le plus long pour insérer un élément est presque 4 millions de fois plus grandes que le temps moyen. Le temps d'insertion est par conséquent extrêmement différent entre l'insertion de 2 données. Il n'est donc pas possible de se fier à cette structure de données pour des insertions prenant un temps uniforme.
+	
+	Comme vu dans la \cref{compareAllTiming}, le temps d'exécution de la skip-list est plus rapide que l'arbre bicolore pour insérer $2^{24}$ éléments. Les résultats du test affichent aussi que plus de la moitié des insertions étaient plus rapides pour la skip-list que l'arbre rouge-noir. Par contre en observant le 95ème centile du temps d'insertion, l'arbre rouge-noir était plus rapide.
+	
+	\begin{table}[h]
+		\resizebox{\columnwidth}{!}{
+			\begin{tabular}{|c|r|r|r|r|r|r|r|}
+				\hline
+				{structure} & {MIN} & {MAX} & {AVG} & {DEV} & {PC5} & {PC50} & {PC95} \\
+				\hline
+				skip-list & {\cellcolor{red!25}} 816 & {\cellcolor{green!25}} 1222713 & 1567 & {\cellcolor{green!25}} 5234 & {\cellcolor{green!25}} 1094 & {\cellcolor{green!25}} 1313 & {\cellcolor{red!25}}2004 \\
+				hashtable & {\cellcolor{green!25}} 268 & {\cellcolor{red!25}}6079131241 & {\cellcolor{green!25}} 1534 & {\cellcolor{red!25}}1717849 & 308.0 & 639.3 & {\cellcolor{green!25}} 1218 \\
+				RB-tree & 425 & 5763820 &  {\cellcolor{red!25}}1651 & 6055 &  {\cellcolor{red!25}}1182 &  {\cellcolor{red!25}}1467 & 1835 \\
+				\hline
+			\end{tabular}
+		}
+		\caption{Différence entre les temps d'insertion}
+		\label{deltaTiming}
+	\end{table}
+	
+	\section{Conclusion}
+	
+	\newpage
 	\begin{appendices}
 	\section{Représentation d'une Skip-List en langage C}
 	\subsection{Initiation}\label{SKInit}

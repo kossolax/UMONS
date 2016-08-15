@@ -11,7 +11,7 @@
 #define ISRED(a) ((a) ? (a->color == RED) : (0))
 #define RBCMP(a,b) ((a == b) ? (0) : ((a < b) ? (-1) : (1)))
 
-
+//---------------BEGINStruct----------------
 typedef enum RBColor {
 	BLACK = 0,
 	RED = 1
@@ -23,7 +23,7 @@ typedef struct RBTree {
 	struct RBTree* left;
 	struct RBTree* right;
 } RBTree;
-
+//---------------ENDStruct----------------
 
 RBTree* RB_init();
 void RB_free(RBTree** list);

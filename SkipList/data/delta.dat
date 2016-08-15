@@ -1,0 +1,3 @@
+   operations |                                       SkipList                     |                                      HashTable                     |                                   RedBlackTree                     |
+iter.   elems |       MIN          MAX      AVG      DEV     PC5     PC50     PC95 |       MIN          MAX      AVG      DEV     PC5     PC50     PC95 |       MIN          MAX      AVG      DEV     PC5     PC50     PC95 |
+ 10  16777216 |    816.3    1222712.5   1566.9   5233.5   1093.9   1312.7   2003.8 |    268.1 6079131240.7   1533.5 1717849.1    308.0    639.3   1218.1 |    424.5    5763819.1   1651.2   6055.2   1182.4   1466.9   1834.8 |

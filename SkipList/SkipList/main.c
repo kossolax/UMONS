@@ -244,16 +244,21 @@ void compareAll(int maxTest, double maxTime, float p, int mode) {
 	}
 }
 int cmp(const void * a, const void * b) {
-	return (int)(*(long long*)a - *(long long*)b);
+	if (*(long long int*)a - *(long long int*)b < 0)
+		return -1;
+	if (*(long long int*)a - *(long long int*)b > 0)
+		return 1;
+	if (*(long long int*)a - *(long long int*)b == 0)
+		return 0;
 }
 void deltaOne(int maxTest, int maxSize, int** keys, long long** dataTimer, void* fctInit(int, float), void fctInsert(void**, int, int), void fctFree(void**), int a, float p) {
 	int i, j;
 	long long begin, timer, min, max, tmp;
-	double avg, var, tmp2, tmp3, pc;
+	double avg, var, tmp2, tmp3, pc[3];
 
 	for (i = 0; i < maxTest; i++) for (j = 0; j < maxSize; j++) dataTimer[i][j] = 0;
 	min = max = tmp = 0;
-	tmp3 = tmp2 = avg = var = pc = 0.0;
+	tmp3 = tmp2 = avg = var = pc[0] = pc[1] = pc[2] = 0.0;
 
 	for (i = 0; i < maxTest; i++) {
 		tmp = 0;
@@ -273,21 +278,24 @@ void deltaOne(int maxTest, int maxSize, int** keys, long long** dataTimer, void*
 		min += dataTimer[i][0];
 		max += dataTimer[i][maxSize - 1];
 		avg += tmp / (double)maxSize;
-		pc += Percentile(dataTimer[i], maxSize, 0.95);
+		pc[0] += Percentile(dataTimer[i], maxSize, 0.05);
+		pc[1] += Percentile(dataTimer[i], maxSize, 0.5);
+		pc[2] += Percentile(dataTimer[i], maxSize, 0.95);
+
 		tmp2 = (tmp / (double)maxSize);
 		for (j = 0; j < maxSize; j++) tmp3 += (tmp2 - (double)dataTimer[i][j])*(tmp2 - (double)dataTimer[i][j]);
 		var += sqrt(tmp3 / (double)(maxSize));
 		
 	}
-	printf("%8.1f %12.1f %8.1f %8.1f %8.1f | ", min / (double)maxTest, max / (double)maxTest, avg / (double)maxTest, var / (double)maxTest, pc/(double)maxTest );
+	printf("%8.1f %12.1f %8.1f %8.1f %8.1f %8.1f %8.1f | ", min / (double)maxTest, max / (double)maxTest, avg / (double)maxTest, var / (double)maxTest, pc[0] / (double)maxTest, pc[1] / (double)maxTest, pc[2] / (double)maxTest);
 }
 void deltaAll(int maxTest, int maxSize, float p) {
-	int i, j, k;
+	int i, j, k, a, b, c;
 	int** keys;
 	long long** dataTimer;
 
-	printf("%13s | %48s | %48s | %48s |\n", "operations", "SkipList                    ", "HashTable                    ", "RedBlackTree                    ");
-	printf("%13s | %48s | %48s | %48s |\n", "iter.   elems", "MIN          MAX      AVG      DEV     PC95", "MIN          MAX      AVG      DEV     PC95", "MIN          MAX      AVG      DEV     PC95");
+	printf("%13s | %66s | %66s | %66s |\n", "operations", "SkipList                    ", "HashTable                    ", "RedBlackTree                    ");
+	printf("%13s | %66s | %66s | %66s |\n", "iter.   elems", "MIN          MAX      AVG      DEV     PC5     PC50     PC95", "MIN          MAX      AVG      DEV     PC5     PC50     PC95", "MIN          MAX      AVG      DEV     PC5     PC50     PC95");
 
 	for (k = 1; k <= 3; k++) {
 		keys = (int**)malloc(sizeof(int*) * maxTest);
@@ -300,7 +308,17 @@ void deltaAll(int maxTest, int maxSize, float p) {
 			switch (k) {
 				case 1:	for (j = 0; j < maxSize; j++) keys[i][j] = j; break;
 				case 2:	for (j = 0; j < maxSize; j++) keys[i][j] = rand() % (j + 1); break;
-				case 3:	for (j = 0; j < maxSize; j++) keys[i][j] = rand() % maxSize; break;
+				case 3:	for (j = 0; j < maxSize; j++) {
+					for (j = 0; j < maxSize; j++) keys[i][j] = j;
+					for (j = 0; j < maxSize; j++) {
+						a = rand() % maxSize;
+						b = rand() % maxSize;
+						c = keys[i][a];
+						keys[i][a] = keys[i][b];
+						keys[i][b] = c;
+					}
+					break;
+				}
 			}
 		}
 
