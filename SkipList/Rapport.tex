@@ -138,7 +138,7 @@
 		\item Le nombre de voies actuelles est fixé à 1.
 		\item Le pointeur de tête est défini par cet élément $NIL$.
 	\end{itemize}
-	\emph{La création d'une skip-list en langage C figure en annexe \ref{SKInit}.}
+	\emph{La création d'une skip-list en langage C figure en annexe.}
 	
 	\begin{figure}[h]
 		\includegraphics[scale=0.95]{img/init}
@@ -163,7 +163,7 @@
 		\item Sinon, l'élément n'a pas été trouvé.
 	\end{enumerate}
 	
-	\emph{L'algorithme écrit en langage C figure en annexe \ref{SKSearch}.}
+	\emph{L'algorithme écrit en langage C figure en annexe.}
 	
 	\paragraph*{Comment rechercher l'élément 8 dans l'exemple de la \cref{SkipSearch1}?}
 	\begin{itemize}
@@ -227,7 +227,7 @@
 		
 		\item \textbf{FIN}.
 	\end{enumerate}
-	\emph{L'algorithme écrit en langage C est présenté en annexe \ref{SKInsert}.}
+	\emph{L'algorithme écrit en langage C est présenté en annexe.}
 	
 	\newpage
 	\paragraph*{Comment insérer l'élément 5 dans \cref{SkipInsert2}?}
@@ -270,7 +270,7 @@
 		\item Si l'élément de tête de la hauteur actuelle de la liste pointe vers $NIL$, diminuer la hauteur actuelle de la liste de 1. Répéter l'opération si possible.
 		\item \textbf{FIN}.
 	\end{enumerate}
-	\emph{L'algorithme écrit en langage C figure en annexe \ref{SKDelete}.}
+	\emph{L'algorithme écrit en langage C figure en annexe.}
 	
 	\newpage
 	\paragraph*{Comment supprimer l'élément 5 dans la \cref{SkipDelete}?}
@@ -762,34 +762,30 @@
 	\vspace{1cm}
 	En conclusion, la skip-list est une excellente alternative aux arbres binaires de recherche. Sa simplicité offre un champ d'action plus large que les algorithmes complexes des arbres équilibrés. La skip-list possède des fondements plus larges et plus efficaces que d'optimiser seulement le temps de recherche d'un élément.
 	
+	\nocite{1}
+	\nocite{2}
+	\nocite{3}
+	\nocite{4}
+	\nocite{5}
+	\nocite{6}
+	\nocite{7}
+	\bibliographystyle{plain}
 	\bibliography{rapport}
 	
 	\newpage
 	\begin{appendices}
 	\section{Représentation d'une Skip-List en langage C}
-	\subsection{Initiation}\label{SKInit}
-	\lstinputlisting[linerange=BEGINSKInit-ENDSKInit]{SkipList/SkipList.c}
-	\subsection{Fonction aléatoire}\label{SKRandom}
-	\lstinputlisting[linerange=BEGINSKRandom-ENDSKRandom]{SkipList/SkipList.c}
-
-	\subsection{Recherche}\label{SKSearch}
-	\lstinputlisting[linerange=BEGINSKSearch-ENDSKSearch]{SkipList/SkipList.c}
-
-	\subsection{Insertion}\label{SKInsert}
-	\lstinputlisting[linerange=BEGINSKInsert-ENDSKInsert]{SkipList/SkipList.c}
+	Le code source est fourni sur le CD annexe. Il est aussi possible de le télécharger sur ce lien:
+	\url{https://github.com/kossolax/UMONS/blob/master/SkipList/SkipList/SkipList.c}
 	
-	\subsection{Suppression}\label{SKDelete}
-	\lstinputlisting[linerange=BEGINSKDelete-ENDSKDelete]{SkipList/SkipList.c}
-	\newpage
+	\section{Logiciel de comparaison}
+	L'exécutable du logiciel est fourni sur le CD annexe. Il est aussi possible de le télécharger sur ce lien:
+	\url{https://github.com/kossolax/UMONS/releases/download/v1/skipList.zip}
+	
+	\section{Répertoire GitHub}
+	L'intégralité de ce document et du code source est disponible sur ce lien:
+	\url{https://github.com/kossolax/UMONS/tree/master/SkipList}
+	
 	\end{appendices}
 	
-	
-	\bibliographystyle{plain}
-	
-	\nocite{*}
-	
-	
-	
-	
-	
-\end{document} 
+\end{document}

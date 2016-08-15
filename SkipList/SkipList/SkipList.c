@@ -119,7 +119,6 @@ int SK_Insert(SkipList** list, int key, int value) {
 
 		x = createNode(*list, key, value, level);
 		for (int i = 0; i < level; i++) {
-			// ???
 			x->forward[i] = update[i]->forward[i];
 			update[i]->forward[i] = x;
 #ifdef DEBUG

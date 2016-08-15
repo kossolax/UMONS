@@ -15,6 +15,7 @@ SkipList/list
 SkipList/Rapport.*
 !SkipList/Rapport.tex
 !SkipList/rapport.bib
+!SkipList/Rapport.pdf
 *.obj
 *.tlog
 *.log
