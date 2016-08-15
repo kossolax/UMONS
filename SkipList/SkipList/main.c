@@ -7,7 +7,6 @@
 #include "HashTable.h"
 #include "Tree.h"
 #include "RBTree.h"
-#include "GetTimer.h"
 
 #define maxPTest	11
 double pTest[maxPTest] = { 4 / 5.0, 3 / 4.0, 2 / 3.0, 3 / 5.0, 1 / 2.0, 2 / 5.0, 1 / 3.0, 1 / 4.0, 1 / 5.0, 1 / 10.0, 1 / 20.0 };
