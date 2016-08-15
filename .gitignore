@@ -14,8 +14,8 @@ UML/bin/
 SkipList/list
 SkipList/Rapport.*
 !SkipList/Rapport.tex
+!SkipList/rapport.bib
 *.obj
-SkipList/SkipList/Release/SkipList.tlog/CL.command.1.tlog
 *.tlog
-SkipList/SkipList/Release/SkipList.log
+*.log
 *.sdf
