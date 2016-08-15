@@ -751,6 +751,18 @@
 	\end{table}
 	
 	\section{Conclusion}
+	La skip-list est une structure de données qui possède des algorithmes simples pouvant être implémentée en moins d'une heure. Ses performances sont très proches des arbres binaires de recherche, alors qu'elle n'a pas besoin d'être rééquilibrée. En raison des probabilités, il est possible qu'elle ne fonctionne pas de manière optimale. Cependant, plus le nombre d'éléments dans la liste est grand, plus la probabilité est faible et devient négligeable.
+	
+	La skip-list fonctionne comme une liste chainée. Des pointeurs supplémentaires sont ajoutés selon la hauteur d'un nœud. Plus la hauteur du nœud est grande, plus celui-ci contient de liens vers l'un des éléments suivants dans la liste à cette même hauteur. La skip-list utilise un paramètre $p$ de probabilité pour influencer la hauteur. La valeur $p=\frac{1}{2}$ est conseillée, une valeur inférieure réduira sa place en mémoire.
+	
+	La probabilité $p=\frac{1}{2}$ est souvent associée avec l'analogie d'une pièce de monnaie. Pour savoir à quelle hauteur atteindra un nœud, il faut lancer une pièce. Chaque fois que le résultat correspond au côté face, il faut relancer la pièce. La hauteur d'un nœud correspond au nombre de lancé effectué.
+	
+	La recherche dans une liste commence sur le niveau le plus haut du premier élément de la liste. Cette recherche descend au niveau inférieur lorsque l'élément suivant est plus petit que la clé qui est recherchée.
+	
+	\vspace{1cm}
+	En conclusion, la skip-list est une excellente alternative aux arbres binaires de recherche. Sa simplicité offre un champ d'action plus large que les algorithmes complexes des arbres équilibrés. La skip-list possède des fondements plus larges et plus efficaces que d'optimiser seulement le temps de recherche d'un élément.
+	
+	\bibliography{rapport}
 	
 	\newpage
 	\begin{appendices}
@@ -772,19 +784,12 @@
 	\end{appendices}
 	
 	
-	@online{1,
-		author = {Patrice Roy},
-		title = {Skip Lists},
-		date = {27/02/2016},
-		url = {http://h-deb.clg.qc.ca/Sujets/Structures-donnees/SkipLists.html},
-	}
-	@online{2,
-		author = {Sylvie Hamel},
-		title = {Dictionnaires ordonnés et “Skip List”},
-		date = {25/02/2016},
-		url = {http://www.iro.umontreal.ca/~hamelsyl/SkipList.pdf},
-	}
+	\bibliographystyle{plain}
 	
-	https://openclassrooms.com/courses/c-bien-choisir-ses-structures-de-donnees
+	\nocite{*}
+	
+	
+	
+	
 	
 \end{document} 
