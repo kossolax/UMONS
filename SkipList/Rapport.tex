@@ -55,29 +55,29 @@
 	
 	Il existe un grand nombre de structures de données, toutes proposent aux concepteurs de logiciel deux fonctionnalités standards : enregistrer et récupérer un renseignement. Selon l’approche employée pour la représentation logique, les performances seront différentes. Certaines structures de données offrent la possibilité de récupérer le premier élément en temps constant, au détriment du temps d’accès aux autres éléments. Alors que d’autres permettent un accès en temps constant à chacun des éléments en dépit d’une durée plus longue pour l’enregistrement d'une information.
 	
-	\subsection{Liste chainée}\label{linkList}
-	Une liste chainée (\cref{LinkedList}) est une structure de données de taille variable. Le principe est que chacun des éléments de cette liste contient une référence vers l'élément suivant. Cette pratique facilite l'insertion et la suppression des éléments, au détriment de la rapidité de la recherche.
+	\subsection{Liste chaînée}\label{linkList}
+	Une liste chaînée (\cref{LinkedList}) est une structure de données de taille variable. Le principe est que chacun des éléments de cette liste contient une référence vers l'élément suivant. Cette pratique facilite l'insertion et la suppression des éléments, au détriment de la rapidité de la recherche.
 	
-	Une liste chainée peut aussi être triée, ce qui porte des conséquences sur ses performances. Une insertion devient plus compliquée, car il faut rechercher, avant tout, où placer l'élément dans la liste afin de garder la structure cohérente.
+	Une liste chaînée peut aussi être triée, ce qui porte des conséquences sur ses performances. Une insertion devient plus compliquée, car il faut rechercher, avant tout, où placer l'élément dans la liste afin de garder la structure cohérente.
 	
-	La recherche dans une liste chainée s'effectue élément par élément: si ce n'est pas le premier élément de la liste, il faut regarder le second. Si ce n'est pas celui-ci, il faut alors regarder celui d'après jusqu'à ce que l'élément recherché soit trouvé ou qu'il n'y ait pas d'élément suivant. Dans le cas d'une liste chainée croissante, la recherche peut s'arrêter plus tôt: si l'élément que l'on regarde est plus grand que celui qui est recherché.
+	La recherche dans une liste chaînée s'effectue élément par élément: si ce n'est pas le premier élément de la liste, il faut regarder le second. Si ce n'est pas celui-ci, il faut alors regarder celui d'après jusqu'à ce que l'élément recherché soit trouvé ou qu'il n'y ait pas d'élément suivant. Dans le cas d'une liste chaînée croissante, la recherche peut s'arrêter plus tôt: si l'élément que l'on regarde est plus grand que celui qui est recherché.
 	
 	\begin{figure}[h]
 		\includegraphics[width=\textwidth]{img/linkedList}
-		\caption{Liste chainée ordonnées}
+		\caption{Liste chaînée ordonnée}
 		\label{LinkedList}
 	\end{figure}
 	
 	Par exemple dans la \cref{LinkedList}, pour rechercher l'élément contenant la valeur 6. La recherche commence par la gauche de la liste. 1 est plus petit que 6, il faut alors regarder l'élément suivant. 2, 3, et 5 sont toujours plus petits que 6, la recherche progresse élément par élément. Par contre, 8 est plus grand que 6. La recherche se termine, infructueuse.
 	
 	\subsubsection*{Les alternatives}
-	Il existe de nombreuses alternatives aux listes chainées pour trouver un élément plus rapidement: les tables de hachage (\cref{hashing}), les arbres binaires de recherche (\cref{tree}), etc. Mais certaines séquences d'insertions peuvent être catastrophiques. Par exemple, insérer des éléments croissants dans un arbre binaire de recherche provoque un rééquilibrage de l'arbre. En revanche, si les éléments sont insérés de façon aléatoire, l'équilibrage devient plus rare. Plus d'information dans la \cref{compare}.
+	Il existe de nombreuses alternatives aux listes chaînées pour trouver un élément plus rapidement: les tables de hachage (\cref{hashing}), les arbres binaires de recherche (\cref{tree}), etc. Mais certaines séquences d'insertions peuvent être catastrophiques. Par exemple, insérer des éléments croissants dans un arbre binaire de recherche provoque un rééquilibrage de l'arbre. En revanche, si les éléments sont insérés de façon aléatoire, l'équilibrage devient plus rare. Plus d'informations dans la \cref{compare}.
 
-	Grâce aux probabilités, les \og skip-list \fg{} (\cref{skip}) bénéficient d'un atout majeur: il ne faut pas les rééquilibrer. Mieux encore, les skip-lists utilisent des algorithmes plus simples que ses concurrents.
+	Grâce aux probabilités, les \og skip-list \fg{} (\cref{skip}) bénéficient d'un atout majeur: il ne faut pas les rééquilibrer. Mieux encore, la skip-list utilise des algorithmes plus simples que ses concurrents.
 	
 	\begin{figure}[h]
 		\centering
-		\subfloat[Table de hashage] {
+		\subfloat[Table de hachage] {
 			\includegraphics[scale=0.75]{img/hashing}
 			\label{hashing}
 		}
@@ -96,7 +96,7 @@
 	\newpage
 	\subsection{Skip-List}
 	Tout comme un dictionnaire, une skip-list permet de récupérer la définition d'un terme recherché \textit{(dit clé)}. Cette recherche est rapide, car les éléments \textit{(dit nœud)} présents dans un dictionnaire sont triés et il est possible de commencer une exploration à un endroit précis.
-	Une skip-list bénéficie des avantages de la liste chainée (\cref{linkList}), en limitant fortement ses inconvénients. Cette structure de données utilise les chaines de façon parallèle. Une fonction basée sur des probabilités permet de déterminer la hauteur de la chaine. Plus cette hauteur est élevée, moins la liste contient d'éléments. Une couche haute est donc un accès plus rapide vers des éléments plus loin dans la liste.
+	Une skip-list bénéficie des avantages de la liste chaînée (\cref{linkList}), en limitant fortement ses inconvénients. Cette structure de données utilise les chaines de façon parallèle. Une fonction basée sur des probabilités permet de déterminer la hauteur de la chaine. Plus cette hauteur est élevée, moins la liste contient d'éléments. Une couche haute est donc un accès plus rapide vers des éléments plus loin dans la liste.
 	
 	\begin{figure}[h]
 		\includegraphics[width=\textwidth]{img/metaphore}
@@ -150,7 +150,7 @@
 	\subsection{La recherche}
 	De manière générale, pour rechercher dans une skip-list il suffit de commencer par le niveau le plus haut et d'effectuer une recherche élément par élément. Si l'élément suivant devient plus grand que celui recherché, il suffit alors de descendre d'un niveau dans la liste.
 	
-	Algorithmiquement parlant, La recherche d'un élément s'exécute de la façon suivante:
+	Algorithmiquement parlant, la recherche d'un élément s'exécute de la façon suivante:
 	\begin{enumerate}
 		\item Commencer l'exploration de la liste par l'élément en tête, et se positionner sur la plus haute voie.
 		\item Sur la voie actuelle, notre clé est-elle plus grande que celle de l'élément suivant?
@@ -173,7 +173,7 @@
 		\item 8 est-il plus grand que 13  ? Non, descendre sur la 2ème voie.
 		\item 8 est-il plus grand que 5 ? Oui, se positionner sur le nœud 5.
 		\item 8 est-il plus grand que 13 ? Non, descendre sur la 1ère voie.
-		\item 8 est-il plus grand que 8 ? Non, Il n'existe pas de voie plus basse.
+		\item 8 est-il plus grand que 8 ? Non, il n'existe pas de voie plus basse.
 		\item 5 est le dernier nœud parcouru. L'élément suivant sur la voie 1 est 8. 8 est-il l'élément recherché? Oui, la recherche est concluante.
 	\end{itemize}
 	\begin{figure}[h]
@@ -192,7 +192,7 @@
 		\item 8 est-il plus grand que 13  ? Non, descendre sur la 2ème voie.
 		\item 8 est-il plus grand que 5 ? Oui, se positionner sur le nœud 5.
 		\item 8 est-il plus grand que 13 ? Non, descendre sur la 1ère voie.
-		\item 8 est-il plus grand que 8 ? Non, Il n'existe pas de voie plus basse.
+		\item 8 est-il plus grand que 8 ? Non, il n'existe pas de voie plus basse.
 		\item 5 est le dernier nœud parcouru. L'élément suivant sur la voie 1 est 9. 9 est-il l'élément recherché? Non, la recherche est infructueuse.
 	\end{itemize}
 	\begin{figure}[h]
@@ -238,7 +238,7 @@
 		\item 5 est-il plus grand que 13 ? Non, enregistrer ce lien en mémoire, puis descendre sur la 2ème voie.
 		\item 5 est-il plus grand que 13 ? Non, enregistrer ce lien en mémoire, puis descendre sur la 1ère voie.
 		\item 5 est-il plus grand que 3 ? Oui, se positionner sur le nœud 3.
-		\item 5 est-il plus grand que 8 ? Non, enregistrer ce lien en mémoire, Il n'existe a pas de voie plus basse.
+		\item 5 est-il plus grand que 8 ? Non, enregistrer ce lien en mémoire, il n'existe pas de voie plus basse.
 		\item 5 est le dernier nœud parcouru. L'élément suivant sur la voie 1 est 8. Est-il l'élément recherché? Non, on crée un nouvel élément. Générer une hauteur aléatoire: hauteur 2.
 		\item Ajouter un lien du nouvel élément 5 en voie 1. Ce lien doit pointer vers l'élément du lien enregistré à cette même voie. Il s'agit de l'élément 8.
 		\item Modifier ce lien enregistré en voie 1 (de l'élément 3 vers l'élément 8) pour qu'il pointe vers ce nouvel élément 5.
@@ -281,7 +281,7 @@
 		\item 5 est-il plus grand que 5? Non, enregistrer ce lien en mémoire, puis descendre sur la 2ème voie.
 		\item 5 est-il plus grand que 5? Non, enregistrer ce lien en mémoire, puis descendre sur la 1ière voie.
 		\item 5 est-il plus grand que 3 ? Oui, se positionner sur le nœud 3.
-		\item 5 est-il plus grand que 5 ? Non, enregistrer ce lien en mémoire, Il n'existe a pas de voie plus basse.
+		\item 5 est-il plus grand que 5 ? Non, enregistrer ce lien en mémoire, il n'existe pas de voie plus basse.
 		\item35 est le dernier nœud parcouru. L'élément suivant sur la voie 1 est 5. Est-il l'élément recherché? Oui, mettre à jour les pointeurs enregistrés sur les voies 4 et 3 vers NIL. Mettre à jour les pointeurs enregistrés sur les voies 2 et 1 vers le nœud 13.
 		\item Supprimer l'élément 5.
 		\item Diminuer la hauteur actuelle de la liste à 3 car la voie 4 pointes vers $NIL$.
@@ -297,15 +297,15 @@
 	\section{Analyse des performances}\label{perf}
 	La caractéristique majeure de la skip-list est l'aléatoire. L'insertion d'un élément nouveau utilise une hauteur qui est déterminée par le hasard. De ce fait, une même séquence produira une liste différente.
 	
-	De par sa nature probabiliste, on suppose que l'utilisateur n'aura pas un comportement à vouloir dégénérer volontairement la liste. C'est-à-dire que les performances peuvent être dégradées en retirant consciemment les éléments après avoir inspecté leur hauteur. Si l'utilisateur supprime tous les nœuds de hauteur $h>1$, le pire scénario de la skip-list équivaut à une liste chainée classique.
+	De par sa nature probabiliste, on suppose que l'utilisateur n'aura pas un comportement à vouloir dégénérer volontairement la liste. C'est-à-dire que les performances peuvent être dégradées en retirant consciemment les éléments après avoir inspecté leur hauteur. Si l'utilisateur supprime tous les nœuds de hauteur $h>1$, le pire scénario de la skip-list équivaut à une liste chaînée classique.
 	
-	Le temps requis pour exécuter l'insertion et la suppression dans une skip-list est prédominé par le temps de la recherche d'un élément. Ces deux derniers n'ont qu'un cout supplémentaire constant par rapport à la hauteur de la liste; alors que le cout de la recherche est proportionnel à la longueur du chemin à parcourir.
+	Le temps requis pour exécuter l'insertion et la suppression dans une skip-list est prédominé par le temps de la recherche d'un élément. Ces deux derniers n'ont qu'un coût supplémentaire constant par rapport à la hauteur de la liste; alors que le coût de la recherche est proportionnel à la longueur du chemin à parcourir.
 	
 	
 	\subsection{Analyse pour $p=\frac{1}{2}$}
-	Pour une variable aléatoire $p=\frac{1}{2}$ et une skip-list de taille infinie, celle-ci tend à ce que chacun des niveaux possède $\frac{1}{2}$ moins d'éléments. Ainsi, le niveau 1 contient $n$ élément, le niveau 2 $\frac{n}{2}$, le niveau 3 $\frac{n}{4}$, ..., un élément à hauteur $h$: $\frac{n}{{2}^{h-1}}$.
+	Pour une variable aléatoire $p=\frac{1}{2}$ et une skip-list de taille infinie, celle-ci tend à ce que chacun des niveaux possèdent $\frac{1}{2}$ moins d'éléments. Ainsi, le niveau 1 contient $n$ élément, le niveau 2 $\frac{n}{2}$, le niveau 3 $\frac{n}{4}$, ..., un élément à hauteur $h$: $\frac{n}{{2}^{h-1}}$.
 	
-	Par conséquent, le nombre total de liens dans une skip-list équivaut à: \[n+\frac{n}{2}+\frac{n}{4}+\frac{n}{8}+\dots = \sum_{h=1}^{+\infty}\frac{n}{{2}^{h-1}}=2n\] Ce qui signifie qu'en moyenne un élément dans une skip-list possède 2 liens. On peut donc déduire qu'en moyenne le nombre de fois que l'on avance dans la liste à un niveau précis équivaut au nombre de liens divisé par le nombre d'éléments, soit $\frac{2n}{n}=2$. En effet, chaque nœud examiné à un niveau $i$, ne peut pas appartenir à un niveau $i+1$. Pour chaque clé apparaissant au niveau $i$, la probabilité qu'elles n'apparaissent pas au niveau $i+1$ est $\frac{1}{2}$. En d'autres mots, si le niveau $i$ contient $k$ éléments. Le niveau $i+1$ en contiendra $k*p$ éléments.
+	Par conséquent, le nombre total de liens dans une skip-list équivaut à: \[n+\frac{n}{2}+\frac{n}{4}+\frac{n}{8}+\dots = \sum_{h=1}^{+\infty}\frac{n}{{2}^{h-1}}=2n\] Ce qui signifie qu'en moyenne un élément dans une skip-list possède 2 liens. On peut donc déduire qu'en moyenne le nombre de fois que l'on avance dans la liste à un niveau précis équivaut au nombre de liens divisé par le nombre d'éléments, soit $\frac{2n}{n}=2$. En effet, chaque nœud examiné à un niveau $i$, ne peut pas appartenir à un niveau $i+1$. Pour chaque clé apparaissant au niveau $i$, la probabilité qu'elles n'apparaissent pas au niveau $i+1$ est $\frac{1}{2}$. En d'autres mots, si le niveau $i$ contient $k$ éléments, le niveau $i+1$ en contiendra $k*p$ éléments.
 	
 	\newpage
 	La probabilité qu'un élément soit de hauteur $i$ est de ${p^{i-1}*(1-p)} = \frac{1}{2^{i}} $. Le facteur $p$ est constant ($\frac{1}{2}$), la probabilité de la hauteur des clés est équiprobable. Si l'on additionne la probabilité de hauteur chacune des clés de la skip-list, et que l'on prend $h$ comme hauteur de la liste, on déduit la formule suivante.
@@ -334,11 +334,11 @@
 		\longrightarrow P \le {\frac{n}{2}}^{log_2(n)} = 1
 		\longrightarrow P \le {\frac{n}{2}}^{3log_2(n)} = \frac{1}{n^2}
 	\]
-	Ce qui signifie que si $n=1000$, il y a une probabilité d'une chance sur un million que la hauteur de la liste soit plus grande que prévu. De façon plus générale pour n'importe quelle constance $c>1$, $h$ est plus grand que $c log_2(n)$ est d'au plus $\frac{1}{n^{c-1}}$. Alors que la probabilité que  $h$ soit plus petit que $c log_2(n)$ est de $1-\frac{1}{n^{c-1}}$. Par conséquent, la hauteur d'une skip-list est définie avec une forte probabilité en $\log_{2}(n)$.
+	Ce qui signifie que si $n=1000$, il y a une probabilité d'une chance sur un million que la hauteur de la liste soit plus grande que prévu. De façon plus générale pour n'importe quelle constante $c>1$, $h$ est plus grand que $c log_2(n)$ est d'au plus $\frac{1}{n^{c-1}}$. Alors que la probabilité que  $h$ soit plus petit que $c log_2(n)$ est de $1-\frac{1}{n^{c-1}}$. Par conséquent, la hauteur d'une skip-list est définie avec une forte probabilité en $\log_{2}(n)$.
 	
 	
 	\subsection{La hauteur}
-	 Afin de calculer la probabilité qu'un nœud atteint un niveau précis $i$, il faut prendre un autre exemple que $p=\frac{1}{2}$. Avec $\frac{1}{4}$, nous pouvons calculé son niveau de cette façon: ${p^{i-1}*(1-p)} = \frac{1}{{4}^{i-1}}*(1-\frac{1}{4}) $. Ainsi, la fonction "getRandomLevel" de la skip-list peut être illustrée de cette façon.
+	 Afin de calculer la probabilité qu'un nœud atteint un niveau précis $i$, il faut prendre un autre exemple que $p=\frac{1}{2}$. Avec $\frac{1}{4}$, nous pouvons calculer son niveau de cette façon: ${p^{i-1}*(1-p)} = \frac{1}{{4}^{i-1}}*(1-\frac{1}{4}) $. Ainsi, la fonction "getRandomLevel" de la skip-list peut être illustrée de cette façon.
 	 
 	 \begin{figure}[h]
 	 	\includegraphics[width=\textwidth]{img/probatree}
@@ -441,13 +441,13 @@
 	Il existe un grand nombre de méthodes différentes pour enregistrer des données au format "clé-valeur". Ces structures de données sont appelées des dictionnaires. Dans un dictionnaire de langue française, chacun des mots est associé à une définition. Ces mots sont triés par ordre alphabétique afin d'effectuer des recherches rapides. En informatique, c'est le même concept qui est utilisé: Chacune des clés (mots) correspond à une valeur (définitions). Les clés, quant à elles, seront structurées de façon organisée afin de pouvoir les trouver rapidement.
 	
 	\subsection{La table de hachage}
-	La table de hachage est une structure de données qui fonctionne grâce à des listes chainées. Le pointeur du premier élément est placé dans un vecteur. Ce vecteur est typiquement initialisé pour contenir 128 éléments. 
+	La table de hachage est une structure de données qui fonctionne grâce à des listes chaînées. Le pointeur du premier élément est placé dans un vecteur. Ce vecteur est typiquement initialisé pour contenir 128 éléments. 
 	
 	Lors de l'insertion dans cette table, la clé est transformée à l'aide d'une méthode de "hachage". Cette dernière doit être capable de répartir efficacement les éléments tout en étant déterministe. C'est à dire, qu'insérer ou rechercher un élément ayant comme clé "4000" doit toujours atteindre la même case du vecteur. 
 	
-	Si 2 éléments doivent s'insérer dans la même case du vecteur, ceux-ci sont alors placés dans une liste chainée. Par exemple si la clé "48" et la clé "24" ont comme résultat de la fonction de hachage 12; L'élément 24 sera le premier élément de la liste chainée, suivi de 48.
+	Si 2 éléments doivent s'insérer dans la même case du vecteur, ceux-ci sont alors placés dans une liste chaînée. Par exemple si la clé "48" et la clé "24" ont comme résultat de la fonction de hachage 12; L'élément 24 sera le premier élément de la liste chaînée, suivi de 48.
 	
-	Lorsque trop d'éléments sont présents dans une même case, la table de hachage doit pouvoir agrandir la taille de son vecteur. Cette modification impose que chacun des éléments présents dans la table soit déplacé pour correspondre aux nouveaux indices calculés par la fonction de hachage. Le nombre maximum de collisions autorisées par case est typiquement 4, mais peut-être configuré autrement. Une table de hachage de 128 cases peut donc contenir 512 éléments. 
+	Lorsque trop d'éléments sont présents dans une même case, la table de hachage doit pouvoir agrandir la taille de son vecteur. Cette modification impose que chacun des éléments présents dans la table soient déplacés pour correspondre aux nouveaux indices calculés par la fonction de hachage. Le nombre maximum de collisions autorisées par case est typiquement 4, mais peut-être configuré autrement. Une table de hachage de 128 cases peut donc contenir 512 éléments. 
 	
 	\lstinputlisting[linerange=BEGINStruct-ENDStruct]{SkipList/HashTable.h}
 	\lstinputlisting[linerange=BEGINStruct-ENDStruct]{SkipList/LinkList.h}
@@ -488,13 +488,13 @@
 	
 	\lstinputlisting[linerange=BEGINStruct-ENDStruct]{SkipList/Tree.h}
 	
-	Chacun des nœuds a donc 2 fils: le gauche contient un élément plus petit que son parent et le fils droit qui contient un élément plus grand que son parent. Par exemple, un nœud de valeur 5 aura comme fils de gauche 3, et comme fils droit 13.
+	Chacun des nœuds a donc 2 fils: le gauche contient un élément plus petit que son parent et le fils droit qui contient un élément plus grand que son parent. Par exemple, un nœud de valeur 5 aura comme fils gauche 3, et comme fils droit 13.
 	
 	Les recherches dans un arbre s'effectuent depuis la racine de l'arbre, soit le nœud le plus haut dans sa hiérarchie. Il faut ensuite comparer l'élément courant avec celui qui est recherché. S'il est plus grand, il faut descendre sur le fils droit, sinon sur le fils gauche. La recherche continue en comparant avec le dernier élément sélectionné. L'exploration de l'arbre s'arrête lorsque l'élément est trouvé, ou qu'un nœud n'a plus de fils.
 	
 	Les insertions et suppressions dans un arbre dépendent de la recherche. Il faut en effet garder la structure cohérente. Si un élément parent est supprimé, il faut être capable de le remplacer par un autre sans détériorer l'arbre.
 	
-	Les insertions séquentielles posent problème dans un arbre. En effet, dans une suite de nombres strictement croissants, chacun des nombres est par définition plus grand que son précédent. Par conséquent, de telles insertions dans un arbre provoqueront une dégradation significative des performances. Le nombre inséré étant plus grand que son précédent, celui-ci est toujours ajouté sur le fils droit. Le fils de gauche n'est par conséquent jamais utilisé; ce qui transforme l'arbre en liste chainée ordonnée.
+	Les insertions séquentielles posent problème dans un arbre. En effet, dans une suite de nombres strictement croissants, chacun des nombres est par définition plus grand que son précédent. Par conséquent, de telles insertions dans un arbre provoqueront une dégradation significative des performances. Le nombre inséré étant plus grand que son précédent, celui-ci est toujours ajouté sur le fils droit. Le fils gauche n'est par conséquent jamais utilisé; ce qui transforme l'arbre en liste chaînée ordonnée.
 	
 	 \begin{table}[h]
 	 	\begin{tabular}{|l|c|c|}
@@ -569,8 +569,8 @@
 		\caption{Tableau récapitulatif}
 	\end{table}
 	
-	\subsection{La liste chainée triée}
-	Une liste chainée (\cref{linkList}) est une simple chaine d'éléments. Chacun des éléments de cette liste contient une référence vers l'élément suivant. Lors d'une insertion, il faut rechercher où placer l'élément dans la liste afin de garder la structure triée.
+	\subsection{La liste chaînée triée}
+	Une liste chaînée (\cref{linkList}) est une simple chaine d'éléments. Chacun des éléments de cette liste contient une référence vers l'élément suivant. Lors d'une insertion, il faut rechercher où placer l'élément dans la liste afin de garder la structure triée.
 	\lstinputlisting[linerange=BEGINStruct-ENDStruct]{SkipList/LinkList.h}
 	
 	\subsubsection*{Avantage}
@@ -678,7 +678,7 @@
 	\end{figure}
 	
 	\newpage
-	\subsection{Comparaisons des performances d'insertion}
+	\subsection{Comparaisons des performances d'insertions}
 	Afin de comparer ces différentes structures de données, il est possible d'analyser leur temps d'exécution. Le tableau (\cref{compareAllTiming}) est la moyenne des résultats du logiciel de comparaison (option 3). Les temps affichés sont en $10^{-4}$ secondes. Ces temps ont été calculés à l'aide de l'instruction RDTSC présente sur les processeurs.
 	
 	
@@ -721,16 +721,16 @@
 		\caption{Comparaisons du temps d'insertion}
 		\label{compareAllTiming}
 	\end{table}
-	On peut en déduire qu'une liste chainée est plus rapide que les autres structures, si le nombre d'éléments est inférieur à 64. Un arbre binaire de recherche est plus rapide, s'il y a moins de $2^{12}$ éléments. Ceci s'explique, car ces derniers ont une complexité $\mathcal{O}(log n)$ alors qu'une liste chainée est en complexité $\mathcal{O}(n)$.
+	On peut en déduire qu'une liste chaînée est plus rapide que les autres structures, si le nombre d'éléments est inférieur à 64. Un arbre binaire de recherche est plus rapide, s'il y a moins de $2^{12}$ éléments. Ceci s'explique, car ces derniers ont une complexité $\mathcal{O}(log n)$ alors qu'une liste chaînée est en complexité $\mathcal{O}(n)$.
 	
 	Au-delà de $2^{12}$ éléments, l'arbre rouge-noir est plus rapide qu'un arbre binaire de recherche. Ce dernier commence à se déséquilibrer, ce qui ne garantit plus une performance optimale de $\mathcal{O}(log n)$. L'arbre rouge-noir quant à lui, possède des algorithmes permettant son rééquilibrage de façon automatique.
 	
-	À partir de $2^{22}$ éléments, la table de hachage devient plus rapide qu'un arbre rouge-noir. Il est aussi possible d'observer qu'au-delà de $2^{24}$ éléments, la skip-list devient plus rapide que l'arbre bicolore. Cela s'explique par le fait qu'une skip-list n'a pas besoin d'être rééquilibrée, quel que soit le nombre d'éléments inséré.
+	À partir de $2^{22}$ éléments, la table de hachage devient plus rapide qu'un arbre rouge-noir. Il est aussi possible d'observer qu'au-delà de $2^{24}$ éléments, la skip-list devient plus rapide que l'arbre bicolore. Cela s'explique par le fait qu'une skip-list n'a pas besoin d'être rééquilibrée, quel que soit le nombre d'éléments insérés.
 	
 	\subsection{Différence entre les temps d'insertion}
-	La rapidité d'insertion n'est pas la seule chose qui permet de privilégier une structure de données au lieu d'une autre. Par exemple, la skip-list ne doit pas être rééquilibrée alors qu'un arbre rouge-noir oui. À première vue, la skip-list a donc des temps d'insertion qui varient moins que les arbres bicolores. Les tables de hachage doivent s'agrandir au fur et à mesure des insertions. Le temps de la réallocation de la mémoire peut donc devenir un gros inconvénient, alors qu'elle était la plus rapide dans la plupart des cas. Le tableau (\cref{deltaTiming}) est la moyenne des résultats du logiciel de comparaison (option 4). Les temps affichés sont en $10^{-4}$ secondes, $2^{24}$ éléments ont été insérés.
+	La rapidité d'insertion n'est pas la seule chose qui permet de privilégier une structure de données au lieu d'une autre. Par exemple, la skip-list ne doit pas être rééquilibrée alors qu'un arbre rouge-noir oui. À première vue, la skip-list a donc des temps d'insertions qui varient moins que les arbres bicolores. Les tables de hachage doivent s'agrandir au fur et à mesure des insertions. Le temps de la réallocation de la mémoire peut donc devenir un gros inconvénient, alors qu'elle était la plus rapide dans la plupart des cas. Le tableau (\cref{deltaTiming}) est la moyenne des résultats du logiciel de comparaison (option 4). Les temps affichés sont en $10^{-4}$ secondes, $2^{24}$ éléments ont été insérés.
 	
-	Les résultats du test révèlent que la table de hashing a eu le temps d'insertion le plus court. Ce qui est normal, étant donné que le temps d'accès à un vecteur par un système d'exploitation est très faible. Par contre, le temps d'exécution le plus long pour insérer un élément est presque 4 millions de fois plus grandes que le temps moyen. Le temps d'insertion est par conséquent extrêmement différent entre l'insertion de 2 données. Il n'est donc pas possible de se fier à cette structure de données pour des insertions prenant un temps uniforme.
+	Les résultats du test révèlent que la table de hachage a eu le temps d'insertion le plus court. Ce qui est normal, étant donné que le temps d'accès à un vecteur par un système d'exploitation est très faible. Par contre, le temps d'exécution le plus long pour insérer un élément est presque 4 millions de fois plus grandes que le temps moyen. Le temps d'insertion est par conséquent extrêmement différent entre l'insertion de 2 données. Il n'est donc pas possible de se fier à cette structure de données pour des insertions prenant un temps uniforme.
 	
 	Comme vu dans la \cref{compareAllTiming}, le temps d'exécution de la skip-list est plus rapide que l'arbre bicolore pour insérer $2^{24}$ éléments. Les résultats du test affichent aussi que plus de la moitié des insertions étaient plus rapides pour la skip-list que l'arbre rouge-noir. Par contre en observant le 95ème centile du temps d'insertion, l'arbre rouge-noir était plus rapide.
 	
@@ -753,7 +753,7 @@
 	\section{Conclusion}
 	La skip-list est une structure de données qui possède des algorithmes simples pouvant être implémentée en moins d'une heure. Ses performances sont très proches des arbres binaires de recherche, alors qu'elle n'a pas besoin d'être rééquilibrée. En raison des probabilités, il est possible qu'elle ne fonctionne pas de manière optimale. Cependant, plus le nombre d'éléments dans la liste est grand, plus la probabilité est faible et devient négligeable.
 	
-	La skip-list fonctionne comme une liste chainée. Des pointeurs supplémentaires sont ajoutés selon la hauteur d'un nœud. Plus la hauteur du nœud est grande, plus celui-ci contient de liens vers l'un des éléments suivants dans la liste à cette même hauteur. La skip-list utilise un paramètre $p$ de probabilité pour influencer la hauteur. La valeur $p=\frac{1}{2}$ est conseillée, une valeur inférieure réduira sa place en mémoire.
+	La skip-list fonctionne comme une liste chaînée. Des pointeurs supplémentaires sont ajoutés selon la hauteur d'un nœud. Plus la hauteur du nœud est grande, plus celui-ci contient de liens vers l'un des éléments suivants dans la liste à cette même hauteur. La skip-list utilise un paramètre $p$ de probabilité pour influencer la hauteur. La valeur $p=\frac{1}{2}$ est conseillée, une valeur inférieure réduira sa place en mémoire.
 	
 	La probabilité $p=\frac{1}{2}$ est souvent associée avec l'analogie d'une pièce de monnaie. Pour savoir à quelle hauteur atteindra un nœud, il faut lancer une pièce. Chaque fois que le résultat correspond au côté face, il faut relancer la pièce. La hauteur d'un nœud correspond au nombre de lancé effectué.
 	
