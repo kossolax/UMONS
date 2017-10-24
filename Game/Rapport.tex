@@ -1,0 +1,82 @@
+\documentclass[hidelinks,a4paper, 12pt]{article}
+    \usepackage[french]{babel}
+    \usepackage[utf8]{inputenc}
+    \usepackage[T1]{fontenc}
+    \usepackage{lmodern}
+    \usepackage{graphicx}
+    \usepackage{hyperref}
+    \usepackage{listings}
+    \usepackage{color}
+    \usepackage{svg}
+    \usepackage{cleveref}
+    \usepackage{subfig}
+    \usepackage{gensymb}
+    \usepackage{pgfplots}
+    \usepackage{pgfplotstable}
+    \usepackage{siunitx}
+    \usepackage{xcolor,colortbl}
+    \newcommand{\subsubsubsection}[1]{\paragraph{#1}\mbox{}\\}
+    \setcounter{secnumdepth}{4}
+    \setcounter{tocdepth}{4}
+    \makeatletter
+    \usepackage[titletoc,title]{appendix}
+    \title{Les agents dans les jeux-vidéos}
+    \author{Steve Zaretti}
+    
+    \begin{document}
+
+    \maketitle
+	\newpage
+	\tableofcontents
+	\newpage
+	
+    \section{Introduction}
+
+    \section{Les agents intéligents}
+    \subsection{Qu'est-ce qu'un agent intelligent}
+    \subsubsection{L'intelligence}
+    \subsubsection{L'interactivité}
+    \subsection{Dans les jeux-vidéos}
+    \subsubsection{Adversaire}
+    \subsubsection{Colaboration}
+
+    \section{Déplacement d'un agent dans son environnement}
+    \subsection{Découverte d'un chemin}
+    \subsubsection{Les algorithmes de pathfinding}
+    \subsubsubsection{A* dans une grille}
+    \subsubsubsection{A* par un nav-mesh}
+    \subsubsection{Amélioration du réalisme}
+    \subsection{Évitement d'obstacle}
+    \subsubsection{Stratégie d'évitement local}
+    \subsubsubsection{Pourquoi éviter dynamiquement un obstacle}
+    \subsubsubsection{Algorithme d'évitement}
+    \subsubsection{Déplacement multi-agent}
+
+    \section{Comportement de l'agent dans son environnement}
+    \subsection{Les stimuli}
+    \subsubsection{Le sens de la vue}
+    \subsubsection{Le sens de l'audition}
+    \subsubsection{Les réflexes}
+    \subsection{L'intention}
+    \subsubsection{Le comportement}
+    \subsubsection{L'anticipation}
+    \subsubsection{Action et transition}
+
+    \section{Implémentation}
+    \subsection{Structures}
+    \subsubsection{Quad-Tree}
+    \subsubsection{Nav-Mesh}
+    \subsubsection{HFSM}
+    \subsection{Environnement}
+    \subsubsection{Tests et résultats}
+    
+    \section{Conclusion}
+    
+    \section{Références}
+
+
+    \newpage
+    \begin{appendices}
+    \end{appendices}
+    
+    \end{document}
