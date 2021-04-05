@@ -11,3 +11,4 @@ Dépôt Git du projet *Distributeur de boisson* pour le cours *de modélisation 
 > Année Préparatoire au Master en Sciences
 > Informatiques à horaire décalé à Charleroi Faculté des Sciences,
 > Université de Mons
++
